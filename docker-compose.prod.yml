@@ -1,22 +1,25 @@
 version: '3.9'
 services:
   radio_garden:
-    image: ghcr.io/tomassasovsky/radio_garden:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+
     container_name: radio_garden
+    expose:
+      - 8080
     env_file:
-     - .env
+     - .env/.env.production
     links:
-      - db
       - lavalink
     depends_on:
-      - db
       - lavalink
 
   lavalink:
     image: fredboat/lavalink:master
-    container_name: radio_garden_lavalink
+    container_name: lavalink
     restart: always
     expose:
       - 2333
     volumes:
-     - /services/rod-lavalink.yml:/opt/Lavalink/application.yml:ro
+     - ./lavalink.yml:/opt/Lavalink/application.yml

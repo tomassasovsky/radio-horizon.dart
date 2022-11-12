@@ -30,19 +30,12 @@ bool getEnvBool(String key, {bool? def}) =>
 /// The token to use for this instance.
 final String token = getEnv('RG_TOKEN');
 
-/// Whether to enable features requiring privileged intents for this instance.
-final bool intentFeaturesEnabled = getEnvBool('RG_INTENT_FEATURES_ENABLE');
-
 /// The prefix to use for text commands for this instance.
 final String prefix = getEnv('RG_PREFIX');
 
 /// The IDs of the users that are allowed to use administrator commands
 final List<Snowflake> adminIds =
     getEnv('RG_ADMIN_IDS').split(RegExp(r'\s+')).map(Snowflake.new).toList();
-
-/// The interval at which to update the docs cache.
-// final Duration docsUpdateInterval =
-//     Duration(seconds: int.parse(getEnv('RG_DOCS_UPDATE_INTERVAL', '900')));
 
 /// The default response for the github command.
 final String defaultGithubResponse = getEnv('RG_DEFAULT_GITHUB_RESPONSE', '''
@@ -78,15 +71,7 @@ String serverPassword = getEnv('LAVALINK_PASSWORD');
 /// Whether to use or not ssl to establish a connection.
 bool useSSL = getEnvBool('LAVALINK_USE_SSL', def: false);
 
-/// The basic intents needed to run Running on Dart without privileged intents.
-const int _baseIntents = GatewayIntents.directMessages |
+/// The basic intents needed to run Radio Garden without privileged intents.
+const int intents = GatewayIntents.directMessages |
     GatewayIntents.guilds |
     GatewayIntents.guildVoiceState;
-
-/// Privileged intents that can be enabled
-/// to add additional features to Running on Dart.
-const int _privilegedIntents =
-    _baseIntents | GatewayIntents.guildMessages | GatewayIntents.guildMembers;
-
-/// The intents to use for this instance.
-final int intents = intentFeaturesEnabled ? _privilegedIntents : _baseIntents;

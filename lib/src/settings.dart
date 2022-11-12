@@ -61,7 +61,7 @@ final bool dev = getEnvBool('RG_DEV');
 
 /// If this instance is in development mode,
 /// the ID of the guild to register commands to, else `null`.
-final guildId = Snowflake(getEnv('RG_DEV_GUILD_ID'));
+final guildId = dev ? Snowflake(getEnv('RG_DEV_GUILD_ID')) : null;
 
 /// The address of the lavalink running server to connect to.
 String serverAddress = getEnv('LAVALINK_ADDRESS');

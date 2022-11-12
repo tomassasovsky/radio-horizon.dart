@@ -1,0 +1,9 @@
+{
+  "dart.lineLength": 80,
+  "[dart]": {
+    "editor.rulers": [
+      80
+    ]
+  },
+  "dotenv.enableAutocloaking": false,
+}

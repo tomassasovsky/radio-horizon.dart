@@ -1,0 +1,22 @@
+version: '3.9'
+services:
+  radio_garden:
+    build: .
+    container_name: radio_garden
+    expose:
+      - 8080
+    env_file:
+     - .env/.env.development
+    links:
+      - lavalink
+    depends_on:
+      - lavalink
+
+  lavalink:
+    image: fredboat/lavalink:master
+    container_name: lavalink
+    restart: always
+    expose:
+      - 2333
+    volumes:
+     - ./lavalink.yml:/opt/Lavalink/application.yml

@@ -1,0 +1,22 @@
+version: '3.9'
+services:
+  radio_garden:
+    image: ghcr.io/tomassasovsky/radio_garden:0.0.1
+    container_name: radio_garden
+    env_file:
+     - .env
+    links:
+      - db
+      - lavalink
+    depends_on:
+      - db
+      - lavalink
+
+  lavalink:
+    image: fredboat/lavalink:master
+    container_name: radio_garden_lavalink
+    restart: always
+    expose:
+      - 2333
+    volumes:
+     - /services/rod-lavalink.yml:/opt/Lavalink/application.yml:ro

@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch development",
+      "request": "launch",
+      "type": "dart",
+      "program": "bin/radio_garden_development.dart",
+      "args": [
+        "--flavor",
+        "development",
+        "--target",
+        "bin/radio_garden_development.dart",
+      ],
+    },
+    {
+      "name": "Launch production",
+      "request": "launch",
+      "type": "dart",
+      "program": "bin/radio_garden_production.dart",
+      "args": [
+        "--flavor",
+        "production",
+        "--target",
+        "bin/radio_garden_production.dart",
+      ],
+    },
+  ]
+}

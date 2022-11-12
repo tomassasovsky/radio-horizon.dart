@@ -1,7 +1,10 @@
 version: '3.9'
 services:
   radio_garden:
-    build: .
+    build:
+      context: .
+      args:
+          dart_entryfile: radio_garden_development.dart
     container_name: radio_garden
     expose:
       - 8080

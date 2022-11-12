@@ -17,7 +17,6 @@ Future<void> main() async {
 
   final commands = CommandsPlugin(
     prefix: mentionOr((_) => prefix),
-    guild: guildId,
     options: const CommandsOptions(
       hideOriginalResponse: false,
     ),

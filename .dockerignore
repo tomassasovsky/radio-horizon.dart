@@ -17,3 +17,8 @@ build/
 # IDE configuration folders
 .vscode/
 .idea/
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

@@ -3,8 +3,8 @@ services:
   radio_garden:
     build:
       context: .
-      dockerfile: Dockerfile.prod
-
+      args:
+          dart_entryfile: radio_garden_production.dart
     container_name: radio_garden
     expose:
       - 8080

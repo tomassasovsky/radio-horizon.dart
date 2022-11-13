@@ -41,6 +41,9 @@ class MusicService {
         );
 
         cluster.eventDispatcher.onTrackStart.listen(_trackStarted);
+        cluster.eventDispatcher.onTrackStuck.listen(_trackStuck);
+        cluster.eventDispatcher.onTrackEnd.listen(_trackEnded);
+        cluster.eventDispatcher.onTrackException.listen(_trackException);
       }
     });
   }
@@ -62,6 +65,10 @@ class MusicService {
 
   Future<void> _trackStarted(ITrackStartEvent event) async {
     final player = event.node.players[event.guildId];
+    Logger('MusicService').info(
+      'Track started: ${player?.nowPlaying?.track.info?.title} '
+      '(${player?.nowPlaying?.track.info?.uri})',
+    );
 
     if (player != null && player.queue.isNotEmpty) {
       final track = player.queue[0];
@@ -71,6 +78,67 @@ class MusicService {
         ..description =
             'Track [${track.track.info?.title}](${track.track.info?.uri}) '
                 'started playing.\n\nRequested by <@${track.requester!}>'
+        ..thumbnailUrl =
+            'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
+
+      await _client.httpEndpoints
+          .sendMessage(track.channelId!, MessageBuilder.embed(embed));
+    }
+  }
+
+  Future<void> _trackEnded(ITrackEndEvent event) async {
+    final player = event.node.players[event.guildId];
+
+    // disconnect the bot if the queue is empty
+    if (player != null && player.queue.isEmpty) {
+      event.node.destroy(event.guildId);
+
+      final track = player.queue[0];
+      final embed = EmbedBuilder()
+        ..color = getRandomColor()
+        ..title = 'Last Track ended, leaving the voice channel'
+        ..description =
+            'Track [${track.track.info?.title}](${track.track.info?.uri}) '
+                'ended playing.\n\nRequested by <@${track.requester!}>.'
+                '\n\nQueue is empty, leaving the voice channel'
+        ..thumbnailUrl =
+            'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
+
+      await _client.httpEndpoints
+          .sendMessage(track.channelId!, MessageBuilder.embed(embed));
+    }
+  }
+
+  Future<void> _trackStuck(ITrackStuckEvent event) async {
+    final player = event.node.players[event.guildId];
+
+    if (player != null && player.queue.isNotEmpty) {
+      final track = player.queue[0];
+      final embed = EmbedBuilder()
+        ..color = getRandomColor()
+        ..title = 'Track stuck'
+        ..description =
+            'Track [${track.track.info?.title}](${track.track.info?.uri}) '
+                'stuck playing.\n\nRequested by <@${track.requester!}>'
+        ..thumbnailUrl =
+            'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
+
+      await _client.httpEndpoints
+          .sendMessage(track.channelId!, MessageBuilder.embed(embed));
+    }
+  }
+
+  Future<void> _trackException(ITrackExceptionEvent event) async {
+    final player = event.node.players[event.guildId];
+
+    if (player != null && player.queue.isNotEmpty) {
+      final track = player.queue[0];
+      final embed = EmbedBuilder()
+        ..color = getRandomColor()
+        ..title = 'Track exception'
+        ..description =
+            'Track [${track.track.info?.title}](${track.track.info?.uri}) '
+                'exception playing.\n\nRequested by <@${track.requester!}>'
         ..thumbnailUrl =
             'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
 

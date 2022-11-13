@@ -49,10 +49,12 @@ ChatGroup radio = ChatGroup(
 
         final track = result.tracks.first;
 
+        node.stop(context.guild!.id);
         node
             .play(
               context.guild!.id,
               track,
+              replace: true,
               requester: context.member!.id,
               channelId: context.channel.id,
             )

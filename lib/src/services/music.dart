@@ -88,6 +88,7 @@ class MusicService {
 
   Future<void> _trackEnded(ITrackEndEvent event) async {
     final player = event.node.players[event.guildId];
+    await Future<void>.delayed(const Duration(minutes: 5));
 
     // disconnect the bot if the queue is empty
     if (player != null && player.queue.isEmpty) {
@@ -96,13 +97,8 @@ class MusicService {
       final track = player.queue[0];
       final embed = EmbedBuilder()
         ..color = getRandomColor()
-        ..title = 'Last Track ended, leaving the voice channel'
-        ..description =
-            'Track [${track.track.info?.title}](${track.track.info?.uri}) '
-                'ended playing.\n\nRequested by <@${track.requester!}>.'
-                '\n\nQueue is empty, leaving the voice channel'
-        ..thumbnailUrl =
-            'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
+        ..title =
+            'Bot inactive for the last 5 minutes. Leaving the voice channel';
 
       await _client.httpEndpoints
           .sendMessage(track.channelId!, MessageBuilder.embed(embed));

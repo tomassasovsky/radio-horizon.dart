@@ -8,7 +8,6 @@
 library radio_garden;
 
 export 'src/commands/commands.dart';
-export 'src/converters.dart';
 export 'src/dotenv.dart';
 export 'src/error_handler.dart';
 export 'src/models/models.dart';

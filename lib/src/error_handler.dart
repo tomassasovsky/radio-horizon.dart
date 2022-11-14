@@ -4,7 +4,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import 'package:duration/duration.dart';
 import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
@@ -63,7 +62,7 @@ Future<void> commandErrorHandler(CommandsException error) async {
         title = 'Command on cooldown';
         description =
             "You can't use this command right now because it is on cooldown. "
-            'Please wait ${prettyDuration(failed.remaining(context))} '
+            'Please wait ${failed.remaining(context).inSeconds}s '
             'and try again.';
       } else {
         title = "You can't use this command!";

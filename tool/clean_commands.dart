@@ -27,7 +27,7 @@ Future<void> main(List<String> args) async {
 
   await interactions.interactionsEndpoints.bulkOverrideGuildCommands(
     clientId!,
-    guildId!,
+    devGuildId!,
     [],
   ).toList();
 

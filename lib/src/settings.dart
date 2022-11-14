@@ -54,7 +54,7 @@ final bool dev = getEnvBool('RG_DEV');
 
 /// If this instance is in development mode,
 /// the ID of the guild to register commands to, else `null`.
-final guildId = dev ? Snowflake(getEnv('RG_DEV_GUILD_ID')) : null;
+final devGuildId = dev ? Snowflake(getEnv('RG_DEV_GUILD_ID')) : null;
 
 /// The bot's app id.
 final clientId = dev ? Snowflake(getEnv('CLIENT_ID')) : null;

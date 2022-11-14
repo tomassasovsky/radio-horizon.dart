@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  radio_garden:
+    build:
+      context: .devcontainer
+      args:
+        VARIANT: "latest"
+        INSTALL_ZSH: "true"
+        UPGRADE_PACKAGES: "true"
+
+    volumes:
+      - .:/workspace:cached
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"

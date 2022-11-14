@@ -17,3 +17,4 @@ coverage/
 .flaskenv*
 !.env.project
 !.env.vault
+.history

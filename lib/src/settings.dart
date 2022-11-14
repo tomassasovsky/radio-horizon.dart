@@ -71,6 +71,21 @@ String serverPassword = getEnv('LAVALINK_PASSWORD');
 /// Whether to use or not ssl to establish a connection.
 bool useSSL = getEnvBool('LAVALINK_USE_SSL', def: false);
 
+/// The host for the song recognition service, in ARCCloud.
+///
+/// Find yours in https://console.acrcloud.com/
+String arcCloudHost = getEnv('ARC_CLOUD_HOST');
+
+/// The access key for the song recognition service, in ARCCloud.
+///
+/// Find yours in https://console.acrcloud.com/
+String arcCloudAccessKey = getEnv('ARC_CLOUD_ACCESS_KEY');
+
+/// The access secret for the song recognition service, in ARCCloud.
+///
+/// Find yours in https://console.acrcloud.com/
+String arcCloudAccessSecret = getEnv('ARC_CLOUD_ACCESS_SECRET');
+
 /// The basic intents needed to run Radio Garden without privileged intents.
 const int intents = GatewayIntents.directMessages |
     GatewayIntents.guilds |

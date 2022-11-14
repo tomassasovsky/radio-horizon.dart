@@ -24,8 +24,7 @@ Future<void> main() async {
     ..addCommand(info)
     ..addCommand(music)
     ..addCommand(radio)
-    ..onCommandError.listen(commandErrorHandler)
-    ..addConverter(durationConverter);
+    ..onCommandError.listen(commandErrorHandler);
 
   client
     ..registerPlugin(Logging())

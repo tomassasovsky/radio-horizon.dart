@@ -4,8 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'dart:async';
+
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
+import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_garden/radio_garden.dart';
 import 'package:radio_garden/src/checks.dart';
 
@@ -23,7 +26,9 @@ ChatGroup music = ChatGroup(
       'Plays music based on the given query',
       id('music-play', (
         IChatContext context,
-        @Description('The name/url of the song/playlist to play') String query,
+        @Description('The name/url of the song/playlist to play')
+        @Autocomplete(_autocompleteCallback)
+            String query,
       ) async {
         final node = MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id);
@@ -166,3 +171,20 @@ ChatGroup music = ChatGroup(
     )
   ],
 );
+
+FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
+  AutocompleteContext context,
+) async {
+  final query = context.currentValue;
+  final node =
+      MusicService.instance.cluster.getOrCreatePlayerNode(context.guild!.id);
+  final response =
+      await node.autoSearch(query).timeout(const Duration(milliseconds: 2500));
+
+  return response.tracks.map(
+    (e) => ArgChoiceBuilder(
+      e.info!.title,
+      e.info!.uri,
+    ),
+  );
+}

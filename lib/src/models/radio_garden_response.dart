@@ -158,7 +158,8 @@ class Source {
 
 enum Type {
   channel,
-  place;
+  place,
+  country;
 
   factory Type.fromJson(String str) {
     switch (str.toLowerCase()) {
@@ -166,6 +167,8 @@ enum Type {
         return Type.channel;
       case 'place':
         return Type.place;
+      case 'country':
+        return Type.country;
     }
 
     throw Exception('Unknown type: $str');

@@ -9,7 +9,7 @@ on:
       - "pubspec.yaml"
   push:
     branches:
-      - main
+      - master
     paths:
       - ".github/workflows/radio_garden.yaml"
       - "lib/**"
@@ -22,6 +22,8 @@ jobs:
 
   build:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/dart_package.yml@v1
+    with:
+      min_coverage: 0
 
   verify-version:
     runs-on: ubuntu-latest

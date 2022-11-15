@@ -14,9 +14,9 @@ import 'package:radio_garden/radio_garden.dart';
 /// If [def] is provided and the environment variable [key] is not set,
 /// [def] will be returned instead of throwing an exception.
 String getEnv(String key, [String? def]) =>
+    dotEnvFlavour.dotenv[key] ??
     Platform.environment[key] ??
     def ??
-    dotEnvFlavour.dotenv[key] ??
     (throw Exception('Missing `$key` environment variable'));
 
 /// Get a [bool] from an environment variable,

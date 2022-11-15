@@ -12,7 +12,7 @@ String songRecognitionResponseToJson(SongRecognitionResponse data) =>
     json.encode(data.toJson());
 
 @freezed
-abstract class SongRecognitionResponse with _$SongRecognitionResponse {
+class SongRecognitionResponse with _$SongRecognitionResponse {
   const factory SongRecognitionResponse({
     Metadata? metadata,
     Status? status,
@@ -24,7 +24,7 @@ abstract class SongRecognitionResponse with _$SongRecognitionResponse {
 }
 
 @freezed
-abstract class Metadata with _$Metadata {
+class Metadata with _$Metadata {
   const factory Metadata({
     DateTime? timestampUtc,
     List<Music>? music,
@@ -35,7 +35,7 @@ abstract class Metadata with _$Metadata {
 }
 
 @freezed
-abstract class Music with _$Music {
+class Music with _$Music {
   const factory Music({
     int? dbBeginTimeOffsetMs,
     int? dbEndTimeOffsetMs,
@@ -66,7 +66,7 @@ abstract class Music with _$Music {
 }
 
 @freezed
-abstract class MusicAlbum with _$MusicAlbum {
+class MusicAlbum with _$MusicAlbum {
   const factory MusicAlbum({
     String? name,
     List<Lang>? langs,
@@ -77,7 +77,7 @@ abstract class MusicAlbum with _$MusicAlbum {
 }
 
 @freezed
-abstract class Lang with _$Lang {
+class Lang with _$Lang {
   const factory Lang({
     String? code,
     String? name,
@@ -87,7 +87,7 @@ abstract class Lang with _$Lang {
 }
 
 @freezed
-abstract class Contributors with _$Contributors {
+class Contributors with _$Contributors {
   const factory Contributors({
     List<String>? composers,
     List<String>? lyricists,
@@ -98,7 +98,7 @@ abstract class Contributors with _$Contributors {
 }
 
 @freezed
-abstract class ExternalIds with _$ExternalIds {
+class ExternalIds with _$ExternalIds {
   const factory ExternalIds({
     String? iswc,
     String? isrc,
@@ -110,7 +110,7 @@ abstract class ExternalIds with _$ExternalIds {
 }
 
 @freezed
-abstract class ExternalMetadata with _$ExternalMetadata {
+class ExternalMetadata with _$ExternalMetadata {
   const factory ExternalMetadata({
     List<Musicbrainz>? musicbrainz,
     Deezer? deezer,
@@ -124,7 +124,7 @@ abstract class ExternalMetadata with _$ExternalMetadata {
 }
 
 @freezed
-abstract class Deezer with _$Deezer {
+class Deezer with _$Deezer {
   const factory Deezer({
     TrackClass? track,
     List<TrackClass>? artists,
@@ -135,7 +135,7 @@ abstract class Deezer with _$Deezer {
 }
 
 @freezed
-abstract class TrackClass with _$TrackClass {
+class TrackClass with _$TrackClass {
   const factory TrackClass({
     String? id,
   }) = _TrackClass;
@@ -145,7 +145,7 @@ abstract class TrackClass with _$TrackClass {
 }
 
 @freezed
-abstract class Musicbrainz with _$Musicbrainz {
+class Musicbrainz with _$Musicbrainz {
   const factory Musicbrainz({
     TrackClass? track,
   }) = _Musicbrainz;
@@ -155,7 +155,7 @@ abstract class Musicbrainz with _$Musicbrainz {
 }
 
 @freezed
-abstract class Musicstory with _$Musicstory {
+class Musicstory with _$Musicstory {
   const factory Musicstory({
     TrackClass? track,
     TrackClass? album,
@@ -166,7 +166,7 @@ abstract class Musicstory with _$Musicstory {
 }
 
 @freezed
-abstract class Youtube with _$Youtube {
+class Youtube with _$Youtube {
   const factory Youtube({
     String? vid,
   }) = _Youtube;
@@ -176,7 +176,7 @@ abstract class Youtube with _$Youtube {
 }
 
 @freezed
-abstract class Genre with _$Genre {
+class Genre with _$Genre {
   const factory Genre({
     String? name,
   }) = _Genre;
@@ -185,7 +185,7 @@ abstract class Genre with _$Genre {
 }
 
 @freezed
-abstract class Lyrics with _$Lyrics {
+class Lyrics with _$Lyrics {
   const factory Lyrics({
     List<String>? copyrights,
   }) = _Lyrics;
@@ -194,7 +194,7 @@ abstract class Lyrics with _$Lyrics {
 }
 
 @freezed
-abstract class ReleaseByTerritory with _$ReleaseByTerritory {
+class ReleaseByTerritory with _$ReleaseByTerritory {
   const factory ReleaseByTerritory({
     List<String>? territories,
     DateTime? releaseDate,
@@ -205,7 +205,7 @@ abstract class ReleaseByTerritory with _$ReleaseByTerritory {
 }
 
 @freezed
-abstract class RightsClaim with _$RightsClaim {
+class RightsClaim with _$RightsClaim {
   const factory RightsClaim({
     Distributor? distributor,
     List<RightsOwner>? rightsOwners,
@@ -218,7 +218,7 @@ abstract class RightsClaim with _$RightsClaim {
 }
 
 @freezed
-abstract class Distributor with _$Distributor {
+class Distributor with _$Distributor {
   const factory Distributor({
     String? id,
     String? name,
@@ -229,7 +229,7 @@ abstract class Distributor with _$Distributor {
 }
 
 @freezed
-abstract class RightsOwner with _$RightsOwner {
+class RightsOwner with _$RightsOwner {
   const factory RightsOwner({
     String? name,
     int? sharePercentage,
@@ -240,7 +240,7 @@ abstract class RightsOwner with _$RightsOwner {
 }
 
 @freezed
-abstract class Status with _$Status {
+class Status with _$Status {
   const factory Status({
     String? msg,
     String? version,

@@ -4,13 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
+import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_garden/radio_garden.dart';
 import 'package:radio_garden/src/checks.dart';
 import 'package:radio_garden/src/models/radio_garden_response.dart';
+import 'package:radio_garden/src/util.dart';
 
 ChatGroup radio = ChatGroup(
   'radio',
@@ -26,14 +29,16 @@ ChatGroup radio = ChatGroup(
       'Plays music from the specified radio station',
       id('radio-play', (
         IChatContext context,
-        @Description('The name of the Radio Station to play') String query,
+        @Description('The name of the Radio Station to play')
+        @Autocomplete(_autocompleteCallback)
+            String query,
       ) async {
+        await connectIfNeeded(context, replace: true);
+
         final node = MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id);
-        await connectIfNeeded(context);
 
         final radio = await radioByName(query);
-
         if (radio == null || (radio.hits?.hits?.isEmpty ?? true)) {
           await context
               .respond(MessageBuilder.content('No results were found'));
@@ -48,26 +53,48 @@ ChatGroup radio = ChatGroup(
         }
 
         final track = result.tracks.first;
-
-        node.stop(context.guild!.id);
         node
-            .play(
-              context.guild!.id,
-              track,
-              replace: true,
-              requester: context.member!.id,
-              channelId: context.channel.id,
-            )
-            .startPlaying();
-        await context.respond(
-          MessageBuilder.content(
-            'Playlist `${track.info?.title}`($query) enqueued',
-          ),
-        );
+          ..players[context.guild!.id]!.queue.clear()
+          ..play(
+            context.guild!.id,
+            track,
+            replace: true,
+            requester: context.member!.id,
+            channelId: context.channel.id,
+          ).startPlaying();
+
+        final embed = EmbedBuilder()
+          ..color = getRandomColor()
+          ..title = 'Started playing'
+          ..description = 'Radio ${radio.title} '
+              'started playing.\n\nRequested by ${context.member?.mention}';
+
+        await context.respond(MessageBuilder.embed(embed));
       }),
     ),
   ],
 );
+
+FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
+  AutocompleteContext context,
+) async {
+  final query = context.currentValue;
+  final response = await radioByName(query)
+      .timeout(const Duration(milliseconds: 2500), onTimeout: () => null);
+
+  final hits = response?.hits?.hits;
+
+  if (hits == null || hits.isEmpty) {
+    return null;
+  }
+
+  return hits.map(
+    (e) => ArgChoiceBuilder(
+      e.source?.title ?? 'NO TITLE',
+      '${e.source?.title} (${e.source?.url.split('/').last})',
+    ),
+  );
+}
 
 Future<RadioGardenSearchResponse?> radioByName(String name) async {
   const searchUrl = 'http://radio.garden/api/search?q=';

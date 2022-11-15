@@ -12,31 +12,33 @@ A Dart app that uses the [Radio Garden API][radio_garden_api] to play radio stat
 
 ## Getting Started 🚀
 
-```sh
-dart pub global activate radio_garden
-```
+### Getting environment variables
 
-Or locally via:
 
 ```sh
-dart pub global activate --source=path <path to this package>
+bash get_environments.sh
 ```
 
-## Usage
+### Running the server on Docker
 
 ```sh
-# Sample command
-$ radio_garden sample
-
-# Sample command optioon
-$ radio_garden sample --cyan
-
-# Show CLI version
-$ radio_garden --version
-
-# Show usage help
-$ radio_garden --help
+bash relaunch_prod.sh #Or relaunch.sh if working in dev
 ```
+
+### Running the server on a Dev Container ⚡
+
+By running the server in a dev container you'll be able to use zsh and you'll not need to wait for docker to rebuild every time you want to test a change in the code.
+
+
+- Install Dev Containers in VS Code.
+- Press F1 and run `Rebuild and Reopen in container`.
+
+From there you can run:
+
+```dart
+dart bin/radio_garden_development.dart
+```
+
 
 ## Running Tests with coverage 🧪
 

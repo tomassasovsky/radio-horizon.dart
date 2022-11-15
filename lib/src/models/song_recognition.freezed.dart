@@ -35,7 +35,8 @@ mixin _$SongRecognitionResponse {
 abstract class $SongRecognitionResponseCopyWith<$Res> {
   factory $SongRecognitionResponseCopyWith(SongRecognitionResponse value,
           $Res Function(SongRecognitionResponse) then) =
-      _$SongRecognitionResponseCopyWithImpl<$Res>;
+      _$SongRecognitionResponseCopyWithImpl<$Res, SongRecognitionResponse>;
+  @useResult
   $Res call({Metadata? metadata, Status? status, int? resultType});
 
   $MetadataCopyWith<$Res>? get metadata;
@@ -43,14 +44,17 @@ abstract class $SongRecognitionResponseCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$SongRecognitionResponseCopyWithImpl<$Res>
+class _$SongRecognitionResponseCopyWithImpl<$Res,
+        $Val extends SongRecognitionResponse>
     implements $SongRecognitionResponseCopyWith<$Res> {
   _$SongRecognitionResponseCopyWithImpl(this._value, this._then);
 
-  final SongRecognitionResponse _value;
   // ignore: unused_field
-  final $Res Function(SongRecognitionResponse) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? metadata = freezed,
@@ -58,40 +62,42 @@ class _$SongRecognitionResponseCopyWithImpl<$Res>
     Object? resultType = freezed,
   }) {
     return _then(_value.copyWith(
-      metadata: metadata == freezed
+      metadata: freezed == metadata
           ? _value.metadata
           : metadata // ignore: cast_nullable_to_non_nullable
               as Metadata?,
-      status: status == freezed
+      status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as Status?,
-      resultType: resultType == freezed
+      resultType: freezed == resultType
           ? _value.resultType
           : resultType // ignore: cast_nullable_to_non_nullable
               as int?,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $MetadataCopyWith<$Res>? get metadata {
     if (_value.metadata == null) {
       return null;
     }
 
     return $MetadataCopyWith<$Res>(_value.metadata!, (value) {
-      return _then(_value.copyWith(metadata: value));
+      return _then(_value.copyWith(metadata: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $StatusCopyWith<$Res>? get status {
     if (_value.status == null) {
       return null;
     }
 
     return $StatusCopyWith<$Res>(_value.status!, (value) {
-      return _then(_value.copyWith(status: value));
+      return _then(_value.copyWith(status: value) as $Val);
     });
   }
 }
@@ -103,6 +109,7 @@ abstract class _$$_SongRecognitionResponseCopyWith<$Res>
           $Res Function(_$_SongRecognitionResponse) then) =
       __$$_SongRecognitionResponseCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({Metadata? metadata, Status? status, int? resultType});
 
   @override
@@ -113,16 +120,14 @@ abstract class _$$_SongRecognitionResponseCopyWith<$Res>
 
 /// @nodoc
 class __$$_SongRecognitionResponseCopyWithImpl<$Res>
-    extends _$SongRecognitionResponseCopyWithImpl<$Res>
+    extends _$SongRecognitionResponseCopyWithImpl<$Res,
+        _$_SongRecognitionResponse>
     implements _$$_SongRecognitionResponseCopyWith<$Res> {
   __$$_SongRecognitionResponseCopyWithImpl(_$_SongRecognitionResponse _value,
       $Res Function(_$_SongRecognitionResponse) _then)
-      : super(_value, (v) => _then(v as _$_SongRecognitionResponse));
+      : super(_value, _then);
 
-  @override
-  _$_SongRecognitionResponse get _value =>
-      super._value as _$_SongRecognitionResponse;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? metadata = freezed,
@@ -130,15 +135,15 @@ class __$$_SongRecognitionResponseCopyWithImpl<$Res>
     Object? resultType = freezed,
   }) {
     return _then(_$_SongRecognitionResponse(
-      metadata: metadata == freezed
+      metadata: freezed == metadata
           ? _value.metadata
           : metadata // ignore: cast_nullable_to_non_nullable
               as Metadata?,
-      status: status == freezed
+      status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as Status?,
-      resultType: resultType == freezed
+      resultType: freezed == resultType
           ? _value.resultType
           : resultType // ignore: cast_nullable_to_non_nullable
               as int?,
@@ -172,22 +177,20 @@ class _$_SongRecognitionResponse implements _SongRecognitionResponse {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_SongRecognitionResponse &&
-            const DeepCollectionEquality().equals(other.metadata, metadata) &&
-            const DeepCollectionEquality().equals(other.status, status) &&
-            const DeepCollectionEquality()
-                .equals(other.resultType, resultType));
+            (identical(other.metadata, metadata) ||
+                other.metadata == metadata) &&
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.resultType, resultType) ||
+                other.resultType == resultType));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(metadata),
-      const DeepCollectionEquality().hash(status),
-      const DeepCollectionEquality().hash(resultType));
+  int get hashCode => Object.hash(runtimeType, metadata, status, resultType);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_SongRecognitionResponseCopyWith<_$_SongRecognitionResponse>
       get copyWith =>
           __$$_SongRecognitionResponseCopyWithImpl<_$_SongRecognitionResponse>(
@@ -195,7 +198,9 @@ class _$_SongRecognitionResponse implements _SongRecognitionResponse {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SongRecognitionResponseToJson(this);
+    return _$$_SongRecognitionResponseToJson(
+      this,
+    );
   }
 }
 
@@ -238,33 +243,37 @@ mixin _$Metadata {
 /// @nodoc
 abstract class $MetadataCopyWith<$Res> {
   factory $MetadataCopyWith(Metadata value, $Res Function(Metadata) then) =
-      _$MetadataCopyWithImpl<$Res>;
+      _$MetadataCopyWithImpl<$Res, Metadata>;
+  @useResult
   $Res call({DateTime? timestampUtc, List<Music>? music});
 }
 
 /// @nodoc
-class _$MetadataCopyWithImpl<$Res> implements $MetadataCopyWith<$Res> {
+class _$MetadataCopyWithImpl<$Res, $Val extends Metadata>
+    implements $MetadataCopyWith<$Res> {
   _$MetadataCopyWithImpl(this._value, this._then);
 
-  final Metadata _value;
   // ignore: unused_field
-  final $Res Function(Metadata) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? timestampUtc = freezed,
     Object? music = freezed,
   }) {
     return _then(_value.copyWith(
-      timestampUtc: timestampUtc == freezed
+      timestampUtc: freezed == timestampUtc
           ? _value.timestampUtc
           : timestampUtc // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      music: music == freezed
+      music: freezed == music
           ? _value.music
           : music // ignore: cast_nullable_to_non_nullable
               as List<Music>?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -274,30 +283,30 @@ abstract class _$$_MetadataCopyWith<$Res> implements $MetadataCopyWith<$Res> {
           _$_Metadata value, $Res Function(_$_Metadata) then) =
       __$$_MetadataCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({DateTime? timestampUtc, List<Music>? music});
 }
 
 /// @nodoc
-class __$$_MetadataCopyWithImpl<$Res> extends _$MetadataCopyWithImpl<$Res>
+class __$$_MetadataCopyWithImpl<$Res>
+    extends _$MetadataCopyWithImpl<$Res, _$_Metadata>
     implements _$$_MetadataCopyWith<$Res> {
   __$$_MetadataCopyWithImpl(
       _$_Metadata _value, $Res Function(_$_Metadata) _then)
-      : super(_value, (v) => _then(v as _$_Metadata));
+      : super(_value, _then);
 
-  @override
-  _$_Metadata get _value => super._value as _$_Metadata;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? timestampUtc = freezed,
     Object? music = freezed,
   }) {
     return _then(_$_Metadata(
-      timestampUtc: timestampUtc == freezed
+      timestampUtc: freezed == timestampUtc
           ? _value.timestampUtc
           : timestampUtc // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      music: music == freezed
+      music: freezed == music
           ? _value._music
           : music // ignore: cast_nullable_to_non_nullable
               as List<Music>?,
@@ -335,26 +344,27 @@ class _$_Metadata implements _Metadata {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Metadata &&
-            const DeepCollectionEquality()
-                .equals(other.timestampUtc, timestampUtc) &&
+            (identical(other.timestampUtc, timestampUtc) ||
+                other.timestampUtc == timestampUtc) &&
             const DeepCollectionEquality().equals(other._music, _music));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(timestampUtc),
-      const DeepCollectionEquality().hash(_music));
+      runtimeType, timestampUtc, const DeepCollectionEquality().hash(_music));
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_MetadataCopyWith<_$_Metadata> get copyWith =>
       __$$_MetadataCopyWithImpl<_$_Metadata>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_MetadataToJson(this);
+    return _$$_MetadataToJson(
+      this,
+    );
   }
 }
 
@@ -413,7 +423,8 @@ mixin _$Music {
 /// @nodoc
 abstract class $MusicCopyWith<$Res> {
   factory $MusicCopyWith(Music value, $Res Function(Music) then) =
-      _$MusicCopyWithImpl<$Res>;
+      _$MusicCopyWithImpl<$Res, Music>;
+  @useResult
   $Res call(
       {int? dbBeginTimeOffsetMs,
       int? dbEndTimeOffsetMs,
@@ -447,13 +458,16 @@ abstract class $MusicCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$MusicCopyWithImpl<$Res> implements $MusicCopyWith<$Res> {
+class _$MusicCopyWithImpl<$Res, $Val extends Music>
+    implements $MusicCopyWith<$Res> {
   _$MusicCopyWithImpl(this._value, this._then);
 
-  final Music _value;
   // ignore: unused_field
-  final $Res Function(Music) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? dbBeginTimeOffsetMs = freezed,
@@ -481,153 +495,158 @@ class _$MusicCopyWithImpl<$Res> implements $MusicCopyWith<$Res> {
     Object? releaseByTerritories = freezed,
   }) {
     return _then(_value.copyWith(
-      dbBeginTimeOffsetMs: dbBeginTimeOffsetMs == freezed
+      dbBeginTimeOffsetMs: freezed == dbBeginTimeOffsetMs
           ? _value.dbBeginTimeOffsetMs
           : dbBeginTimeOffsetMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      dbEndTimeOffsetMs: dbEndTimeOffsetMs == freezed
+      dbEndTimeOffsetMs: freezed == dbEndTimeOffsetMs
           ? _value.dbEndTimeOffsetMs
           : dbEndTimeOffsetMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      sampleBeginTimeOffsetMs: sampleBeginTimeOffsetMs == freezed
+      sampleBeginTimeOffsetMs: freezed == sampleBeginTimeOffsetMs
           ? _value.sampleBeginTimeOffsetMs
           : sampleBeginTimeOffsetMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      sampleEndTimeOffsetMs: sampleEndTimeOffsetMs == freezed
+      sampleEndTimeOffsetMs: freezed == sampleEndTimeOffsetMs
           ? _value.sampleEndTimeOffsetMs
           : sampleEndTimeOffsetMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      playOffsetMs: playOffsetMs == freezed
+      playOffsetMs: freezed == playOffsetMs
           ? _value.playOffsetMs
           : playOffsetMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      artists: artists == freezed
+      artists: freezed == artists
           ? _value.artists
           : artists // ignore: cast_nullable_to_non_nullable
               as List<MusicAlbum>?,
-      lyrics: lyrics == freezed
+      lyrics: freezed == lyrics
           ? _value.lyrics
           : lyrics // ignore: cast_nullable_to_non_nullable
               as Lyrics?,
-      acrid: acrid == freezed
+      acrid: freezed == acrid
           ? _value.acrid
           : acrid // ignore: cast_nullable_to_non_nullable
               as String?,
-      album: album == freezed
+      album: freezed == album
           ? _value.album
           : album // ignore: cast_nullable_to_non_nullable
               as MusicAlbum?,
-      rightsClaim: rightsClaim == freezed
+      rightsClaim: freezed == rightsClaim
           ? _value.rightsClaim
           : rightsClaim // ignore: cast_nullable_to_non_nullable
               as List<RightsClaim>?,
-      externalIds: externalIds == freezed
+      externalIds: freezed == externalIds
           ? _value.externalIds
           : externalIds // ignore: cast_nullable_to_non_nullable
               as ExternalIds?,
-      resultFrom: resultFrom == freezed
+      resultFrom: freezed == resultFrom
           ? _value.resultFrom
           : resultFrom // ignore: cast_nullable_to_non_nullable
               as int?,
-      contributors: contributors == freezed
+      contributors: freezed == contributors
           ? _value.contributors
           : contributors // ignore: cast_nullable_to_non_nullable
               as Contributors?,
-      title: title == freezed
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String?,
-      langs: langs == freezed
+      langs: freezed == langs
           ? _value.langs
           : langs // ignore: cast_nullable_to_non_nullable
               as List<Lang>?,
-      language: language == freezed
+      language: freezed == language
           ? _value.language
           : language // ignore: cast_nullable_to_non_nullable
               as String?,
-      durationMs: durationMs == freezed
+      durationMs: freezed == durationMs
           ? _value.durationMs
           : durationMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      label: label == freezed
+      label: freezed == label
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
               as String?,
-      externalMetadata: externalMetadata == freezed
+      externalMetadata: freezed == externalMetadata
           ? _value.externalMetadata
           : externalMetadata // ignore: cast_nullable_to_non_nullable
               as ExternalMetadata?,
-      score: score == freezed
+      score: freezed == score
           ? _value.score
           : score // ignore: cast_nullable_to_non_nullable
               as int?,
-      genres: genres == freezed
+      genres: freezed == genres
           ? _value.genres
           : genres // ignore: cast_nullable_to_non_nullable
               as List<Genre>?,
-      releaseDate: releaseDate == freezed
+      releaseDate: freezed == releaseDate
           ? _value.releaseDate
           : releaseDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      releaseByTerritories: releaseByTerritories == freezed
+      releaseByTerritories: freezed == releaseByTerritories
           ? _value.releaseByTerritories
           : releaseByTerritories // ignore: cast_nullable_to_non_nullable
               as List<ReleaseByTerritory>?,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $LyricsCopyWith<$Res>? get lyrics {
     if (_value.lyrics == null) {
       return null;
     }
 
     return $LyricsCopyWith<$Res>(_value.lyrics!, (value) {
-      return _then(_value.copyWith(lyrics: value));
+      return _then(_value.copyWith(lyrics: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $MusicAlbumCopyWith<$Res>? get album {
     if (_value.album == null) {
       return null;
     }
 
     return $MusicAlbumCopyWith<$Res>(_value.album!, (value) {
-      return _then(_value.copyWith(album: value));
+      return _then(_value.copyWith(album: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $ExternalIdsCopyWith<$Res>? get externalIds {
     if (_value.externalIds == null) {
       return null;
     }
 
     return $ExternalIdsCopyWith<$Res>(_value.externalIds!, (value) {
-      return _then(_value.copyWith(externalIds: value));
+      return _then(_value.copyWith(externalIds: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $ContributorsCopyWith<$Res>? get contributors {
     if (_value.contributors == null) {
       return null;
     }
 
     return $ContributorsCopyWith<$Res>(_value.contributors!, (value) {
-      return _then(_value.copyWith(contributors: value));
+      return _then(_value.copyWith(contributors: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $ExternalMetadataCopyWith<$Res>? get externalMetadata {
     if (_value.externalMetadata == null) {
       return null;
     }
 
     return $ExternalMetadataCopyWith<$Res>(_value.externalMetadata!, (value) {
-      return _then(_value.copyWith(externalMetadata: value));
+      return _then(_value.copyWith(externalMetadata: value) as $Val);
     });
   }
 }
@@ -637,6 +656,7 @@ abstract class _$$_MusicCopyWith<$Res> implements $MusicCopyWith<$Res> {
   factory _$$_MusicCopyWith(_$_Music value, $Res Function(_$_Music) then) =
       __$$_MusicCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {int? dbBeginTimeOffsetMs,
       int? dbEndTimeOffsetMs,
@@ -675,14 +695,12 @@ abstract class _$$_MusicCopyWith<$Res> implements $MusicCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_MusicCopyWithImpl<$Res> extends _$MusicCopyWithImpl<$Res>
+class __$$_MusicCopyWithImpl<$Res> extends _$MusicCopyWithImpl<$Res, _$_Music>
     implements _$$_MusicCopyWith<$Res> {
   __$$_MusicCopyWithImpl(_$_Music _value, $Res Function(_$_Music) _then)
-      : super(_value, (v) => _then(v as _$_Music));
+      : super(_value, _then);
 
-  @override
-  _$_Music get _value => super._value as _$_Music;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? dbBeginTimeOffsetMs = freezed,
@@ -710,95 +728,95 @@ class __$$_MusicCopyWithImpl<$Res> extends _$MusicCopyWithImpl<$Res>
     Object? releaseByTerritories = freezed,
   }) {
     return _then(_$_Music(
-      dbBeginTimeOffsetMs: dbBeginTimeOffsetMs == freezed
+      dbBeginTimeOffsetMs: freezed == dbBeginTimeOffsetMs
           ? _value.dbBeginTimeOffsetMs
           : dbBeginTimeOffsetMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      dbEndTimeOffsetMs: dbEndTimeOffsetMs == freezed
+      dbEndTimeOffsetMs: freezed == dbEndTimeOffsetMs
           ? _value.dbEndTimeOffsetMs
           : dbEndTimeOffsetMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      sampleBeginTimeOffsetMs: sampleBeginTimeOffsetMs == freezed
+      sampleBeginTimeOffsetMs: freezed == sampleBeginTimeOffsetMs
           ? _value.sampleBeginTimeOffsetMs
           : sampleBeginTimeOffsetMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      sampleEndTimeOffsetMs: sampleEndTimeOffsetMs == freezed
+      sampleEndTimeOffsetMs: freezed == sampleEndTimeOffsetMs
           ? _value.sampleEndTimeOffsetMs
           : sampleEndTimeOffsetMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      playOffsetMs: playOffsetMs == freezed
+      playOffsetMs: freezed == playOffsetMs
           ? _value.playOffsetMs
           : playOffsetMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      artists: artists == freezed
+      artists: freezed == artists
           ? _value._artists
           : artists // ignore: cast_nullable_to_non_nullable
               as List<MusicAlbum>?,
-      lyrics: lyrics == freezed
+      lyrics: freezed == lyrics
           ? _value.lyrics
           : lyrics // ignore: cast_nullable_to_non_nullable
               as Lyrics?,
-      acrid: acrid == freezed
+      acrid: freezed == acrid
           ? _value.acrid
           : acrid // ignore: cast_nullable_to_non_nullable
               as String?,
-      album: album == freezed
+      album: freezed == album
           ? _value.album
           : album // ignore: cast_nullable_to_non_nullable
               as MusicAlbum?,
-      rightsClaim: rightsClaim == freezed
+      rightsClaim: freezed == rightsClaim
           ? _value._rightsClaim
           : rightsClaim // ignore: cast_nullable_to_non_nullable
               as List<RightsClaim>?,
-      externalIds: externalIds == freezed
+      externalIds: freezed == externalIds
           ? _value.externalIds
           : externalIds // ignore: cast_nullable_to_non_nullable
               as ExternalIds?,
-      resultFrom: resultFrom == freezed
+      resultFrom: freezed == resultFrom
           ? _value.resultFrom
           : resultFrom // ignore: cast_nullable_to_non_nullable
               as int?,
-      contributors: contributors == freezed
+      contributors: freezed == contributors
           ? _value.contributors
           : contributors // ignore: cast_nullable_to_non_nullable
               as Contributors?,
-      title: title == freezed
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
               as String?,
-      langs: langs == freezed
+      langs: freezed == langs
           ? _value._langs
           : langs // ignore: cast_nullable_to_non_nullable
               as List<Lang>?,
-      language: language == freezed
+      language: freezed == language
           ? _value.language
           : language // ignore: cast_nullable_to_non_nullable
               as String?,
-      durationMs: durationMs == freezed
+      durationMs: freezed == durationMs
           ? _value.durationMs
           : durationMs // ignore: cast_nullable_to_non_nullable
               as int?,
-      label: label == freezed
+      label: freezed == label
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
               as String?,
-      externalMetadata: externalMetadata == freezed
+      externalMetadata: freezed == externalMetadata
           ? _value.externalMetadata
           : externalMetadata // ignore: cast_nullable_to_non_nullable
               as ExternalMetadata?,
-      score: score == freezed
+      score: freezed == score
           ? _value.score
           : score // ignore: cast_nullable_to_non_nullable
               as int?,
-      genres: genres == freezed
+      genres: freezed == genres
           ? _value._genres
           : genres // ignore: cast_nullable_to_non_nullable
               as List<Genre>?,
-      releaseDate: releaseDate == freezed
+      releaseDate: freezed == releaseDate
           ? _value.releaseDate
           : releaseDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      releaseByTerritories: releaseByTerritories == freezed
+      releaseByTerritories: freezed == releaseByTerritories
           ? _value._releaseByTerritories
           : releaseByTerritories // ignore: cast_nullable_to_non_nullable
               as List<ReleaseByTerritory>?,
@@ -933,40 +951,42 @@ class _$_Music implements _Music {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Music &&
-            const DeepCollectionEquality()
-                .equals(other.dbBeginTimeOffsetMs, dbBeginTimeOffsetMs) &&
-            const DeepCollectionEquality()
-                .equals(other.dbEndTimeOffsetMs, dbEndTimeOffsetMs) &&
-            const DeepCollectionEquality().equals(
-                other.sampleBeginTimeOffsetMs, sampleBeginTimeOffsetMs) &&
-            const DeepCollectionEquality()
-                .equals(other.sampleEndTimeOffsetMs, sampleEndTimeOffsetMs) &&
-            const DeepCollectionEquality()
-                .equals(other.playOffsetMs, playOffsetMs) &&
+            (identical(other.dbBeginTimeOffsetMs, dbBeginTimeOffsetMs) ||
+                other.dbBeginTimeOffsetMs == dbBeginTimeOffsetMs) &&
+            (identical(other.dbEndTimeOffsetMs, dbEndTimeOffsetMs) ||
+                other.dbEndTimeOffsetMs == dbEndTimeOffsetMs) &&
+            (identical(
+                    other.sampleBeginTimeOffsetMs, sampleBeginTimeOffsetMs) ||
+                other.sampleBeginTimeOffsetMs == sampleBeginTimeOffsetMs) &&
+            (identical(other.sampleEndTimeOffsetMs, sampleEndTimeOffsetMs) ||
+                other.sampleEndTimeOffsetMs == sampleEndTimeOffsetMs) &&
+            (identical(other.playOffsetMs, playOffsetMs) ||
+                other.playOffsetMs == playOffsetMs) &&
             const DeepCollectionEquality().equals(other._artists, _artists) &&
-            const DeepCollectionEquality().equals(other.lyrics, lyrics) &&
-            const DeepCollectionEquality().equals(other.acrid, acrid) &&
-            const DeepCollectionEquality().equals(other.album, album) &&
+            (identical(other.lyrics, lyrics) || other.lyrics == lyrics) &&
+            (identical(other.acrid, acrid) || other.acrid == acrid) &&
+            (identical(other.album, album) || other.album == album) &&
             const DeepCollectionEquality()
                 .equals(other._rightsClaim, _rightsClaim) &&
-            const DeepCollectionEquality()
-                .equals(other.externalIds, externalIds) &&
-            const DeepCollectionEquality()
-                .equals(other.resultFrom, resultFrom) &&
-            const DeepCollectionEquality()
-                .equals(other.contributors, contributors) &&
-            const DeepCollectionEquality().equals(other.title, title) &&
+            (identical(other.externalIds, externalIds) ||
+                other.externalIds == externalIds) &&
+            (identical(other.resultFrom, resultFrom) ||
+                other.resultFrom == resultFrom) &&
+            (identical(other.contributors, contributors) ||
+                other.contributors == contributors) &&
+            (identical(other.title, title) || other.title == title) &&
             const DeepCollectionEquality().equals(other._langs, _langs) &&
-            const DeepCollectionEquality().equals(other.language, language) &&
-            const DeepCollectionEquality()
-                .equals(other.durationMs, durationMs) &&
-            const DeepCollectionEquality().equals(other.label, label) &&
-            const DeepCollectionEquality()
-                .equals(other.externalMetadata, externalMetadata) &&
-            const DeepCollectionEquality().equals(other.score, score) &&
+            (identical(other.language, language) ||
+                other.language == language) &&
+            (identical(other.durationMs, durationMs) ||
+                other.durationMs == durationMs) &&
+            (identical(other.label, label) || other.label == label) &&
+            (identical(other.externalMetadata, externalMetadata) ||
+                other.externalMetadata == externalMetadata) &&
+            (identical(other.score, score) || other.score == score) &&
             const DeepCollectionEquality().equals(other._genres, _genres) &&
-            const DeepCollectionEquality()
-                .equals(other.releaseDate, releaseDate) &&
+            (identical(other.releaseDate, releaseDate) ||
+                other.releaseDate == releaseDate) &&
             const DeepCollectionEquality()
                 .equals(other._releaseByTerritories, _releaseByTerritories));
   }
@@ -975,39 +995,42 @@ class _$_Music implements _Music {
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        const DeepCollectionEquality().hash(dbBeginTimeOffsetMs),
-        const DeepCollectionEquality().hash(dbEndTimeOffsetMs),
-        const DeepCollectionEquality().hash(sampleBeginTimeOffsetMs),
-        const DeepCollectionEquality().hash(sampleEndTimeOffsetMs),
-        const DeepCollectionEquality().hash(playOffsetMs),
+        dbBeginTimeOffsetMs,
+        dbEndTimeOffsetMs,
+        sampleBeginTimeOffsetMs,
+        sampleEndTimeOffsetMs,
+        playOffsetMs,
         const DeepCollectionEquality().hash(_artists),
-        const DeepCollectionEquality().hash(lyrics),
-        const DeepCollectionEquality().hash(acrid),
-        const DeepCollectionEquality().hash(album),
+        lyrics,
+        acrid,
+        album,
         const DeepCollectionEquality().hash(_rightsClaim),
-        const DeepCollectionEquality().hash(externalIds),
-        const DeepCollectionEquality().hash(resultFrom),
-        const DeepCollectionEquality().hash(contributors),
-        const DeepCollectionEquality().hash(title),
+        externalIds,
+        resultFrom,
+        contributors,
+        title,
         const DeepCollectionEquality().hash(_langs),
-        const DeepCollectionEquality().hash(language),
-        const DeepCollectionEquality().hash(durationMs),
-        const DeepCollectionEquality().hash(label),
-        const DeepCollectionEquality().hash(externalMetadata),
-        const DeepCollectionEquality().hash(score),
+        language,
+        durationMs,
+        label,
+        externalMetadata,
+        score,
         const DeepCollectionEquality().hash(_genres),
-        const DeepCollectionEquality().hash(releaseDate),
+        releaseDate,
         const DeepCollectionEquality().hash(_releaseByTerritories)
       ]);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_MusicCopyWith<_$_Music> get copyWith =>
       __$$_MusicCopyWithImpl<_$_Music>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_MusicToJson(this);
+    return _$$_MusicToJson(
+      this,
+    );
   }
 }
 
@@ -1110,33 +1133,37 @@ mixin _$MusicAlbum {
 abstract class $MusicAlbumCopyWith<$Res> {
   factory $MusicAlbumCopyWith(
           MusicAlbum value, $Res Function(MusicAlbum) then) =
-      _$MusicAlbumCopyWithImpl<$Res>;
+      _$MusicAlbumCopyWithImpl<$Res, MusicAlbum>;
+  @useResult
   $Res call({String? name, List<Lang>? langs});
 }
 
 /// @nodoc
-class _$MusicAlbumCopyWithImpl<$Res> implements $MusicAlbumCopyWith<$Res> {
+class _$MusicAlbumCopyWithImpl<$Res, $Val extends MusicAlbum>
+    implements $MusicAlbumCopyWith<$Res> {
   _$MusicAlbumCopyWithImpl(this._value, this._then);
 
-  final MusicAlbum _value;
   // ignore: unused_field
-  final $Res Function(MusicAlbum) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? name = freezed,
     Object? langs = freezed,
   }) {
     return _then(_value.copyWith(
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
-      langs: langs == freezed
+      langs: freezed == langs
           ? _value.langs
           : langs // ignore: cast_nullable_to_non_nullable
               as List<Lang>?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -1147,30 +1174,30 @@ abstract class _$$_MusicAlbumCopyWith<$Res>
           _$_MusicAlbum value, $Res Function(_$_MusicAlbum) then) =
       __$$_MusicAlbumCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? name, List<Lang>? langs});
 }
 
 /// @nodoc
-class __$$_MusicAlbumCopyWithImpl<$Res> extends _$MusicAlbumCopyWithImpl<$Res>
+class __$$_MusicAlbumCopyWithImpl<$Res>
+    extends _$MusicAlbumCopyWithImpl<$Res, _$_MusicAlbum>
     implements _$$_MusicAlbumCopyWith<$Res> {
   __$$_MusicAlbumCopyWithImpl(
       _$_MusicAlbum _value, $Res Function(_$_MusicAlbum) _then)
-      : super(_value, (v) => _then(v as _$_MusicAlbum));
+      : super(_value, _then);
 
-  @override
-  _$_MusicAlbum get _value => super._value as _$_MusicAlbum;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? name = freezed,
     Object? langs = freezed,
   }) {
     return _then(_$_MusicAlbum(
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
-      langs: langs == freezed
+      langs: freezed == langs
           ? _value._langs
           : langs // ignore: cast_nullable_to_non_nullable
               as List<Lang>?,
@@ -1207,25 +1234,26 @@ class _$_MusicAlbum implements _MusicAlbum {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_MusicAlbum &&
-            const DeepCollectionEquality().equals(other.name, name) &&
+            (identical(other.name, name) || other.name == name) &&
             const DeepCollectionEquality().equals(other._langs, _langs));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(_langs));
+      runtimeType, name, const DeepCollectionEquality().hash(_langs));
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_MusicAlbumCopyWith<_$_MusicAlbum> get copyWith =>
       __$$_MusicAlbumCopyWithImpl<_$_MusicAlbum>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_MusicAlbumToJson(this);
+    return _$$_MusicAlbumToJson(
+      this,
+    );
   }
 }
 
@@ -1263,33 +1291,37 @@ mixin _$Lang {
 /// @nodoc
 abstract class $LangCopyWith<$Res> {
   factory $LangCopyWith(Lang value, $Res Function(Lang) then) =
-      _$LangCopyWithImpl<$Res>;
+      _$LangCopyWithImpl<$Res, Lang>;
+  @useResult
   $Res call({String? code, String? name});
 }
 
 /// @nodoc
-class _$LangCopyWithImpl<$Res> implements $LangCopyWith<$Res> {
+class _$LangCopyWithImpl<$Res, $Val extends Lang>
+    implements $LangCopyWith<$Res> {
   _$LangCopyWithImpl(this._value, this._then);
 
-  final Lang _value;
   // ignore: unused_field
-  final $Res Function(Lang) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? code = freezed,
     Object? name = freezed,
   }) {
     return _then(_value.copyWith(
-      code: code == freezed
+      code: freezed == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -1298,29 +1330,28 @@ abstract class _$$_LangCopyWith<$Res> implements $LangCopyWith<$Res> {
   factory _$$_LangCopyWith(_$_Lang value, $Res Function(_$_Lang) then) =
       __$$_LangCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? code, String? name});
 }
 
 /// @nodoc
-class __$$_LangCopyWithImpl<$Res> extends _$LangCopyWithImpl<$Res>
+class __$$_LangCopyWithImpl<$Res> extends _$LangCopyWithImpl<$Res, _$_Lang>
     implements _$$_LangCopyWith<$Res> {
   __$$_LangCopyWithImpl(_$_Lang _value, $Res Function(_$_Lang) _then)
-      : super(_value, (v) => _then(v as _$_Lang));
+      : super(_value, _then);
 
-  @override
-  _$_Lang get _value => super._value as _$_Lang;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? code = freezed,
     Object? name = freezed,
   }) {
     return _then(_$_Lang(
-      code: code == freezed
+      code: freezed == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -1350,25 +1381,25 @@ class _$_Lang implements _Lang {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Lang &&
-            const DeepCollectionEquality().equals(other.code, code) &&
-            const DeepCollectionEquality().equals(other.name, name));
+            (identical(other.code, code) || other.code == code) &&
+            (identical(other.name, name) || other.name == name));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(code),
-      const DeepCollectionEquality().hash(name));
+  int get hashCode => Object.hash(runtimeType, code, name);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_LangCopyWith<_$_Lang> get copyWith =>
       __$$_LangCopyWithImpl<_$_Lang>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_LangToJson(this);
+    return _$$_LangToJson(
+      this,
+    );
   }
 }
 
@@ -1405,33 +1436,37 @@ mixin _$Contributors {
 abstract class $ContributorsCopyWith<$Res> {
   factory $ContributorsCopyWith(
           Contributors value, $Res Function(Contributors) then) =
-      _$ContributorsCopyWithImpl<$Res>;
+      _$ContributorsCopyWithImpl<$Res, Contributors>;
+  @useResult
   $Res call({List<String>? composers, List<String>? lyricists});
 }
 
 /// @nodoc
-class _$ContributorsCopyWithImpl<$Res> implements $ContributorsCopyWith<$Res> {
+class _$ContributorsCopyWithImpl<$Res, $Val extends Contributors>
+    implements $ContributorsCopyWith<$Res> {
   _$ContributorsCopyWithImpl(this._value, this._then);
 
-  final Contributors _value;
   // ignore: unused_field
-  final $Res Function(Contributors) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? composers = freezed,
     Object? lyricists = freezed,
   }) {
     return _then(_value.copyWith(
-      composers: composers == freezed
+      composers: freezed == composers
           ? _value.composers
           : composers // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      lyricists: lyricists == freezed
+      lyricists: freezed == lyricists
           ? _value.lyricists
           : lyricists // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -1442,31 +1477,30 @@ abstract class _$$_ContributorsCopyWith<$Res>
           _$_Contributors value, $Res Function(_$_Contributors) then) =
       __$$_ContributorsCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({List<String>? composers, List<String>? lyricists});
 }
 
 /// @nodoc
 class __$$_ContributorsCopyWithImpl<$Res>
-    extends _$ContributorsCopyWithImpl<$Res>
+    extends _$ContributorsCopyWithImpl<$Res, _$_Contributors>
     implements _$$_ContributorsCopyWith<$Res> {
   __$$_ContributorsCopyWithImpl(
       _$_Contributors _value, $Res Function(_$_Contributors) _then)
-      : super(_value, (v) => _then(v as _$_Contributors));
+      : super(_value, _then);
 
-  @override
-  _$_Contributors get _value => super._value as _$_Contributors;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? composers = freezed,
     Object? lyricists = freezed,
   }) {
     return _then(_$_Contributors(
-      composers: composers == freezed
+      composers: freezed == composers
           ? _value._composers
           : composers // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      lyricists: lyricists == freezed
+      lyricists: freezed == lyricists
           ? _value._lyricists
           : lyricists // ignore: cast_nullable_to_non_nullable
               as List<String>?,
@@ -1528,12 +1562,15 @@ class _$_Contributors implements _Contributors {
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_ContributorsCopyWith<_$_Contributors> get copyWith =>
       __$$_ContributorsCopyWithImpl<_$_Contributors>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ContributorsToJson(this);
+    return _$$_ContributorsToJson(
+      this,
+    );
   }
 }
 
@@ -1575,18 +1612,22 @@ mixin _$ExternalIds {
 abstract class $ExternalIdsCopyWith<$Res> {
   factory $ExternalIdsCopyWith(
           ExternalIds value, $Res Function(ExternalIds) then) =
-      _$ExternalIdsCopyWithImpl<$Res>;
+      _$ExternalIdsCopyWithImpl<$Res, ExternalIds>;
+  @useResult
   $Res call({String? iswc, String? isrc, String? upc});
 }
 
 /// @nodoc
-class _$ExternalIdsCopyWithImpl<$Res> implements $ExternalIdsCopyWith<$Res> {
+class _$ExternalIdsCopyWithImpl<$Res, $Val extends ExternalIds>
+    implements $ExternalIdsCopyWith<$Res> {
   _$ExternalIdsCopyWithImpl(this._value, this._then);
 
-  final ExternalIds _value;
   // ignore: unused_field
-  final $Res Function(ExternalIds) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? iswc = freezed,
@@ -1594,19 +1635,19 @@ class _$ExternalIdsCopyWithImpl<$Res> implements $ExternalIdsCopyWith<$Res> {
     Object? upc = freezed,
   }) {
     return _then(_value.copyWith(
-      iswc: iswc == freezed
+      iswc: freezed == iswc
           ? _value.iswc
           : iswc // ignore: cast_nullable_to_non_nullable
               as String?,
-      isrc: isrc == freezed
+      isrc: freezed == isrc
           ? _value.isrc
           : isrc // ignore: cast_nullable_to_non_nullable
               as String?,
-      upc: upc == freezed
+      upc: freezed == upc
           ? _value.upc
           : upc // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -1617,19 +1658,19 @@ abstract class _$$_ExternalIdsCopyWith<$Res>
           _$_ExternalIds value, $Res Function(_$_ExternalIds) then) =
       __$$_ExternalIdsCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? iswc, String? isrc, String? upc});
 }
 
 /// @nodoc
-class __$$_ExternalIdsCopyWithImpl<$Res> extends _$ExternalIdsCopyWithImpl<$Res>
+class __$$_ExternalIdsCopyWithImpl<$Res>
+    extends _$ExternalIdsCopyWithImpl<$Res, _$_ExternalIds>
     implements _$$_ExternalIdsCopyWith<$Res> {
   __$$_ExternalIdsCopyWithImpl(
       _$_ExternalIds _value, $Res Function(_$_ExternalIds) _then)
-      : super(_value, (v) => _then(v as _$_ExternalIds));
+      : super(_value, _then);
 
-  @override
-  _$_ExternalIds get _value => super._value as _$_ExternalIds;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? iswc = freezed,
@@ -1637,15 +1678,15 @@ class __$$_ExternalIdsCopyWithImpl<$Res> extends _$ExternalIdsCopyWithImpl<$Res>
     Object? upc = freezed,
   }) {
     return _then(_$_ExternalIds(
-      iswc: iswc == freezed
+      iswc: freezed == iswc
           ? _value.iswc
           : iswc // ignore: cast_nullable_to_non_nullable
               as String?,
-      isrc: isrc == freezed
+      isrc: freezed == isrc
           ? _value.isrc
           : isrc // ignore: cast_nullable_to_non_nullable
               as String?,
-      upc: upc == freezed
+      upc: freezed == upc
           ? _value.upc
           : upc // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -1678,27 +1719,26 @@ class _$_ExternalIds implements _ExternalIds {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ExternalIds &&
-            const DeepCollectionEquality().equals(other.iswc, iswc) &&
-            const DeepCollectionEquality().equals(other.isrc, isrc) &&
-            const DeepCollectionEquality().equals(other.upc, upc));
+            (identical(other.iswc, iswc) || other.iswc == iswc) &&
+            (identical(other.isrc, isrc) || other.isrc == isrc) &&
+            (identical(other.upc, upc) || other.upc == upc));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(iswc),
-      const DeepCollectionEquality().hash(isrc),
-      const DeepCollectionEquality().hash(upc));
+  int get hashCode => Object.hash(runtimeType, iswc, isrc, upc);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_ExternalIdsCopyWith<_$_ExternalIds> get copyWith =>
       __$$_ExternalIdsCopyWithImpl<_$_ExternalIds>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ExternalIdsToJson(this);
+    return _$$_ExternalIdsToJson(
+      this,
+    );
   }
 }
 
@@ -1745,7 +1785,8 @@ mixin _$ExternalMetadata {
 abstract class $ExternalMetadataCopyWith<$Res> {
   factory $ExternalMetadataCopyWith(
           ExternalMetadata value, $Res Function(ExternalMetadata) then) =
-      _$ExternalMetadataCopyWithImpl<$Res>;
+      _$ExternalMetadataCopyWithImpl<$Res, ExternalMetadata>;
+  @useResult
   $Res call(
       {List<Musicbrainz>? musicbrainz,
       Deezer? deezer,
@@ -1760,14 +1801,16 @@ abstract class $ExternalMetadataCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ExternalMetadataCopyWithImpl<$Res>
+class _$ExternalMetadataCopyWithImpl<$Res, $Val extends ExternalMetadata>
     implements $ExternalMetadataCopyWith<$Res> {
   _$ExternalMetadataCopyWithImpl(this._value, this._then);
 
-  final ExternalMetadata _value;
   // ignore: unused_field
-  final $Res Function(ExternalMetadata) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? musicbrainz = freezed,
@@ -1777,70 +1820,74 @@ class _$ExternalMetadataCopyWithImpl<$Res>
     Object? youtube = freezed,
   }) {
     return _then(_value.copyWith(
-      musicbrainz: musicbrainz == freezed
+      musicbrainz: freezed == musicbrainz
           ? _value.musicbrainz
           : musicbrainz // ignore: cast_nullable_to_non_nullable
               as List<Musicbrainz>?,
-      deezer: deezer == freezed
+      deezer: freezed == deezer
           ? _value.deezer
           : deezer // ignore: cast_nullable_to_non_nullable
               as Deezer?,
-      spotify: spotify == freezed
+      spotify: freezed == spotify
           ? _value.spotify
           : spotify // ignore: cast_nullable_to_non_nullable
               as Deezer?,
-      musicstory: musicstory == freezed
+      musicstory: freezed == musicstory
           ? _value.musicstory
           : musicstory // ignore: cast_nullable_to_non_nullable
               as Musicstory?,
-      youtube: youtube == freezed
+      youtube: freezed == youtube
           ? _value.youtube
           : youtube // ignore: cast_nullable_to_non_nullable
               as Youtube?,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $DeezerCopyWith<$Res>? get deezer {
     if (_value.deezer == null) {
       return null;
     }
 
     return $DeezerCopyWith<$Res>(_value.deezer!, (value) {
-      return _then(_value.copyWith(deezer: value));
+      return _then(_value.copyWith(deezer: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $DeezerCopyWith<$Res>? get spotify {
     if (_value.spotify == null) {
       return null;
     }
 
     return $DeezerCopyWith<$Res>(_value.spotify!, (value) {
-      return _then(_value.copyWith(spotify: value));
+      return _then(_value.copyWith(spotify: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $MusicstoryCopyWith<$Res>? get musicstory {
     if (_value.musicstory == null) {
       return null;
     }
 
     return $MusicstoryCopyWith<$Res>(_value.musicstory!, (value) {
-      return _then(_value.copyWith(musicstory: value));
+      return _then(_value.copyWith(musicstory: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $YoutubeCopyWith<$Res>? get youtube {
     if (_value.youtube == null) {
       return null;
     }
 
     return $YoutubeCopyWith<$Res>(_value.youtube!, (value) {
-      return _then(_value.copyWith(youtube: value));
+      return _then(_value.copyWith(youtube: value) as $Val);
     });
   }
 }
@@ -1852,6 +1899,7 @@ abstract class _$$_ExternalMetadataCopyWith<$Res>
           _$_ExternalMetadata value, $Res Function(_$_ExternalMetadata) then) =
       __$$_ExternalMetadataCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {List<Musicbrainz>? musicbrainz,
       Deezer? deezer,
@@ -1871,15 +1919,13 @@ abstract class _$$_ExternalMetadataCopyWith<$Res>
 
 /// @nodoc
 class __$$_ExternalMetadataCopyWithImpl<$Res>
-    extends _$ExternalMetadataCopyWithImpl<$Res>
+    extends _$ExternalMetadataCopyWithImpl<$Res, _$_ExternalMetadata>
     implements _$$_ExternalMetadataCopyWith<$Res> {
   __$$_ExternalMetadataCopyWithImpl(
       _$_ExternalMetadata _value, $Res Function(_$_ExternalMetadata) _then)
-      : super(_value, (v) => _then(v as _$_ExternalMetadata));
+      : super(_value, _then);
 
-  @override
-  _$_ExternalMetadata get _value => super._value as _$_ExternalMetadata;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? musicbrainz = freezed,
@@ -1889,23 +1935,23 @@ class __$$_ExternalMetadataCopyWithImpl<$Res>
     Object? youtube = freezed,
   }) {
     return _then(_$_ExternalMetadata(
-      musicbrainz: musicbrainz == freezed
+      musicbrainz: freezed == musicbrainz
           ? _value._musicbrainz
           : musicbrainz // ignore: cast_nullable_to_non_nullable
               as List<Musicbrainz>?,
-      deezer: deezer == freezed
+      deezer: freezed == deezer
           ? _value.deezer
           : deezer // ignore: cast_nullable_to_non_nullable
               as Deezer?,
-      spotify: spotify == freezed
+      spotify: freezed == spotify
           ? _value.spotify
           : spotify // ignore: cast_nullable_to_non_nullable
               as Deezer?,
-      musicstory: musicstory == freezed
+      musicstory: freezed == musicstory
           ? _value.musicstory
           : musicstory // ignore: cast_nullable_to_non_nullable
               as Musicstory?,
-      youtube: youtube == freezed
+      youtube: freezed == youtube
           ? _value.youtube
           : youtube // ignore: cast_nullable_to_non_nullable
               as Youtube?,
@@ -1957,11 +2003,11 @@ class _$_ExternalMetadata implements _ExternalMetadata {
             other is _$_ExternalMetadata &&
             const DeepCollectionEquality()
                 .equals(other._musicbrainz, _musicbrainz) &&
-            const DeepCollectionEquality().equals(other.deezer, deezer) &&
-            const DeepCollectionEquality().equals(other.spotify, spotify) &&
-            const DeepCollectionEquality()
-                .equals(other.musicstory, musicstory) &&
-            const DeepCollectionEquality().equals(other.youtube, youtube));
+            (identical(other.deezer, deezer) || other.deezer == deezer) &&
+            (identical(other.spotify, spotify) || other.spotify == spotify) &&
+            (identical(other.musicstory, musicstory) ||
+                other.musicstory == musicstory) &&
+            (identical(other.youtube, youtube) || other.youtube == youtube));
   }
 
   @JsonKey(ignore: true)
@@ -1969,19 +2015,22 @@ class _$_ExternalMetadata implements _ExternalMetadata {
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_musicbrainz),
-      const DeepCollectionEquality().hash(deezer),
-      const DeepCollectionEquality().hash(spotify),
-      const DeepCollectionEquality().hash(musicstory),
-      const DeepCollectionEquality().hash(youtube));
+      deezer,
+      spotify,
+      musicstory,
+      youtube);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_ExternalMetadataCopyWith<_$_ExternalMetadata> get copyWith =>
       __$$_ExternalMetadataCopyWithImpl<_$_ExternalMetadata>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ExternalMetadataToJson(this);
+    return _$$_ExternalMetadataToJson(
+      this,
+    );
   }
 }
 
@@ -2030,7 +2079,8 @@ mixin _$Deezer {
 /// @nodoc
 abstract class $DeezerCopyWith<$Res> {
   factory $DeezerCopyWith(Deezer value, $Res Function(Deezer) then) =
-      _$DeezerCopyWithImpl<$Res>;
+      _$DeezerCopyWithImpl<$Res, Deezer>;
+  @useResult
   $Res call({TrackClass? track, List<TrackClass>? artists, TrackClass? album});
 
   $TrackClassCopyWith<$Res>? get track;
@@ -2038,13 +2088,16 @@ abstract class $DeezerCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$DeezerCopyWithImpl<$Res> implements $DeezerCopyWith<$Res> {
+class _$DeezerCopyWithImpl<$Res, $Val extends Deezer>
+    implements $DeezerCopyWith<$Res> {
   _$DeezerCopyWithImpl(this._value, this._then);
 
-  final Deezer _value;
   // ignore: unused_field
-  final $Res Function(Deezer) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? track = freezed,
@@ -2052,40 +2105,42 @@ class _$DeezerCopyWithImpl<$Res> implements $DeezerCopyWith<$Res> {
     Object? album = freezed,
   }) {
     return _then(_value.copyWith(
-      track: track == freezed
+      track: freezed == track
           ? _value.track
           : track // ignore: cast_nullable_to_non_nullable
               as TrackClass?,
-      artists: artists == freezed
+      artists: freezed == artists
           ? _value.artists
           : artists // ignore: cast_nullable_to_non_nullable
               as List<TrackClass>?,
-      album: album == freezed
+      album: freezed == album
           ? _value.album
           : album // ignore: cast_nullable_to_non_nullable
               as TrackClass?,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $TrackClassCopyWith<$Res>? get track {
     if (_value.track == null) {
       return null;
     }
 
     return $TrackClassCopyWith<$Res>(_value.track!, (value) {
-      return _then(_value.copyWith(track: value));
+      return _then(_value.copyWith(track: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $TrackClassCopyWith<$Res>? get album {
     if (_value.album == null) {
       return null;
     }
 
     return $TrackClassCopyWith<$Res>(_value.album!, (value) {
-      return _then(_value.copyWith(album: value));
+      return _then(_value.copyWith(album: value) as $Val);
     });
   }
 }
@@ -2095,6 +2150,7 @@ abstract class _$$_DeezerCopyWith<$Res> implements $DeezerCopyWith<$Res> {
   factory _$$_DeezerCopyWith(_$_Deezer value, $Res Function(_$_Deezer) then) =
       __$$_DeezerCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({TrackClass? track, List<TrackClass>? artists, TrackClass? album});
 
   @override
@@ -2104,14 +2160,13 @@ abstract class _$$_DeezerCopyWith<$Res> implements $DeezerCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_DeezerCopyWithImpl<$Res> extends _$DeezerCopyWithImpl<$Res>
+class __$$_DeezerCopyWithImpl<$Res>
+    extends _$DeezerCopyWithImpl<$Res, _$_Deezer>
     implements _$$_DeezerCopyWith<$Res> {
   __$$_DeezerCopyWithImpl(_$_Deezer _value, $Res Function(_$_Deezer) _then)
-      : super(_value, (v) => _then(v as _$_Deezer));
+      : super(_value, _then);
 
-  @override
-  _$_Deezer get _value => super._value as _$_Deezer;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? track = freezed,
@@ -2119,15 +2174,15 @@ class __$$_DeezerCopyWithImpl<$Res> extends _$DeezerCopyWithImpl<$Res>
     Object? album = freezed,
   }) {
     return _then(_$_Deezer(
-      track: track == freezed
+      track: freezed == track
           ? _value.track
           : track // ignore: cast_nullable_to_non_nullable
               as TrackClass?,
-      artists: artists == freezed
+      artists: freezed == artists
           ? _value._artists
           : artists // ignore: cast_nullable_to_non_nullable
               as List<TrackClass>?,
-      album: album == freezed
+      album: freezed == album
           ? _value.album
           : album // ignore: cast_nullable_to_non_nullable
               as TrackClass?,
@@ -2168,27 +2223,27 @@ class _$_Deezer implements _Deezer {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Deezer &&
-            const DeepCollectionEquality().equals(other.track, track) &&
+            (identical(other.track, track) || other.track == track) &&
             const DeepCollectionEquality().equals(other._artists, _artists) &&
-            const DeepCollectionEquality().equals(other.album, album));
+            (identical(other.album, album) || other.album == album));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(track),
-      const DeepCollectionEquality().hash(_artists),
-      const DeepCollectionEquality().hash(album));
+      runtimeType, track, const DeepCollectionEquality().hash(_artists), album);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_DeezerCopyWith<_$_Deezer> get copyWith =>
       __$$_DeezerCopyWithImpl<_$_Deezer>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_DeezerToJson(this);
+    return _$$_DeezerToJson(
+      this,
+    );
   }
 }
 
@@ -2230,28 +2285,32 @@ mixin _$TrackClass {
 abstract class $TrackClassCopyWith<$Res> {
   factory $TrackClassCopyWith(
           TrackClass value, $Res Function(TrackClass) then) =
-      _$TrackClassCopyWithImpl<$Res>;
+      _$TrackClassCopyWithImpl<$Res, TrackClass>;
+  @useResult
   $Res call({String? id});
 }
 
 /// @nodoc
-class _$TrackClassCopyWithImpl<$Res> implements $TrackClassCopyWith<$Res> {
+class _$TrackClassCopyWithImpl<$Res, $Val extends TrackClass>
+    implements $TrackClassCopyWith<$Res> {
   _$TrackClassCopyWithImpl(this._value, this._then);
 
-  final TrackClass _value;
   // ignore: unused_field
-  final $Res Function(TrackClass) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = freezed,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -2262,25 +2321,25 @@ abstract class _$$_TrackClassCopyWith<$Res>
           _$_TrackClass value, $Res Function(_$_TrackClass) then) =
       __$$_TrackClassCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? id});
 }
 
 /// @nodoc
-class __$$_TrackClassCopyWithImpl<$Res> extends _$TrackClassCopyWithImpl<$Res>
+class __$$_TrackClassCopyWithImpl<$Res>
+    extends _$TrackClassCopyWithImpl<$Res, _$_TrackClass>
     implements _$$_TrackClassCopyWith<$Res> {
   __$$_TrackClassCopyWithImpl(
       _$_TrackClass _value, $Res Function(_$_TrackClass) _then)
-      : super(_value, (v) => _then(v as _$_TrackClass));
+      : super(_value, _then);
 
-  @override
-  _$_TrackClass get _value => super._value as _$_TrackClass;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = freezed,
   }) {
     return _then(_$_TrackClass(
-      id: id == freezed
+      id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -2309,22 +2368,24 @@ class _$_TrackClass implements _TrackClass {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_TrackClass &&
-            const DeepCollectionEquality().equals(other.id, id));
+            (identical(other.id, id) || other.id == id));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(id));
+  int get hashCode => Object.hash(runtimeType, id);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_TrackClassCopyWith<_$_TrackClass> get copyWith =>
       __$$_TrackClassCopyWithImpl<_$_TrackClass>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_TrackClassToJson(this);
+    return _$$_TrackClassToJson(
+      this,
+    );
   }
 }
 
@@ -2360,40 +2421,45 @@ mixin _$Musicbrainz {
 abstract class $MusicbrainzCopyWith<$Res> {
   factory $MusicbrainzCopyWith(
           Musicbrainz value, $Res Function(Musicbrainz) then) =
-      _$MusicbrainzCopyWithImpl<$Res>;
+      _$MusicbrainzCopyWithImpl<$Res, Musicbrainz>;
+  @useResult
   $Res call({TrackClass? track});
 
   $TrackClassCopyWith<$Res>? get track;
 }
 
 /// @nodoc
-class _$MusicbrainzCopyWithImpl<$Res> implements $MusicbrainzCopyWith<$Res> {
+class _$MusicbrainzCopyWithImpl<$Res, $Val extends Musicbrainz>
+    implements $MusicbrainzCopyWith<$Res> {
   _$MusicbrainzCopyWithImpl(this._value, this._then);
 
-  final Musicbrainz _value;
   // ignore: unused_field
-  final $Res Function(Musicbrainz) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? track = freezed,
   }) {
     return _then(_value.copyWith(
-      track: track == freezed
+      track: freezed == track
           ? _value.track
           : track // ignore: cast_nullable_to_non_nullable
               as TrackClass?,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $TrackClassCopyWith<$Res>? get track {
     if (_value.track == null) {
       return null;
     }
 
     return $TrackClassCopyWith<$Res>(_value.track!, (value) {
-      return _then(_value.copyWith(track: value));
+      return _then(_value.copyWith(track: value) as $Val);
     });
   }
 }
@@ -2405,6 +2471,7 @@ abstract class _$$_MusicbrainzCopyWith<$Res>
           _$_Musicbrainz value, $Res Function(_$_Musicbrainz) then) =
       __$$_MusicbrainzCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({TrackClass? track});
 
   @override
@@ -2412,21 +2479,20 @@ abstract class _$$_MusicbrainzCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_MusicbrainzCopyWithImpl<$Res> extends _$MusicbrainzCopyWithImpl<$Res>
+class __$$_MusicbrainzCopyWithImpl<$Res>
+    extends _$MusicbrainzCopyWithImpl<$Res, _$_Musicbrainz>
     implements _$$_MusicbrainzCopyWith<$Res> {
   __$$_MusicbrainzCopyWithImpl(
       _$_Musicbrainz _value, $Res Function(_$_Musicbrainz) _then)
-      : super(_value, (v) => _then(v as _$_Musicbrainz));
+      : super(_value, _then);
 
-  @override
-  _$_Musicbrainz get _value => super._value as _$_Musicbrainz;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? track = freezed,
   }) {
     return _then(_$_Musicbrainz(
-      track: track == freezed
+      track: freezed == track
           ? _value.track
           : track // ignore: cast_nullable_to_non_nullable
               as TrackClass?,
@@ -2455,22 +2521,24 @@ class _$_Musicbrainz implements _Musicbrainz {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Musicbrainz &&
-            const DeepCollectionEquality().equals(other.track, track));
+            (identical(other.track, track) || other.track == track));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(track));
+  int get hashCode => Object.hash(runtimeType, track);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_MusicbrainzCopyWith<_$_Musicbrainz> get copyWith =>
       __$$_MusicbrainzCopyWithImpl<_$_Musicbrainz>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_MusicbrainzToJson(this);
+    return _$$_MusicbrainzToJson(
+      this,
+    );
   }
 }
 
@@ -2507,7 +2575,8 @@ mixin _$Musicstory {
 abstract class $MusicstoryCopyWith<$Res> {
   factory $MusicstoryCopyWith(
           Musicstory value, $Res Function(Musicstory) then) =
-      _$MusicstoryCopyWithImpl<$Res>;
+      _$MusicstoryCopyWithImpl<$Res, Musicstory>;
+  @useResult
   $Res call({TrackClass? track, TrackClass? album});
 
   $TrackClassCopyWith<$Res>? get track;
@@ -2515,49 +2584,54 @@ abstract class $MusicstoryCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$MusicstoryCopyWithImpl<$Res> implements $MusicstoryCopyWith<$Res> {
+class _$MusicstoryCopyWithImpl<$Res, $Val extends Musicstory>
+    implements $MusicstoryCopyWith<$Res> {
   _$MusicstoryCopyWithImpl(this._value, this._then);
 
-  final Musicstory _value;
   // ignore: unused_field
-  final $Res Function(Musicstory) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? track = freezed,
     Object? album = freezed,
   }) {
     return _then(_value.copyWith(
-      track: track == freezed
+      track: freezed == track
           ? _value.track
           : track // ignore: cast_nullable_to_non_nullable
               as TrackClass?,
-      album: album == freezed
+      album: freezed == album
           ? _value.album
           : album // ignore: cast_nullable_to_non_nullable
               as TrackClass?,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $TrackClassCopyWith<$Res>? get track {
     if (_value.track == null) {
       return null;
     }
 
     return $TrackClassCopyWith<$Res>(_value.track!, (value) {
-      return _then(_value.copyWith(track: value));
+      return _then(_value.copyWith(track: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $TrackClassCopyWith<$Res>? get album {
     if (_value.album == null) {
       return null;
     }
 
     return $TrackClassCopyWith<$Res>(_value.album!, (value) {
-      return _then(_value.copyWith(album: value));
+      return _then(_value.copyWith(album: value) as $Val);
     });
   }
 }
@@ -2569,6 +2643,7 @@ abstract class _$$_MusicstoryCopyWith<$Res>
           _$_Musicstory value, $Res Function(_$_Musicstory) then) =
       __$$_MusicstoryCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({TrackClass? track, TrackClass? album});
 
   @override
@@ -2578,26 +2653,25 @@ abstract class _$$_MusicstoryCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_MusicstoryCopyWithImpl<$Res> extends _$MusicstoryCopyWithImpl<$Res>
+class __$$_MusicstoryCopyWithImpl<$Res>
+    extends _$MusicstoryCopyWithImpl<$Res, _$_Musicstory>
     implements _$$_MusicstoryCopyWith<$Res> {
   __$$_MusicstoryCopyWithImpl(
       _$_Musicstory _value, $Res Function(_$_Musicstory) _then)
-      : super(_value, (v) => _then(v as _$_Musicstory));
+      : super(_value, _then);
 
-  @override
-  _$_Musicstory get _value => super._value as _$_Musicstory;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? track = freezed,
     Object? album = freezed,
   }) {
     return _then(_$_Musicstory(
-      track: track == freezed
+      track: freezed == track
           ? _value.track
           : track // ignore: cast_nullable_to_non_nullable
               as TrackClass?,
-      album: album == freezed
+      album: freezed == album
           ? _value.album
           : album // ignore: cast_nullable_to_non_nullable
               as TrackClass?,
@@ -2628,25 +2702,25 @@ class _$_Musicstory implements _Musicstory {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Musicstory &&
-            const DeepCollectionEquality().equals(other.track, track) &&
-            const DeepCollectionEquality().equals(other.album, album));
+            (identical(other.track, track) || other.track == track) &&
+            (identical(other.album, album) || other.album == album));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(track),
-      const DeepCollectionEquality().hash(album));
+  int get hashCode => Object.hash(runtimeType, track, album);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_MusicstoryCopyWith<_$_Musicstory> get copyWith =>
       __$$_MusicstoryCopyWithImpl<_$_Musicstory>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_MusicstoryToJson(this);
+    return _$$_MusicstoryToJson(
+      this,
+    );
   }
 }
 
@@ -2683,28 +2757,32 @@ mixin _$Youtube {
 /// @nodoc
 abstract class $YoutubeCopyWith<$Res> {
   factory $YoutubeCopyWith(Youtube value, $Res Function(Youtube) then) =
-      _$YoutubeCopyWithImpl<$Res>;
+      _$YoutubeCopyWithImpl<$Res, Youtube>;
+  @useResult
   $Res call({String? vid});
 }
 
 /// @nodoc
-class _$YoutubeCopyWithImpl<$Res> implements $YoutubeCopyWith<$Res> {
+class _$YoutubeCopyWithImpl<$Res, $Val extends Youtube>
+    implements $YoutubeCopyWith<$Res> {
   _$YoutubeCopyWithImpl(this._value, this._then);
 
-  final Youtube _value;
   // ignore: unused_field
-  final $Res Function(Youtube) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? vid = freezed,
   }) {
     return _then(_value.copyWith(
-      vid: vid == freezed
+      vid: freezed == vid
           ? _value.vid
           : vid // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -2714,24 +2792,24 @@ abstract class _$$_YoutubeCopyWith<$Res> implements $YoutubeCopyWith<$Res> {
           _$_Youtube value, $Res Function(_$_Youtube) then) =
       __$$_YoutubeCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? vid});
 }
 
 /// @nodoc
-class __$$_YoutubeCopyWithImpl<$Res> extends _$YoutubeCopyWithImpl<$Res>
+class __$$_YoutubeCopyWithImpl<$Res>
+    extends _$YoutubeCopyWithImpl<$Res, _$_Youtube>
     implements _$$_YoutubeCopyWith<$Res> {
   __$$_YoutubeCopyWithImpl(_$_Youtube _value, $Res Function(_$_Youtube) _then)
-      : super(_value, (v) => _then(v as _$_Youtube));
+      : super(_value, _then);
 
-  @override
-  _$_Youtube get _value => super._value as _$_Youtube;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? vid = freezed,
   }) {
     return _then(_$_Youtube(
-      vid: vid == freezed
+      vid: freezed == vid
           ? _value.vid
           : vid // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -2760,22 +2838,24 @@ class _$_Youtube implements _Youtube {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Youtube &&
-            const DeepCollectionEquality().equals(other.vid, vid));
+            (identical(other.vid, vid) || other.vid == vid));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(vid));
+  int get hashCode => Object.hash(runtimeType, vid);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_YoutubeCopyWith<_$_Youtube> get copyWith =>
       __$$_YoutubeCopyWithImpl<_$_Youtube>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_YoutubeToJson(this);
+    return _$$_YoutubeToJson(
+      this,
+    );
   }
 }
 
@@ -2808,28 +2888,32 @@ mixin _$Genre {
 /// @nodoc
 abstract class $GenreCopyWith<$Res> {
   factory $GenreCopyWith(Genre value, $Res Function(Genre) then) =
-      _$GenreCopyWithImpl<$Res>;
+      _$GenreCopyWithImpl<$Res, Genre>;
+  @useResult
   $Res call({String? name});
 }
 
 /// @nodoc
-class _$GenreCopyWithImpl<$Res> implements $GenreCopyWith<$Res> {
+class _$GenreCopyWithImpl<$Res, $Val extends Genre>
+    implements $GenreCopyWith<$Res> {
   _$GenreCopyWithImpl(this._value, this._then);
 
-  final Genre _value;
   // ignore: unused_field
-  final $Res Function(Genre) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? name = freezed,
   }) {
     return _then(_value.copyWith(
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -2838,24 +2922,23 @@ abstract class _$$_GenreCopyWith<$Res> implements $GenreCopyWith<$Res> {
   factory _$$_GenreCopyWith(_$_Genre value, $Res Function(_$_Genre) then) =
       __$$_GenreCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? name});
 }
 
 /// @nodoc
-class __$$_GenreCopyWithImpl<$Res> extends _$GenreCopyWithImpl<$Res>
+class __$$_GenreCopyWithImpl<$Res> extends _$GenreCopyWithImpl<$Res, _$_Genre>
     implements _$$_GenreCopyWith<$Res> {
   __$$_GenreCopyWithImpl(_$_Genre _value, $Res Function(_$_Genre) _then)
-      : super(_value, (v) => _then(v as _$_Genre));
+      : super(_value, _then);
 
-  @override
-  _$_Genre get _value => super._value as _$_Genre;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? name = freezed,
   }) {
     return _then(_$_Genre(
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -2884,22 +2967,24 @@ class _$_Genre implements _Genre {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Genre &&
-            const DeepCollectionEquality().equals(other.name, name));
+            (identical(other.name, name) || other.name == name));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(name));
+  int get hashCode => Object.hash(runtimeType, name);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_GenreCopyWith<_$_Genre> get copyWith =>
       __$$_GenreCopyWithImpl<_$_Genre>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_GenreToJson(this);
+    return _$$_GenreToJson(
+      this,
+    );
   }
 }
 
@@ -2932,28 +3017,32 @@ mixin _$Lyrics {
 /// @nodoc
 abstract class $LyricsCopyWith<$Res> {
   factory $LyricsCopyWith(Lyrics value, $Res Function(Lyrics) then) =
-      _$LyricsCopyWithImpl<$Res>;
+      _$LyricsCopyWithImpl<$Res, Lyrics>;
+  @useResult
   $Res call({List<String>? copyrights});
 }
 
 /// @nodoc
-class _$LyricsCopyWithImpl<$Res> implements $LyricsCopyWith<$Res> {
+class _$LyricsCopyWithImpl<$Res, $Val extends Lyrics>
+    implements $LyricsCopyWith<$Res> {
   _$LyricsCopyWithImpl(this._value, this._then);
 
-  final Lyrics _value;
   // ignore: unused_field
-  final $Res Function(Lyrics) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? copyrights = freezed,
   }) {
     return _then(_value.copyWith(
-      copyrights: copyrights == freezed
+      copyrights: freezed == copyrights
           ? _value.copyrights
           : copyrights // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -2962,24 +3051,24 @@ abstract class _$$_LyricsCopyWith<$Res> implements $LyricsCopyWith<$Res> {
   factory _$$_LyricsCopyWith(_$_Lyrics value, $Res Function(_$_Lyrics) then) =
       __$$_LyricsCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({List<String>? copyrights});
 }
 
 /// @nodoc
-class __$$_LyricsCopyWithImpl<$Res> extends _$LyricsCopyWithImpl<$Res>
+class __$$_LyricsCopyWithImpl<$Res>
+    extends _$LyricsCopyWithImpl<$Res, _$_Lyrics>
     implements _$$_LyricsCopyWith<$Res> {
   __$$_LyricsCopyWithImpl(_$_Lyrics _value, $Res Function(_$_Lyrics) _then)
-      : super(_value, (v) => _then(v as _$_Lyrics));
+      : super(_value, _then);
 
-  @override
-  _$_Lyrics get _value => super._value as _$_Lyrics;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? copyrights = freezed,
   }) {
     return _then(_$_Lyrics(
-      copyrights: copyrights == freezed
+      copyrights: freezed == copyrights
           ? _value._copyrights
           : copyrights // ignore: cast_nullable_to_non_nullable
               as List<String>?,
@@ -3025,12 +3114,15 @@ class _$_Lyrics implements _Lyrics {
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_LyricsCopyWith<_$_Lyrics> get copyWith =>
       __$$_LyricsCopyWithImpl<_$_Lyrics>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_LyricsToJson(this);
+    return _$$_LyricsToJson(
+      this,
+    );
   }
 }
 
@@ -3066,34 +3158,37 @@ mixin _$ReleaseByTerritory {
 abstract class $ReleaseByTerritoryCopyWith<$Res> {
   factory $ReleaseByTerritoryCopyWith(
           ReleaseByTerritory value, $Res Function(ReleaseByTerritory) then) =
-      _$ReleaseByTerritoryCopyWithImpl<$Res>;
+      _$ReleaseByTerritoryCopyWithImpl<$Res, ReleaseByTerritory>;
+  @useResult
   $Res call({List<String>? territories, DateTime? releaseDate});
 }
 
 /// @nodoc
-class _$ReleaseByTerritoryCopyWithImpl<$Res>
+class _$ReleaseByTerritoryCopyWithImpl<$Res, $Val extends ReleaseByTerritory>
     implements $ReleaseByTerritoryCopyWith<$Res> {
   _$ReleaseByTerritoryCopyWithImpl(this._value, this._then);
 
-  final ReleaseByTerritory _value;
   // ignore: unused_field
-  final $Res Function(ReleaseByTerritory) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? territories = freezed,
     Object? releaseDate = freezed,
   }) {
     return _then(_value.copyWith(
-      territories: territories == freezed
+      territories: freezed == territories
           ? _value.territories
           : territories // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      releaseDate: releaseDate == freezed
+      releaseDate: freezed == releaseDate
           ? _value.releaseDate
           : releaseDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -3104,31 +3199,30 @@ abstract class _$$_ReleaseByTerritoryCopyWith<$Res>
           $Res Function(_$_ReleaseByTerritory) then) =
       __$$_ReleaseByTerritoryCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({List<String>? territories, DateTime? releaseDate});
 }
 
 /// @nodoc
 class __$$_ReleaseByTerritoryCopyWithImpl<$Res>
-    extends _$ReleaseByTerritoryCopyWithImpl<$Res>
+    extends _$ReleaseByTerritoryCopyWithImpl<$Res, _$_ReleaseByTerritory>
     implements _$$_ReleaseByTerritoryCopyWith<$Res> {
   __$$_ReleaseByTerritoryCopyWithImpl(
       _$_ReleaseByTerritory _value, $Res Function(_$_ReleaseByTerritory) _then)
-      : super(_value, (v) => _then(v as _$_ReleaseByTerritory));
+      : super(_value, _then);
 
-  @override
-  _$_ReleaseByTerritory get _value => super._value as _$_ReleaseByTerritory;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? territories = freezed,
     Object? releaseDate = freezed,
   }) {
     return _then(_$_ReleaseByTerritory(
-      territories: territories == freezed
+      territories: freezed == territories
           ? _value._territories
           : territories // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      releaseDate: releaseDate == freezed
+      releaseDate: freezed == releaseDate
           ? _value.releaseDate
           : releaseDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
@@ -3170,26 +3264,27 @@ class _$_ReleaseByTerritory implements _ReleaseByTerritory {
             other is _$_ReleaseByTerritory &&
             const DeepCollectionEquality()
                 .equals(other._territories, _territories) &&
-            const DeepCollectionEquality()
-                .equals(other.releaseDate, releaseDate));
+            (identical(other.releaseDate, releaseDate) ||
+                other.releaseDate == releaseDate));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(_territories),
-      const DeepCollectionEquality().hash(releaseDate));
+  int get hashCode => Object.hash(runtimeType,
+      const DeepCollectionEquality().hash(_territories), releaseDate);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_ReleaseByTerritoryCopyWith<_$_ReleaseByTerritory> get copyWith =>
       __$$_ReleaseByTerritoryCopyWithImpl<_$_ReleaseByTerritory>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ReleaseByTerritoryToJson(this);
+    return _$$_ReleaseByTerritoryToJson(
+      this,
+    );
   }
 }
 
@@ -3232,7 +3327,8 @@ mixin _$RightsClaim {
 abstract class $RightsClaimCopyWith<$Res> {
   factory $RightsClaimCopyWith(
           RightsClaim value, $Res Function(RightsClaim) then) =
-      _$RightsClaimCopyWithImpl<$Res>;
+      _$RightsClaimCopyWithImpl<$Res, RightsClaim>;
+  @useResult
   $Res call(
       {Distributor? distributor,
       List<RightsOwner>? rightsOwners,
@@ -3243,13 +3339,16 @@ abstract class $RightsClaimCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$RightsClaimCopyWithImpl<$Res> implements $RightsClaimCopyWith<$Res> {
+class _$RightsClaimCopyWithImpl<$Res, $Val extends RightsClaim>
+    implements $RightsClaimCopyWith<$Res> {
   _$RightsClaimCopyWithImpl(this._value, this._then);
 
-  final RightsClaim _value;
   // ignore: unused_field
-  final $Res Function(RightsClaim) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? distributor = freezed,
@@ -3258,33 +3357,34 @@ class _$RightsClaimCopyWithImpl<$Res> implements $RightsClaimCopyWith<$Res> {
     Object? territories = freezed,
   }) {
     return _then(_value.copyWith(
-      distributor: distributor == freezed
+      distributor: freezed == distributor
           ? _value.distributor
           : distributor // ignore: cast_nullable_to_non_nullable
               as Distributor?,
-      rightsOwners: rightsOwners == freezed
+      rightsOwners: freezed == rightsOwners
           ? _value.rightsOwners
           : rightsOwners // ignore: cast_nullable_to_non_nullable
               as List<RightsOwner>?,
-      rightsClaimPolicy: rightsClaimPolicy == freezed
+      rightsClaimPolicy: freezed == rightsClaimPolicy
           ? _value.rightsClaimPolicy
           : rightsClaimPolicy // ignore: cast_nullable_to_non_nullable
               as String?,
-      territories: territories == freezed
+      territories: freezed == territories
           ? _value.territories
           : territories // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $DistributorCopyWith<$Res>? get distributor {
     if (_value.distributor == null) {
       return null;
     }
 
     return $DistributorCopyWith<$Res>(_value.distributor!, (value) {
-      return _then(_value.copyWith(distributor: value));
+      return _then(_value.copyWith(distributor: value) as $Val);
     });
   }
 }
@@ -3296,6 +3396,7 @@ abstract class _$$_RightsClaimCopyWith<$Res>
           _$_RightsClaim value, $Res Function(_$_RightsClaim) then) =
       __$$_RightsClaimCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {Distributor? distributor,
       List<RightsOwner>? rightsOwners,
@@ -3307,15 +3408,14 @@ abstract class _$$_RightsClaimCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_RightsClaimCopyWithImpl<$Res> extends _$RightsClaimCopyWithImpl<$Res>
+class __$$_RightsClaimCopyWithImpl<$Res>
+    extends _$RightsClaimCopyWithImpl<$Res, _$_RightsClaim>
     implements _$$_RightsClaimCopyWith<$Res> {
   __$$_RightsClaimCopyWithImpl(
       _$_RightsClaim _value, $Res Function(_$_RightsClaim) _then)
-      : super(_value, (v) => _then(v as _$_RightsClaim));
+      : super(_value, _then);
 
-  @override
-  _$_RightsClaim get _value => super._value as _$_RightsClaim;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? distributor = freezed,
@@ -3324,19 +3424,19 @@ class __$$_RightsClaimCopyWithImpl<$Res> extends _$RightsClaimCopyWithImpl<$Res>
     Object? territories = freezed,
   }) {
     return _then(_$_RightsClaim(
-      distributor: distributor == freezed
+      distributor: freezed == distributor
           ? _value.distributor
           : distributor // ignore: cast_nullable_to_non_nullable
               as Distributor?,
-      rightsOwners: rightsOwners == freezed
+      rightsOwners: freezed == rightsOwners
           ? _value._rightsOwners
           : rightsOwners // ignore: cast_nullable_to_non_nullable
               as List<RightsOwner>?,
-      rightsClaimPolicy: rightsClaimPolicy == freezed
+      rightsClaimPolicy: freezed == rightsClaimPolicy
           ? _value.rightsClaimPolicy
           : rightsClaimPolicy // ignore: cast_nullable_to_non_nullable
               as String?,
-      territories: territories == freezed
+      territories: freezed == territories
           ? _value._territories
           : territories // ignore: cast_nullable_to_non_nullable
               as List<String>?,
@@ -3390,12 +3490,12 @@ class _$_RightsClaim implements _RightsClaim {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_RightsClaim &&
-            const DeepCollectionEquality()
-                .equals(other.distributor, distributor) &&
+            (identical(other.distributor, distributor) ||
+                other.distributor == distributor) &&
             const DeepCollectionEquality()
                 .equals(other._rightsOwners, _rightsOwners) &&
-            const DeepCollectionEquality()
-                .equals(other.rightsClaimPolicy, rightsClaimPolicy) &&
+            (identical(other.rightsClaimPolicy, rightsClaimPolicy) ||
+                other.rightsClaimPolicy == rightsClaimPolicy) &&
             const DeepCollectionEquality()
                 .equals(other._territories, _territories));
   }
@@ -3404,19 +3504,22 @@ class _$_RightsClaim implements _RightsClaim {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(distributor),
+      distributor,
       const DeepCollectionEquality().hash(_rightsOwners),
-      const DeepCollectionEquality().hash(rightsClaimPolicy),
+      rightsClaimPolicy,
       const DeepCollectionEquality().hash(_territories));
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_RightsClaimCopyWith<_$_RightsClaim> get copyWith =>
       __$$_RightsClaimCopyWithImpl<_$_RightsClaim>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RightsClaimToJson(this);
+    return _$$_RightsClaimToJson(
+      this,
+    );
   }
 }
 
@@ -3463,33 +3566,37 @@ mixin _$Distributor {
 abstract class $DistributorCopyWith<$Res> {
   factory $DistributorCopyWith(
           Distributor value, $Res Function(Distributor) then) =
-      _$DistributorCopyWithImpl<$Res>;
+      _$DistributorCopyWithImpl<$Res, Distributor>;
+  @useResult
   $Res call({String? id, String? name});
 }
 
 /// @nodoc
-class _$DistributorCopyWithImpl<$Res> implements $DistributorCopyWith<$Res> {
+class _$DistributorCopyWithImpl<$Res, $Val extends Distributor>
+    implements $DistributorCopyWith<$Res> {
   _$DistributorCopyWithImpl(this._value, this._then);
 
-  final Distributor _value;
   // ignore: unused_field
-  final $Res Function(Distributor) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = freezed,
     Object? name = freezed,
   }) {
     return _then(_value.copyWith(
-      id: id == freezed
+      id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -3500,30 +3607,30 @@ abstract class _$$_DistributorCopyWith<$Res>
           _$_Distributor value, $Res Function(_$_Distributor) then) =
       __$$_DistributorCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? id, String? name});
 }
 
 /// @nodoc
-class __$$_DistributorCopyWithImpl<$Res> extends _$DistributorCopyWithImpl<$Res>
+class __$$_DistributorCopyWithImpl<$Res>
+    extends _$DistributorCopyWithImpl<$Res, _$_Distributor>
     implements _$$_DistributorCopyWith<$Res> {
   __$$_DistributorCopyWithImpl(
       _$_Distributor _value, $Res Function(_$_Distributor) _then)
-      : super(_value, (v) => _then(v as _$_Distributor));
+      : super(_value, _then);
 
-  @override
-  _$_Distributor get _value => super._value as _$_Distributor;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = freezed,
     Object? name = freezed,
   }) {
     return _then(_$_Distributor(
-      id: id == freezed
+      id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -3554,25 +3661,25 @@ class _$_Distributor implements _Distributor {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Distributor &&
-            const DeepCollectionEquality().equals(other.id, id) &&
-            const DeepCollectionEquality().equals(other.name, name));
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.name, name) || other.name == name));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(id),
-      const DeepCollectionEquality().hash(name));
+  int get hashCode => Object.hash(runtimeType, id, name);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_DistributorCopyWith<_$_Distributor> get copyWith =>
       __$$_DistributorCopyWithImpl<_$_Distributor>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_DistributorToJson(this);
+    return _$$_DistributorToJson(
+      this,
+    );
   }
 }
 
@@ -3612,33 +3719,37 @@ mixin _$RightsOwner {
 abstract class $RightsOwnerCopyWith<$Res> {
   factory $RightsOwnerCopyWith(
           RightsOwner value, $Res Function(RightsOwner) then) =
-      _$RightsOwnerCopyWithImpl<$Res>;
+      _$RightsOwnerCopyWithImpl<$Res, RightsOwner>;
+  @useResult
   $Res call({String? name, int? sharePercentage});
 }
 
 /// @nodoc
-class _$RightsOwnerCopyWithImpl<$Res> implements $RightsOwnerCopyWith<$Res> {
+class _$RightsOwnerCopyWithImpl<$Res, $Val extends RightsOwner>
+    implements $RightsOwnerCopyWith<$Res> {
   _$RightsOwnerCopyWithImpl(this._value, this._then);
 
-  final RightsOwner _value;
   // ignore: unused_field
-  final $Res Function(RightsOwner) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? name = freezed,
     Object? sharePercentage = freezed,
   }) {
     return _then(_value.copyWith(
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
-      sharePercentage: sharePercentage == freezed
+      sharePercentage: freezed == sharePercentage
           ? _value.sharePercentage
           : sharePercentage // ignore: cast_nullable_to_non_nullable
               as int?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -3649,30 +3760,30 @@ abstract class _$$_RightsOwnerCopyWith<$Res>
           _$_RightsOwner value, $Res Function(_$_RightsOwner) then) =
       __$$_RightsOwnerCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? name, int? sharePercentage});
 }
 
 /// @nodoc
-class __$$_RightsOwnerCopyWithImpl<$Res> extends _$RightsOwnerCopyWithImpl<$Res>
+class __$$_RightsOwnerCopyWithImpl<$Res>
+    extends _$RightsOwnerCopyWithImpl<$Res, _$_RightsOwner>
     implements _$$_RightsOwnerCopyWith<$Res> {
   __$$_RightsOwnerCopyWithImpl(
       _$_RightsOwner _value, $Res Function(_$_RightsOwner) _then)
-      : super(_value, (v) => _then(v as _$_RightsOwner));
+      : super(_value, _then);
 
-  @override
-  _$_RightsOwner get _value => super._value as _$_RightsOwner;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? name = freezed,
     Object? sharePercentage = freezed,
   }) {
     return _then(_$_RightsOwner(
-      name: name == freezed
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String?,
-      sharePercentage: sharePercentage == freezed
+      sharePercentage: freezed == sharePercentage
           ? _value.sharePercentage
           : sharePercentage // ignore: cast_nullable_to_non_nullable
               as int?,
@@ -3703,26 +3814,26 @@ class _$_RightsOwner implements _RightsOwner {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_RightsOwner &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality()
-                .equals(other.sharePercentage, sharePercentage));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.sharePercentage, sharePercentage) ||
+                other.sharePercentage == sharePercentage));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(sharePercentage));
+  int get hashCode => Object.hash(runtimeType, name, sharePercentage);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_RightsOwnerCopyWith<_$_RightsOwner> get copyWith =>
       __$$_RightsOwnerCopyWithImpl<_$_RightsOwner>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RightsOwnerToJson(this);
+    return _$$_RightsOwnerToJson(
+      this,
+    );
   }
 }
 
@@ -3761,18 +3872,22 @@ mixin _$Status {
 /// @nodoc
 abstract class $StatusCopyWith<$Res> {
   factory $StatusCopyWith(Status value, $Res Function(Status) then) =
-      _$StatusCopyWithImpl<$Res>;
+      _$StatusCopyWithImpl<$Res, Status>;
+  @useResult
   $Res call({String? msg, String? version, int? code});
 }
 
 /// @nodoc
-class _$StatusCopyWithImpl<$Res> implements $StatusCopyWith<$Res> {
+class _$StatusCopyWithImpl<$Res, $Val extends Status>
+    implements $StatusCopyWith<$Res> {
   _$StatusCopyWithImpl(this._value, this._then);
 
-  final Status _value;
   // ignore: unused_field
-  final $Res Function(Status) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? msg = freezed,
@@ -3780,19 +3895,19 @@ class _$StatusCopyWithImpl<$Res> implements $StatusCopyWith<$Res> {
     Object? code = freezed,
   }) {
     return _then(_value.copyWith(
-      msg: msg == freezed
+      msg: freezed == msg
           ? _value.msg
           : msg // ignore: cast_nullable_to_non_nullable
               as String?,
-      version: version == freezed
+      version: freezed == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as String?,
-      code: code == freezed
+      code: freezed == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
               as int?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -3801,18 +3916,18 @@ abstract class _$$_StatusCopyWith<$Res> implements $StatusCopyWith<$Res> {
   factory _$$_StatusCopyWith(_$_Status value, $Res Function(_$_Status) then) =
       __$$_StatusCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String? msg, String? version, int? code});
 }
 
 /// @nodoc
-class __$$_StatusCopyWithImpl<$Res> extends _$StatusCopyWithImpl<$Res>
+class __$$_StatusCopyWithImpl<$Res>
+    extends _$StatusCopyWithImpl<$Res, _$_Status>
     implements _$$_StatusCopyWith<$Res> {
   __$$_StatusCopyWithImpl(_$_Status _value, $Res Function(_$_Status) _then)
-      : super(_value, (v) => _then(v as _$_Status));
+      : super(_value, _then);
 
-  @override
-  _$_Status get _value => super._value as _$_Status;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? msg = freezed,
@@ -3820,15 +3935,15 @@ class __$$_StatusCopyWithImpl<$Res> extends _$StatusCopyWithImpl<$Res>
     Object? code = freezed,
   }) {
     return _then(_$_Status(
-      msg: msg == freezed
+      msg: freezed == msg
           ? _value.msg
           : msg // ignore: cast_nullable_to_non_nullable
               as String?,
-      version: version == freezed
+      version: freezed == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as String?,
-      code: code == freezed
+      code: freezed == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
               as int?,
@@ -3861,27 +3976,26 @@ class _$_Status implements _Status {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Status &&
-            const DeepCollectionEquality().equals(other.msg, msg) &&
-            const DeepCollectionEquality().equals(other.version, version) &&
-            const DeepCollectionEquality().equals(other.code, code));
+            (identical(other.msg, msg) || other.msg == msg) &&
+            (identical(other.version, version) || other.version == version) &&
+            (identical(other.code, code) || other.code == code));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(msg),
-      const DeepCollectionEquality().hash(version),
-      const DeepCollectionEquality().hash(code));
+  int get hashCode => Object.hash(runtimeType, msg, version, code);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_StatusCopyWith<_$_Status> get copyWith =>
       __$$_StatusCopyWithImpl<_$_Status>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_StatusToJson(this);
+    return _$$_StatusToJson(
+      this,
+    );
   }
 }
 

@@ -70,38 +70,35 @@ class MusicService {
       '(${player?.nowPlaying?.track.info?.uri})',
     );
 
-    if (player != null && player.queue.isNotEmpty) {
-      final track = player.queue[0];
+    if (player != null && player.nowPlaying != null) {
+      final track = player.nowPlaying;
+      if (track?.track.info?.uri.contains('openstream') ?? true) {
+        Logger('MusicService')
+            .info('track contains openstream ${track?.track.info?.uri} ');
+        return;
+      }
+
       final embed = EmbedBuilder()
         ..color = getRandomColor()
         ..title = 'Track started'
         ..description =
-            'Track [${track.track.info?.title}](${track.track.info?.uri}) '
-                'started playing.\n\nRequested by <@${track.requester!}>'
+            'Track [${track?.track.info?.title}](${track?.track.info?.uri}) '
+                'started playing.\n\nRequested by <@${track?.requester!}>'
         ..thumbnailUrl =
-            'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
+            'https://img.youtube.com/vi/${track?.track.info?.identifier}/hqdefault.jpg';
 
       await _client.httpEndpoints
-          .sendMessage(track.channelId!, MessageBuilder.embed(embed));
+          .sendMessage(track!.channelId!, MessageBuilder.embed(embed));
     }
   }
 
   Future<void> _trackEnded(ITrackEndEvent event) async {
-    final player = event.node.players[event.guildId];
     await Future<void>.delayed(const Duration(minutes: 5));
 
     // disconnect the bot if the queue is empty
+    final player = event.node.players[event.guildId];
     if (player != null && player.queue.isEmpty) {
       event.node.destroy(event.guildId);
-
-      final track = player.queue[0];
-      final embed = EmbedBuilder()
-        ..color = getRandomColor()
-        ..title =
-            'Bot inactive for the last 5 minutes. Leaving the voice channel';
-
-      await _client.httpEndpoints
-          .sendMessage(track.channelId!, MessageBuilder.embed(embed));
     }
   }
 

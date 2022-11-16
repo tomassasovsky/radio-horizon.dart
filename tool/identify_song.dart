@@ -8,7 +8,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:radio_garden/radio_garden.dart';
-import 'package:radio_garden/src/models/song_recognition.dart';
+import 'package:radio_garden/src/models/song_recognition/song_recognition.dart';
 
 String sign(String signString, String accessSecret) {
   return base64Encode(

@@ -168,7 +168,7 @@ ChatGroup music = ChatGroup(
             .resume(context.guild!.id);
         await context.respond(MessageBuilder.content('Player resumed'));
       }),
-    )
+    ),
   ],
 );
 

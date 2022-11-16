@@ -13,6 +13,7 @@ import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_garden/radio_garden.dart';
 import 'package:radio_garden/src/checks.dart';
 import 'package:radio_garden/src/models/radio_garden_response.dart';
+import 'package:radio_garden/src/services/song_recognition.dart';
 import 'package:radio_garden/src/util.dart';
 
 ChatGroup radio = ChatGroup(
@@ -63,6 +64,8 @@ ChatGroup radio = ChatGroup(
             channelId: context.channel.id,
           ).startPlaying();
 
+        SongRecognitionService.instance.currentRadio = radio;
+
         final embed = EmbedBuilder()
           ..color = getRandomColor()
           ..title = 'Started playing'
@@ -70,6 +73,27 @@ ChatGroup radio = ChatGroup(
               'started playing.\n\nRequested by ${context.member?.mention}';
 
         await context.respond(MessageBuilder.embed(embed));
+      }),
+    ),
+    ChatCommand(
+      'recognise',
+      'Recognise the current song playing',
+      id('music-recognise', (
+        IChatContext context,
+      ) async {
+        try {
+          final radioId = SongRecognitionService.instance.currentRadio.radioId;
+
+          final result =
+              await SongRecognitionService.instance.identify(radioId);
+          await context.respond(MessageBuilder.content(result));
+        } catch (_) {
+          await context.respond(
+            MessageBuilder.content(
+              "Couldn't identify the current song playing :(",
+            ),
+          );
+        }
       }),
     ),
   ],
@@ -105,6 +129,7 @@ Future<RadioGardenSearchResponse?> radioByName(String name) async {
   );
 
   final searchResponse = radioGardenSearchResponseFromJson(response.body);
+
   Logger('Radio#radioByName').info(
     'Found ${searchResponse.hits?.hits?.length ?? 0} radio stations for $name',
   );

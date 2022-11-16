@@ -7,6 +7,7 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_garden/radio_garden.dart';
+import 'package:radio_garden/src/services/song_recognition.dart';
 
 Future<void> main() async {
   dotEnvFlavour = DotEnvFlavour.development;
@@ -35,6 +36,7 @@ Future<void> main() async {
   // Initialise our services
   PrometheusService.init(client, commands);
   MusicService.init(client);
+  SongRecognitionService.init(client, MusicService.instance);
 
   // Connect
   await client.connect();

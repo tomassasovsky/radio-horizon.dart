@@ -22,20 +22,26 @@ ChatCommand info = ChatCommand(
   'info',
   'Get generic information about the bot',
   id('info', (IChatContext context) async {
+    final client = context.client as INyxxWebsocket;
     final color = getRandomColor();
+
+    final button = LinkButtonBuilder(
+      'Add Radio Garden to your server',
+      client.app.getInviteUrl(),
+    );
 
     final embed = EmbedBuilder()
       ..color = color
       ..addAuthor((author) {
         author
-          ..name = (context.client as INyxxWebsocket).self.tag
-          ..iconUrl = (context.client as INyxxWebsocket).self.avatarURL()
+          ..name = client.self.tag
+          ..iconUrl = client.self.avatarURL()
           ..url = 'https://github.com/tomassasovsky/radio-garden.dart';
       })
       ..addFooter((footer) {
         footer.text = 'Radio Garden'
             ' | Shard ${(context.guild?.shard.id ?? 0) + 1} of '
-            '${(context.client as INyxxWebsocket).shards}'
+            '${client.shards}'
             ' | Dart SDK version ${Platform.version.split('(').first}';
       })
       ..addField(
@@ -62,7 +68,7 @@ ChatCommand info = ChatCommand(
       )
       ..addField(
         name: 'Shard count',
-        content: (context.client as INyxxWebsocket).shards,
+        content: client.shards,
         inline: true,
       )
       ..addField(
@@ -78,20 +84,16 @@ ChatCommand info = ChatCommand(
         content: getCurrentMemoryString(),
         inline: true,
       )
-      ..addField(name: 'Uptime', content: formatFull(context.client.startTime));
+      ..addField(
+        name: 'Uptime',
+        content: formatFull(context.client.startTime),
+        inline: true,
+      );
 
-    await context.respond(
-      ComponentMessageBuilder()
-        ..embeds = [embed]
-        ..addComponentRow(
-          ComponentRowBuilder()
-            ..addComponent(
-              LinkButtonBuilder(
-                'Add Radio Garden to your server',
-                (context.client as INyxxWebsocket).app.getInviteUrl(),
-              ),
-            ),
-        ),
-    );
+    final messageBuilder = ComponentMessageBuilder()
+      ..embeds = [embed]
+      ..addComponentRow(ComponentRowBuilder()..addComponent(button));
+
+    await context.respond(messageBuilder);
   }),
 );

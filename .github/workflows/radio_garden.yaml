@@ -21,9 +21,10 @@ jobs:
     uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/semantic_pull_request.yml@v1
 
   build:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/dart_package.yml@v1
+    uses: ./.github/workflows/dart_package.yaml
     with:
       min_coverage: 0
+      analyze_directories: lib
 
   verify-version:
     runs-on: ubuntu-latest
@@ -39,6 +40,3 @@ jobs:
       - name: 📦 Install Dependencies
         run: |
           dart pub get
-
-      - name: 🔎 Verify version
-        run: dart run test --run-skipped -t version-verify

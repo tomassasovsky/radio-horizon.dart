@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_garden/radio_garden.dart';
@@ -14,6 +15,10 @@ Future<void> main() async {
 
   // Create nyxx client and nyxx_commands plugin
   final client = NyxxFactory.createNyxxWebsocket(token, intents);
+
+  /// Connects to the MongoDB database
+  final db = Db('mongodb://localhost:27017/mongo_dart-blog');
+  await db.open();
 
   final commands = CommandsPlugin(
     prefix: mentionOr((_) => prefix),
@@ -35,6 +40,7 @@ Future<void> main() async {
   // Initialise our services
   PrometheusService.init(client, commands);
   MusicService.init(client);
+  DB.init(client);
 
   // Connect
   await client.connect();

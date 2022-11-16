@@ -22,6 +22,8 @@ class MusicService {
         final ssl = useSSL;
         final shards = _client.shardManager.totalNumShards;
 
+        await usage?.sendEvent('MusicService:constructor', 'start');
+
         Logger('MusicService').info(
           'Connecting to Lavalink server at $host:$port (SSL: $ssl, '
           'Shards: $shards)',
@@ -40,6 +42,25 @@ class MusicService {
           ),
         );
 
+        if (cluster.connectedNodes.isEmpty) {
+          Logger('MusicService').severe(
+            'Failed to connect to Lavalink server at $host:$port (SSL: $ssl, '
+            'Shards: $shards)',
+          );
+
+          await usage?.sendEvent(
+            'MusicService:constructor',
+            'lavalink-connection-failure',
+          );
+
+          return;
+        }
+
+        await usage?.sendEvent(
+          'MusicService:constructor',
+          'lavalink-connection-successful',
+        );
+
         cluster.eventDispatcher.onTrackStart.listen(_trackStarted);
         cluster.eventDispatcher.onTrackStuck.listen(_trackStuck);
         cluster.eventDispatcher.onTrackEnd.listen(_trackEnded);
@@ -52,6 +73,7 @@ class MusicService {
       (throw Exception(
         'Music service must be initialised with MusicService.init',
       ));
+
   static MusicService? _instance;
 
   final INyxxWebsocket _client;
@@ -65,18 +87,35 @@ class MusicService {
 
   Future<void> _trackStarted(ITrackStartEvent event) async {
     final player = event.node.players[event.guildId];
+
+    if (player == null) {
+      Logger('MusicService').warning(
+        'Received track start event for guild ${event.guildId} but no player '
+        'was found',
+      );
+
+      await usage?.sendEvent(
+        'MusicService:_trackStarted',
+        'no-player-found',
+        label: event.guildId.toString(),
+      );
+
+      return;
+    }
+
     Logger('MusicService').info(
-      'Track started: ${player?.nowPlaying?.track.info?.title} '
-      '(${player?.nowPlaying?.track.info?.uri})',
+      'Track started: ${player.nowPlaying?.track.info?.title} '
+      '(${player.nowPlaying?.track.info?.uri})',
     );
 
-    if (player != null && player.nowPlaying != null) {
+    if (player.nowPlaying != null) {
       final track = player.nowPlaying;
-      if (track?.track.info?.uri.contains('openstream') ?? true) {
-        Logger('MusicService')
-            .info('track contains openstream ${track?.track.info?.uri} ');
-        return;
-      }
+      await usage?.sendEvent(
+        'MusicService:_trackStarted',
+        'track-started',
+        label: track?.track.info?.title,
+        parameters: queuedTrackToAnalyticsParameters(track!),
+      );
 
       final embed = EmbedBuilder()
         ..color = getRandomColor()
@@ -87,8 +126,10 @@ class MusicService {
         ..thumbnailUrl =
             'https://img.youtube.com/vi/${track?.track.info?.identifier}/hqdefault.jpg';
 
-      await _client.httpEndpoints
-          .sendMessage(track!.channelId!, MessageBuilder.embed(embed));
+      await _client.httpEndpoints.sendMessage(
+        track!.channelId!,
+        MessageBuilder.embed(embed),
+      );
     }
   }
 
@@ -105,8 +146,42 @@ class MusicService {
   Future<void> _trackStuck(ITrackStuckEvent event) async {
     final player = event.node.players[event.guildId];
 
-    if (player != null && player.queue.isNotEmpty) {
+    if (player == null) {
+      Logger('MusicService').warning(
+        'Received track stuck event for guild ${event.guildId} but no player '
+        'was found',
+      );
+
+      await usage?.sendEvent(
+        'MusicService:_trackStuck',
+        'no-player-found',
+        label: event.guildId.toString(),
+      );
+
+      return;
+    }
+
+    Logger('MusicService').warning(
+      'Track stuck: ${player.nowPlaying?.track.info?.title} '
+      '(${player.nowPlaying?.track.info?.uri})',
+    );
+
+    await usage?.sendEvent(
+      'MusicService:_trackStuck',
+      'reason-unknown',
+      label: event.guildId.toString(),
+    );
+
+    if (player.queue.isNotEmpty) {
       final track = player.queue[0];
+
+      await usage?.sendEvent(
+        'MusicService:_trackStuck',
+        'track-stuck',
+        label: track.track.info?.title,
+        parameters: queuedTrackToAnalyticsParameters(track),
+      );
+
       final embed = EmbedBuilder()
         ..color = getRandomColor()
         ..title = 'Track stuck'
@@ -126,6 +201,14 @@ class MusicService {
 
     if (player != null && player.queue.isNotEmpty) {
       final track = player.queue[0];
+
+      await usage?.sendEvent(
+        'MusicService:_trackException',
+        'track-exception',
+        label: track.track.info?.title,
+        parameters: queuedTrackToAnalyticsParameters(track),
+      );
+
       final embed = EmbedBuilder()
         ..color = getRandomColor()
         ..title = 'Track exception'

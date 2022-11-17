@@ -7,7 +7,6 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_garden/radio_garden.dart';
-import 'package:radio_garden/src/services/song_recognition.dart';
 import 'package:usage/usage.dart';
 
 Future<void> main() async {

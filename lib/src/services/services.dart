@@ -6,3 +6,4 @@
 
 export 'music.dart';
 export 'prometheus.dart';
+export 'song_recognition.dart';

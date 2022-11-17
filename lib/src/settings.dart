@@ -38,9 +38,12 @@ final List<Snowflake> adminIds =
     getEnv('RG_ADMIN_IDS').split(RegExp(r'\s+')).map(Snowflake.new).toList();
 
 /// The default response for the github command.
-final String defaultGithubResponse = getEnv('RG_DEFAULT_GITHUB_RESPONSE', '''
+final String defaultGithubResponse = getEnv(
+  'RG_DEFAULT_GITHUB_RESPONSE',
+  '''
 Radio Garden Bot is an open source project hosted on GitHub.
-''');
+''',
+);
 
 /// The GitHub account to use when no other account is specified.
 final String githubAccount = getEnv('RG_GITHUB_ACCOUNT', 'tomassasovsky');

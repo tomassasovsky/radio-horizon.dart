@@ -47,6 +47,7 @@ class RadioGardenSearchResponse {
 
   String get radioId {
     final uriSplit = uri?.split('/');
+    // uri ends as **/radioId/song.mp3
     return uriSplit?[uriSplit.length - 2] ?? '';
   }
 

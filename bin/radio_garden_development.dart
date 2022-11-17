@@ -36,7 +36,7 @@ Future<void> main() async {
   // Initialise our services
   PrometheusService.init(client, commands);
   MusicService.init(client);
-  SongRecognitionService.init(client, MusicService.instance);
+  SongRecognitionService.init();
 
   // Connect
   await client.connect();

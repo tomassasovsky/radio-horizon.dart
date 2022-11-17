@@ -82,10 +82,11 @@ ChatGroup radio = ChatGroup(
         IChatContext context,
       ) async {
         try {
-          final radioId = SongRecognitionService.instance.currentRadio.radioId;
+          final recognitionService = SongRecognitionService.instance;
 
-          final result =
-              await SongRecognitionService.instance.identify(radioId);
+          final radioId = recognitionService.currentRadio.radioId;
+
+          final result = await recognitionService.identify(radioId);
           await context.respond(MessageBuilder.content(result));
         } catch (_) {
           await context.respond(

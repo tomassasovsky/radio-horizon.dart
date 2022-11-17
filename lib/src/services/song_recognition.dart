@@ -12,8 +12,6 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:radio_garden/radio_garden.dart';
-import 'package:radio_garden/src/models/radio_garden_response.dart';
-import 'package:radio_garden/src/models/song_recognition/index.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -81,8 +79,8 @@ class SongRecognitionService {
         final bytes = await outputFile.length();
 
         if (bytes > 0) {
-          // we can calculate the duration by using the bitrate and the file size,
-          // the formula is found here:
+          // we can calculate the duration by using the bitrate and
+          //the file size, the formula is found here:
           // http://www.audiomountain.com/tech/audio-file-size.html
           final bytePerSecond = bitRate / 8 * 1000;
           final expectedBytes = bytePerSecond * durationInSeconds;

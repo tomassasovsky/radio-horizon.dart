@@ -42,6 +42,14 @@ class MusicService {
           ),
         );
 
+        for (var i = 0; i < 10; i++) {
+          if (cluster.connectedNodes.isNotEmpty) {
+            break;
+          }
+
+          await Future<void>.delayed(const Duration(seconds: 5));
+        }
+
         if (cluster.connectedNodes.isEmpty) {
           Logger('MusicService').severe(
             'Failed to connect to Lavalink server at $host:$port (SSL: $ssl, '

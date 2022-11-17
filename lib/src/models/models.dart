@@ -5,4 +5,4 @@
 // https://opensource.org/licenses/MIT.
 
 export 'radio_garden_response.dart';
-export 'song_recognition.dart';
+export 'song_recognition/index.dart';

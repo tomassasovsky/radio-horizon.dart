@@ -7,6 +7,7 @@
 import 'dart:io';
 import 'package:nyxx/nyxx.dart';
 import 'package:radio_garden/radio_garden.dart';
+import 'package:usage/usage_io.dart';
 
 /// Get a [String] from an environment variable,
 /// throwing an exception if it is not set.
@@ -18,6 +19,14 @@ String getEnv(String key, [String? def]) =>
     Platform.environment[key] ??
     def ??
     (throw Exception('Missing `$key` environment variable'));
+
+/// Get a [String] from an environment variable,
+/// returning `null` if it is not set.
+///
+/// If [def] is provided and the environment variable [key] is not set,
+/// [def] will be returned instead of `null`.
+String? maybeGetEnv(String key, [String? def]) =>
+    dotEnvFlavour.dotenv[key] ?? Platform.environment[key] ?? def;
 
 /// Get a [bool] from an environment variable,
 /// throwing an exception if it is not set.
@@ -88,6 +97,23 @@ String arcCloudAccessKey = getEnv('ARC_CLOUD_ACCESS_KEY');
 ///
 /// Find yours in https://console.acrcloud.com/
 String arcCloudAccessSecret = getEnv('ARC_CLOUD_ACCESS_SECRET');
+
+/// Your Google Analytics Tracking ID.
+///
+/// Find yours in https://analytics.google.com/analytics/web/, by creating
+/// a Universal Analytics property.
+String? googleAnalyticsTrackingId = maybeGetEnv('ANALYTICS_TRACKING_ID');
+
+/// The Google Analytics client.
+///
+/// This is used to send usage statistics to Google Analytics.
+final usage = googleAnalyticsTrackingId == null
+    ? null
+    : AnalyticsIO(
+        googleAnalyticsTrackingId!,
+        'radio-garden.dart',
+        packageVersion,
+      );
 
 /// The basic intents needed to run Radio Garden without privileged intents.
 const int intents = GatewayIntents.directMessages |

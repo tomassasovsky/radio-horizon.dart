@@ -100,10 +100,10 @@ ChatGroup radio = ChatGroup(
 
           final result = await recognitionService.identify(radioId);
           await context.respond(MessageBuilder.content(result));
-        } catch (_) {
+        } catch (e) {
           await context.respond(
             MessageBuilder.content(
-              "Couldn't identify the current song playing :(",
+              handleRecognitionExceptions(e),
             ),
           );
         }
@@ -147,4 +147,15 @@ Future<RadioGardenSearchResponse?> radioByName(String name) async {
     'Found ${searchResponse.hits?.hits?.length ?? 0} radio stations for $name',
   );
   return searchResponse;
+}
+
+String handleRecognitionExceptions(Object e) {
+  switch (e.runtimeType) {
+    case RadioNotPlayingException:
+      return "Couldn't find a radio playing!";
+    case RadioCantCommunicateWithServer:
+      return 'There was communicating with the server, please try again';
+    default:
+      return "Couldn't identify the current song playing :(";
+  }
 }

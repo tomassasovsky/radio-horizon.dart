@@ -4,4 +4,5 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-export 'docs.dart';
+export 'radio_garden_response.dart';
+export 'song_recognition.dart';

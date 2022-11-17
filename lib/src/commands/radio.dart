@@ -12,7 +12,6 @@ import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_garden/radio_garden.dart';
 import 'package:radio_garden/src/checks.dart';
-import 'package:radio_garden/src/models/radio_garden_response.dart';
 import 'package:radio_garden/src/util.dart';
 
 ChatGroup radio = ChatGroup(
@@ -33,6 +32,19 @@ ChatGroup radio = ChatGroup(
         @Autocomplete(_autocompleteCallback)
             String query,
       ) async {
+        await usage?.sendEvent(
+          'ChatCommand:radio-play',
+          'call',
+          parameters: {
+            'query': query,
+            'guild': context.guild?.id.toString() ?? 'null',
+            'guild_name': context.guild?.name ?? 'null',
+            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+            'channel': context.channel.id.toString(),
+            'user': context.member?.id.toString() ?? 'null',
+          },
+        );
+
         await connectIfNeeded(context, replace: true);
 
         final node = MusicService.instance.cluster

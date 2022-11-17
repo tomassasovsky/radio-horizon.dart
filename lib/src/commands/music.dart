@@ -30,6 +30,19 @@ ChatGroup music = ChatGroup(
         @Autocomplete(_autocompleteCallback)
             String query,
       ) async {
+        await usage?.sendEvent(
+          'ChatCommand:music-play',
+          'call',
+          parameters: {
+            'query': query,
+            'guild': context.guild?.id.toString() ?? 'null',
+            'guild_name': context.guild?.name ?? 'null',
+            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+            'channel': context.channel.id.toString(),
+            'user': context.member?.id.toString() ?? 'null',
+          },
+        );
+
         final node = MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id);
         await connectIfNeeded(context);
@@ -80,6 +93,18 @@ ChatGroup music = ChatGroup(
       'Skips the currently playing track',
       checks: [connectedToAVoiceChannelCheck],
       id('music-skip', (IChatContext context) async {
+        await usage?.sendEvent(
+          'ChatCommand:music-skip',
+          'call',
+          parameters: {
+            'guild': context.guild?.id.toString() ?? 'null',
+            'guild_name': context.guild?.name ?? 'null',
+            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+            'channel': context.channel.id.toString(),
+            'user': context.member?.id.toString() ?? 'null',
+          },
+        );
+
         final node = MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id);
         final player = node.players[context.guild!.id]!;
@@ -98,6 +123,18 @@ ChatGroup music = ChatGroup(
       'Stops the current player and clears its track queue',
       checks: [connectedToAVoiceChannelCheck],
       id('music-stop', (IChatContext context) async {
+        await usage?.sendEvent(
+          'ChatCommand:music-stop',
+          'call',
+          parameters: {
+            'guild': context.guild?.id.toString() ?? 'null',
+            'guild_name': context.guild?.name ?? 'null',
+            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+            'channel': context.channel.id.toString(),
+            'user': context.member?.id.toString() ?? 'null',
+          },
+        );
+
         MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id)
             .stop(context.guild!.id);
@@ -109,6 +146,18 @@ ChatGroup music = ChatGroup(
       'Leaves the current voice channel',
       checks: [connectedToAVoiceChannelCheck],
       id('music-leave', (IChatContext context) async {
+        await usage?.sendEvent(
+          'ChatCommand:music-leave',
+          'call',
+          parameters: {
+            'guild': context.guild?.id.toString() ?? 'null',
+            'guild_name': context.guild?.name ?? 'null',
+            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+            'channel': context.channel.id.toString(),
+            'user': context.member?.id.toString() ?? 'null',
+          },
+        );
+
         MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id)
             .destroy(context.guild!.id);
@@ -121,6 +170,18 @@ ChatGroup music = ChatGroup(
       'Joins the voice channel you are in',
       checks: [notConnectedToAVoiceChannelCheck],
       id('music-join', (IChatContext context) async {
+        await usage?.sendEvent(
+          'ChatCommand:music-join',
+          'call',
+          parameters: {
+            'guild': context.guild?.id.toString() ?? 'null',
+            'guild_name': context.guild?.name ?? 'null',
+            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+            'channel': context.channel.id.toString(),
+            'user': context.member?.id.toString() ?? 'null',
+          },
+        );
+
         MusicService.instance.cluster.getOrCreatePlayerNode(context.guild!.id);
         await connectIfNeeded(context);
         await context
@@ -139,12 +200,26 @@ ChatGroup music = ChatGroup(
         @UseConverter(IntConverter(min: 0, max: 1000))
             int volume,
       ) async {
+        await usage?.sendEvent(
+          'ChatCommand:music-volume',
+          'call',
+          parameters: {
+            'volume': '$volume',
+            'guild': context.guild?.id.toString() ?? 'null',
+            'guild_name': context.guild?.name ?? 'null',
+            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+            'channel': context.channel.id.toString(),
+            'user': context.member?.id.toString() ?? 'null',
+          },
+        );
+
         MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id)
             .volume(
               context.guild!.id,
               volume,
             );
+
         await context
             .respond(MessageBuilder.content('Volume changed to $volume'));
       }),
@@ -153,6 +228,18 @@ ChatGroup music = ChatGroup(
       'pause',
       'Pauses the player',
       id('music-pause', (IChatContext context) async {
+        await usage?.sendEvent(
+          'ChatCommand:music-pause',
+          'call',
+          parameters: {
+            'guild': context.guild?.id.toString() ?? 'null',
+            'guild_name': context.guild?.name ?? 'null',
+            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+            'channel': context.channel.id.toString(),
+            'user': context.member?.id.toString() ?? 'null',
+          },
+        );
+
         MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id)
             .pause(context.guild!.id);
@@ -163,6 +250,18 @@ ChatGroup music = ChatGroup(
       'resume',
       'Resumes the currently playing track',
       id('music-resume', (IChatContext context) async {
+        await usage?.sendEvent(
+          'ChatCommand:music-resume',
+          'call',
+          parameters: {
+            'guild': context.guild?.id.toString() ?? 'null',
+            'guild_name': context.guild?.name ?? 'null',
+            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+            'channel': context.channel.id.toString(),
+            'user': context.member?.id.toString() ?? 'null',
+          },
+        );
+
         MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id)
             .resume(context.guild!.id);
@@ -176,6 +275,20 @@ FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;
+
+  await usage?.sendEvent(
+    'ChatCommand:music-play',
+    'autocompletion',
+    parameters: {
+      'query': query,
+      'guild': context.guild?.id.toString() ?? 'null',
+      'guild_name': context.guild?.name ?? 'null',
+      'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+      'channel': context.channel.id.toString(),
+      'user': context.member?.id.toString() ?? 'null',
+    },
+  );
+
   final node =
       MusicService.instance.cluster.getOrCreatePlayerNode(context.guild!.id);
   final response =

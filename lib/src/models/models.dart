@@ -4,5 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+// Song Recognition models:
+export './song_recognition/guild_radio.dart';
+export './song_recognition/song_recognition.dart';
+export './song_recognition/song_recognition_exceptions.dart';
+export './song_recognition/song_recognition_options.dart';
+
 export 'radio_garden_response.dart';
-export 'song_recognition/index.dart';

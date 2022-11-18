@@ -14,3 +14,8 @@ class RadioCantCommunicateWithServer extends SongRecognitionException {
 
   final Exception? error;
 }
+
+/// Throws when there's an issue with the http.Client
+class RadioCantIdentifySongException extends SongRecognitionException {
+  const RadioCantIdentifySongException();
+}

@@ -95,7 +95,7 @@ ChatGroup radio = ChatGroup(
       ) async {
         try {
           final recognitionService = SongRecognitionService.instance;
-          final guildId = context.guild?.id.toString() ?? '';
+          final guildId = context.guild!.id.toString();
 
           final guildRadio = recognitionService.currentRadio(guildId);
 

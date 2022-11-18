@@ -12,7 +12,6 @@ import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_garden/radio_garden.dart';
 import 'package:radio_garden/src/checks.dart';
-import 'package:radio_garden/src/services/song_recognition.dart';
 import 'package:radio_garden/src/util.dart';
 
 ChatGroup radio = ChatGroup(
@@ -76,7 +75,8 @@ ChatGroup radio = ChatGroup(
             channelId: context.channel.id,
           ).startPlaying();
 
-        SongRecognitionService.instance.currentRadio = radio;
+        SongRecognitionService.instance
+            .setCurrentRadio(context.guild!.id.toString(), radio);
 
         final embed = EmbedBuilder()
           ..color = getRandomColor()
@@ -95,10 +95,13 @@ ChatGroup radio = ChatGroup(
       ) async {
         try {
           final recognitionService = SongRecognitionService.instance;
+          final guildId = context.guild?.id.toString() ?? '';
 
-          final radioId = recognitionService.currentRadio.radioId;
+          final guildRadio = recognitionService.currentRadio(guildId);
 
-          final result = await recognitionService.identify(radioId);
+          final result =
+              await recognitionService.identify(guildRadio.radio.radioId);
+
           await context.respond(MessageBuilder.content(result));
         } catch (e) {
           await context.respond(
@@ -154,7 +157,8 @@ String handleRecognitionExceptions(Object e) {
     case RadioNotPlayingException:
       return "Couldn't find a radio playing!";
     case RadioCantCommunicateWithServer:
-      return 'There was communicating with the server, please try again';
+      return 'There was communicating with the server, please try again.';
+    case RadioCantIdentifySongException:
     default:
       return "Couldn't identify the current song playing :(";
   }

@@ -12,18 +12,24 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:nyxx/nyxx.dart';
 import 'package:radio_garden/radio_garden.dart';
-
 import 'package:uuid/uuid.dart';
 
 class SongRecognitionService {
-  SongRecognitionService._() {
+  SongRecognitionService._(
+    this.client,
+  ) {
     _httpClient = http.Client();
   }
 
-  static void init() {
-    _instance = SongRecognitionService._();
+  static void init(INyxxWebsocket client) {
+    _instance = SongRecognitionService._(
+      client,
+    );
   }
+
+  final INyxxWebsocket client;
 
   static SongRecognitionService get instance =>
       _instance ??
@@ -47,12 +53,27 @@ class SongRecognitionService {
   // HttpClient used to get the sample
   http.Client? _httpClient;
 
-  RadioGardenSearchResponse? _currentRadio;
+  final List<GuildRadio> _guildRadiosList = [];
 
-  RadioGardenSearchResponse get currentRadio =>
-      _currentRadio ?? (throw const RadioNotPlayingException());
+  GuildRadio currentRadio(String guildId) {
+    if (guildId.isEmpty) {
+      throw const RadioNotPlayingException();
+    }
+    return _guildRadiosList.firstWhere(
+      (element) => element.guildId == guildId,
+      orElse: () => throw const RadioNotPlayingException(),
+    );
+  }
 
-  set currentRadio(RadioGardenSearchResponse radio) => _currentRadio = radio;
+  void setCurrentRadio(String guildId, RadioGardenSearchResponse radio) {
+    final newRadio = GuildRadio(guildId: guildId, radio: radio);
+    final radioIndex = _guildRadiosList
+        .indexWhere((element) => element.guildId == newRadio.guildId);
+
+    if (radioIndex < 0) {
+      _guildRadiosList.add(newRadio);
+    }
+  }
 
   /// Identifies the current song playing in the radio.
   ///
@@ -107,10 +128,14 @@ class SongRecognitionService {
       // Deletes the file after the recognition is done
       songFile.deleteSync();
 
-      return track == null
-          ? "Couldn't recognise the song :("
-          : 'Song found: ${'${track.title} - ${track.artists?.first.name}'}';
+      if (track == null) {
+        throw const RadioCantIdentifySongException();
+      }
+      return 'Song found: ${'${track.title} - ${track.artists?.first.name}'}';
     } catch (e) {
+      if (e is RadioCantIdentifySongException) {
+        rethrow;
+      }
       throw RadioCantCommunicateWithServer(Exception(e.toString()));
     }
   }
@@ -143,16 +168,16 @@ class SongRecognitionService {
     if (!outputFile.existsSync()) outputFile.createSync();
     final sink = outputFile.openWrite();
 
+    // we can calculate the duration by using the bitrate and
+    //the file size, the formula is found here:
+    // http://www.audiomountain.com/tech/audio-file-size.html
+    final bytePerSecond = bitRate / 8 * 1000;
+    final expectedBytes = bytePerSecond * durationInSeconds;
+
     streamSubscription = response.stream.listen((chunk) async {
       final bytes = await outputFile.length();
 
       if (bytes > 0) {
-        // we can calculate the duration by using the bitrate and
-        //the file size, the formula is found here:
-        // http://www.audiomountain.com/tech/audio-file-size.html
-        final bytePerSecond = bitRate / 8 * 1000;
-        final expectedBytes = bytePerSecond * durationInSeconds;
-
         if (expectedBytes < bytes) {
           await sink.flush();
           await sink.close();

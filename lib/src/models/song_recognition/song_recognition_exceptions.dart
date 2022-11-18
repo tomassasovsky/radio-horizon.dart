@@ -1,3 +1,9 @@
+// Copyright (c) 2022, Jorge Rincón Arias
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
 class SongRecognitionException implements Exception {
   const SongRecognitionException();
 }
@@ -15,7 +21,8 @@ class RadioCantCommunicateWithServer extends SongRecognitionException {
   final Exception? error;
 }
 
-/// Throws when there's an issue with the http.Client
+/// Throws when there's an issue  identifying the song, it is related to
+/// the http.Client
 class RadioCantIdentifySongException extends SongRecognitionException {
   const RadioCantIdentifySongException();
 }

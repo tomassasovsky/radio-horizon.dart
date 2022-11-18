@@ -1,4 +1,4 @@
-// Copyright (c) 2022, Tomás Sasovsky
+// Copyright (c) 2022, Jorge Rincón Arias
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at

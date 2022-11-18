@@ -19,9 +19,7 @@ import 'package:uuid/uuid.dart';
 class SongRecognitionService {
   SongRecognitionService._(
     this.client,
-  ) {
-    _httpClient = http.Client();
-  }
+  ) : _httpClient = http.Client();
 
   static void init(INyxxWebsocket client) {
     _instance = SongRecognitionService._(
@@ -51,7 +49,7 @@ class SongRecognitionService {
       ));
 
   // HttpClient used to get the sample
-  http.Client? _httpClient;
+  final http.Client? _httpClient;
 
   final List<GuildRadio> _guildRadiosList = [];
 
@@ -132,10 +130,9 @@ class SongRecognitionService {
         throw const RadioCantIdentifySongException();
       }
       return 'Song found: ${'${track.title} - ${track.artists?.first.name}'}';
+    } on RadioCantIdentifySongException {
+      rethrow;
     } catch (e) {
-      if (e is RadioCantIdentifySongException) {
-        rethrow;
-      }
       throw RadioCantCommunicateWithServer(Exception(e.toString()));
     }
   }
@@ -169,7 +166,7 @@ class SongRecognitionService {
     final sink = outputFile.openWrite();
 
     // we can calculate the duration by using the bitrate and
-    //the file size, the formula is found here:
+    // the file size, the formula is found here:
     // http://www.audiomountain.com/tech/audio-file-size.html
     final bytePerSecond = bitRate / 8 * 1000;
     final expectedBytes = bytePerSecond * durationInSeconds;

@@ -86,6 +86,9 @@ ChatGroup music = ChatGroup(
             ),
           );
         }
+
+        SongRecognitionService.instance
+            .deleteRadioFromList(context.guild!.id.toString());
       }),
     ),
     ChatCommand(

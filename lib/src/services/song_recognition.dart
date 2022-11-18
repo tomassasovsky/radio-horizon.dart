@@ -53,6 +53,10 @@ class SongRecognitionService {
 
   final List<GuildRadio> _guildRadiosList = [];
 
+  /// Gets the current radio playing by Guild.
+  ///
+  /// Throws [RadioNotPlayingException] if the Guild is not listening
+  /// to the radio
   GuildRadio currentRadio(String guildId) {
     if (guildId.isEmpty) {
       throw const RadioNotPlayingException();
@@ -63,6 +67,7 @@ class SongRecognitionService {
     );
   }
 
+  /// Adds or not the current radio that the guild is playing
   void setCurrentRadio(String guildId, RadioGardenSearchResponse radio) {
     final newRadio = GuildRadio(guildId: guildId, radio: radio);
     final radioIndex = _guildRadiosList
@@ -70,7 +75,15 @@ class SongRecognitionService {
 
     if (radioIndex < 0) {
       _guildRadiosList.add(newRadio);
+    } else {
+      _guildRadiosList[radioIndex] = newRadio;
     }
+  }
+
+  /// Deletes the radio from the [SongRecognitionService] radio. This is to let
+  /// the service know that the guild is no longer listening to the radio.
+  void deleteRadioFromList(String guildId) {
+    _guildRadiosList.removeWhere((e) => e.guildId == guildId);
   }
 
   /// Identifies the current song playing in the radio.
@@ -79,7 +92,11 @@ class SongRecognitionService {
   Future<String> identify(String radioId) async {
     final stopwatch = Stopwatch()..start();
 
-    final songFile = await generateSample(radioId: radioId);
+    final songFile = await generateSample(
+      radioId: radioId,
+      durationInSeconds: 5,
+    );
+
     final sample = songFile.readAsBytesSync()..buffer.asUint8List();
 
     final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
@@ -160,7 +177,9 @@ class SongRecognitionService {
 
     StreamSubscription<List<int>>? streamSubscription;
 
-    final bitRate = int.parse(response.headers['icy-br'] ?? '128');
+    final responseBitRate = response.headers['icy-br'] ?? '128';
+
+    final bitRate = num.parse(responseBitRate).toInt();
     final outputFile = File('${Directory.systemTemp.path}/${uuid.v4()}');
     if (!outputFile.existsSync()) outputFile.createSync();
     final sink = outputFile.openWrite();
@@ -168,7 +187,7 @@ class SongRecognitionService {
     // we can calculate the duration by using the bitrate and
     // the file size, the formula is found here:
     // http://www.audiomountain.com/tech/audio-file-size.html
-    final bytePerSecond = bitRate / 8 * 1000;
+    final bytePerSecond = bitRate / 8 * 1024;
     final expectedBytes = bytePerSecond * durationInSeconds;
 
     streamSubscription = response.stream.listen((chunk) async {

@@ -6,8 +6,6 @@
 
 // Song Recognition models:
 export './song_recognition/guild_radio.dart';
-export './song_recognition/song_recognition.dart';
 export './song_recognition/song_recognition_exceptions.dart';
-export './song_recognition/song_recognition_options.dart';
 
 export 'radio_garden_response.dart';

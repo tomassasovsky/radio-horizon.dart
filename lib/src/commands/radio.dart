@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT.
 
 import 'dart:async';
+import 'package:acrcloud_rest/acrcloud_rest.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
@@ -13,6 +14,7 @@ import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_garden/radio_garden.dart';
 import 'package:radio_garden/src/checks.dart';
 import 'package:radio_garden/src/util.dart';
+import 'package:retry/retry.dart';
 
 ChatGroup radio = ChatGroup(
   'radio',
@@ -90,23 +92,116 @@ ChatGroup radio = ChatGroup(
     ChatCommand(
       'recognise',
       'Recognise the current song playing',
-      id('music-recognise', (
+      id('radio-recognise', (
         IChatContext context,
       ) async {
         try {
           final recognitionService = SongRecognitionService.instance;
           final guildId = context.guild!.id.toString();
 
-          final guildRadio = recognitionService.currentRadio(guildId);
+          final stopwatch = Stopwatch()..start();
 
-          final result =
-              await recognitionService.identify(guildRadio.radio.radioId);
+          late Music result;
+          var recognitionSampleDuration = 10;
 
-          await context.respond(MessageBuilder.content(result));
-        } catch (e) {
+          await retry(
+            () async {
+              final guildRadio = recognitionService.currentRadio(guildId);
+              result = await recognitionService.identify(
+                guildRadio.radio.radioId,
+                recognitionSampleDuration,
+              );
+            },
+            maxDelay: const Duration(minutes: 2),
+            retryIf: (e) => true,
+            onRetry: (e) {
+              recognitionSampleDuration +=
+                  (recognitionSampleDuration * 0.25).toInt();
+
+              Logger('radio-recognise').warning(
+                'TimeoutException while recognising song, retrying',
+                e,
+              );
+            },
+          ).timeout(const Duration(minutes: 2));
+
+          stopwatch.stop();
+
+          final metadataResult = await ACRCloudRest().getMetadata(
+            token: metadataToken,
+            query: '${result.title!} ${result.artists?.first.name}',
+            // get metadata for all platforms
+            platforms: SongPlatforms.values,
+          );
+
+          final metadata = metadataResult.first;
+
+          final embed = EmbedBuilder()
+            ..color = getRandomColor()
+            ..title = result.title
+            ..description = 'Requested by <@${context.member!.id}>'
+            ..imageUrl = metadata.album?.cover;
+
+          final artists = metadata.artists;
+          if (artists != null && artists.isNotEmpty) {
+            embed.addField(
+              name: 'Artists',
+              content: artists.map((e) => e.name).join('\n'),
+            );
+          }
+
+          final album = metadata.album;
+          if (album != null) {
+            embed.addField(
+              name: 'Album',
+              content: album.name,
+            );
+          }
+
+          var addedLinks = 0;
+          final buttonRowBuilders = [ComponentRowBuilder()];
+
+          void addOpenInButton(SongMetadataSource? metadata) {
+            if (metadata == null) return;
+
+            final url = metadata.link;
+            final label = metadata.songPlatform.label;
+
+            // the buttons in a button row can't be more than 5
+            if (addedLinks % 5 == 0 && addedLinks != 0) {
+              buttonRowBuilders.add(ComponentRowBuilder());
+            }
+
+            if (url != null) {
+              final button = LinkButtonBuilder(label, url);
+              buttonRowBuilders.last.addComponent(button);
+              addedLinks++;
+            }
+          }
+
+          for (final element in metadata.externalMetadata?.all ??
+              <List<SongMetadataSource>>[]) {
+            addOpenInButton(element.maybeAt(0));
+          }
+
+          embed.addField(
+            name: 'Computation time',
+            content: '${stopwatch.elapsedMilliseconds}ms',
+          );
+
+          final messageBuilder = ComponentMessageBuilder()..embeds = [embed];
+          if (addedLinks > 0) {
+            buttonRowBuilders.forEach(messageBuilder.addComponentRow);
+          }
+
+          await context.respond(messageBuilder);
+        } catch (e, stacktrace) {
           await context.respond(
-            MessageBuilder.content(
-              handleRecognitionExceptions(e),
+            MessageBuilder.embed(
+              EmbedBuilder()
+                ..color = DiscordColor.red
+                ..title = 'An error has occurred'
+                ..description = handleRecognitionExceptions(e, stacktrace),
             ),
           );
         }
@@ -152,7 +247,10 @@ Future<RadioGardenSearchResponse?> radioByName(String name) async {
   return searchResponse;
 }
 
-String handleRecognitionExceptions(Object e) {
+String handleRecognitionExceptions(Object e, StackTrace stackTrace) {
+  Logger('Radio#handleRecognitionExceptions')
+      .severe('Exception: ', e, stackTrace);
+
   switch (e.runtimeType) {
     case RadioNotPlayingException:
       return "Couldn't find a radio playing!";

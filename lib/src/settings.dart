@@ -98,6 +98,9 @@ String arcCloudAccessKey = getEnv('ARC_CLOUD_ACCESS_KEY');
 /// Find yours in https://console.acrcloud.com/
 String arcCloudAccessSecret = getEnv('ARC_CLOUD_ACCESS_SECRET');
 
+/// The token to use getting metadata from the song recognition service.
+final String metadataToken = getEnv('ARC_CLOUD_METADATA_TOKEN');
+
 /// Your Google Analytics Tracking ID.
 ///
 /// Find yours in https://analytics.google.com/analytics/web/, by creating

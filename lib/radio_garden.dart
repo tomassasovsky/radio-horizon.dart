@@ -10,6 +10,7 @@ library radio_garden;
 export 'src/commands/commands.dart';
 export 'src/dotenv.dart';
 export 'src/error_handler.dart';
+export 'src/helpers/maybe_at.dart';
 export 'src/models/models.dart';
 export 'src/services/services.dart';
 export 'src/settings.dart';

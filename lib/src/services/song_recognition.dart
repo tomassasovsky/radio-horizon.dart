@@ -5,11 +5,9 @@
 // https://opensource.org/licenses/MIT.
 
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
-import 'package:crypto/crypto.dart';
+import 'package:acrcloud_rest/acrcloud_rest.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:nyxx/nyxx.dart';
@@ -88,65 +86,28 @@ class SongRecognitionService {
 
   /// Identifies the current song playing in the radio.
   ///
-  /// Receives a [radioId] to identify the radio.
-  Future<String> identify(String radioId) async {
-    final stopwatch = Stopwatch()..start();
-
+  /// Receives a [radioId] to identify the radio and a [durationInSeconds] to
+  /// grab that amount of time of the sample from the radio.
+  Future<Music> identify(String radioId, int? durationInSeconds) async {
     final songFile = await generateSample(
       radioId: radioId,
-      durationInSeconds: 5,
+      durationInSeconds: durationInSeconds ?? 10,
     );
 
-    final sample = songFile.readAsBytesSync()..buffer.asUint8List();
-
-    final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-
-    final stringToSign = buildStringToSign(
-      'POST',
-      _options.endpoint,
-      _options.accessKey,
-      _options.dataType,
-      _options.signatureVersion,
-      timestamp.toString(),
-    );
-    final signature = sign(stringToSign, _options.accessSecret);
-
-    final uri = Uri(
-      scheme: 'https',
-      host: arcCloudHost,
-      path: 'v1/identify',
-    );
-
-    final fields = {
-      'access_key': _options.accessKey,
-      'data_type': _options.dataType,
-      'signature_version': _options.signatureVersion,
-      'signature': signature,
-      'sample_bytes': sample.length.toString(),
-      'timestamp': timestamp.toString(),
-    };
-
-    final request = http.MultipartRequest('POST', uri);
-    request.fields.addAll(fields);
-    request.files.add(http.MultipartFile.fromBytes('sample', sample));
+    final sample = await songFile.readAsBytes();
 
     try {
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      final result = SongRecognitionResponse.fromJson(
-        jsonDecode(response.body) as Map,
+      final result = await ACRCloudRest().recogniseSong(
+        sample,
+        options: _options,
       );
 
-      log('Done in ${stopwatch.elapsedMilliseconds}ms');
       final track = result.metadata?.music?.first;
 
       // Deletes the file after the recognition is done
       songFile.deleteSync();
 
-      if (track == null) {
-        throw const RadioCantIdentifySongException();
-      }
-      return 'Song found: ${'${track.title} - ${track.artists?.first.name}'}';
+      return track ?? (throw const RadioCantIdentifySongException());
     } on RadioCantIdentifySongException {
       rethrow;
     } catch (e) {
@@ -210,25 +171,5 @@ class SongRecognitionService {
     });
 
     return completer.future;
-  }
-
-  String sign(String signString, String accessSecret) {
-    return base64Encode(
-      Hmac(sha1, utf8.encode(accessSecret))
-          .convert(utf8.encode(signString))
-          .bytes,
-    );
-  }
-
-  String buildStringToSign(
-    String method,
-    String uri,
-    String accessKey,
-    String dataType,
-    String signatureVersion,
-    String timestamp,
-  ) {
-    return [method, uri, accessKey, dataType, signatureVersion, timestamp]
-        .join('\n');
   }
 }

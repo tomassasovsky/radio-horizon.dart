@@ -140,7 +140,7 @@ class SongRecognitionService {
 
     final responseBitRate = response.headers['icy-br'] ?? '128';
 
-    final bitRate = num.parse(responseBitRate).toInt();
+    final bitRate = num.parse(responseBitRate.split(',').first).toInt();
     final outputFile = File('${Directory.systemTemp.path}/${uuid.v4()}');
     if (!outputFile.existsSync()) outputFile.createSync();
     final sink = outputFile.openWrite();
@@ -156,10 +156,11 @@ class SongRecognitionService {
 
       if (bytes > 0) {
         if (expectedBytes < bytes) {
+          unawaited(streamSubscription?.cancel());
+
           await sink.flush();
           await sink.close();
 
-          await streamSubscription?.cancel();
           if (!completer.isCompleted) {
             completer.complete(outputFile);
           }

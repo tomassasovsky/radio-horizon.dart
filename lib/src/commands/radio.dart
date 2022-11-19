@@ -104,38 +104,52 @@ ChatGroup radio = ChatGroup(
 
           late Music result;
           var recognitionSampleDuration = 10;
+          late List<SongMetadata> metadataResult;
+
+          Future<void> processCurrentSong() async {
+            await retry(
+              () async {
+                final guildRadio = recognitionService.currentRadio(guildId);
+                result = await recognitionService.identify(
+                  guildRadio.radio.radioId,
+                  recognitionSampleDuration,
+                );
+              },
+              maxDelay: const Duration(minutes: 2),
+              retryIf: (e) => true,
+              onRetry: (e) {
+                recognitionSampleDuration +=
+                    (recognitionSampleDuration * 0.25).toInt();
+
+                log(
+                  'Retrying recognition with a longer sample duration '
+                  '($recognitionSampleDuration seconds)',
+                  error: e,
+                );
+              },
+            ).timeout(const Duration(minutes: 2));
+          }
+
+          await processCurrentSong();
+
+          final query = '${result.title} ${result.artists?.first.name}';
 
           await retry(
             () async {
-              final guildRadio = recognitionService.currentRadio(guildId);
-              result = await recognitionService.identify(
-                guildRadio.radio.radioId,
-                recognitionSampleDuration,
+              metadataResult = await ACRCloudRest().getMetadata(
+                token: metadataToken,
+                query: query,
+                // get metadata for all platforms
+                platforms: SongPlatforms.values,
               );
             },
-            maxDelay: const Duration(minutes: 2),
-            retryIf: (e) => true,
-            onRetry: (e) {
-              recognitionSampleDuration +=
-                  (recognitionSampleDuration * 0.25).toInt();
-
-              log(
-                'Retrying recognition with a longer sample duration '
-                '($recognitionSampleDuration seconds)',
-                error: e,
-              );
+            retryIf: (exception) => exception is SongMetadataCameNull,
+            onRetry: (_) async {
+              await processCurrentSong();
             },
-          ).timeout(const Duration(minutes: 2));
-
-          stopwatch.stop();
-
-          final metadataResult = await ACRCloudRest().getMetadata(
-            token: metadataToken,
-            query: '${result.title!} ${result.artists?.first.name}',
-            // get metadata for all platforms
-            platforms: SongPlatforms.values,
           );
 
+          stopwatch.stop();
           final metadata = metadataResult.first;
 
           final embed = EmbedBuilder()

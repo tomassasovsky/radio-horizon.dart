@@ -11,8 +11,6 @@ class DB {
   }
 
   late Db db;
-  late List<Map<String, dynamic>> servers;
-  late List<int> serversId;
 
   Future<void> _initialize() async {
     final mongoConnection = getEnv('MONGO_CONNECTION');
@@ -20,16 +18,11 @@ class DB {
     /// Connects to the MongoDB database
     db = await Db.create(mongoConnection);
     await db.open();
-
-    servers = await serverCollection.find().toList();
-    serversId = servers.map((e) => e['guildId'] as int).toList();
   }
 
   Future<void> _addServer() async {
     _client.eventsWs.onGuildCreate.listen((event) {
-      if (!serversId.contains(event.guild.id.id)) {
-        serverCollection.insert({'guildId': event.guild.id.id});
-      }
+      serverCollection.insert({'guildId': event.guild.id.id});
     });
   }
 

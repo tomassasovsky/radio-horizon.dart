@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT.
 
 import 'dart:async';
+import 'dart:developer';
 import 'package:acrcloud_rest/acrcloud_rest.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
@@ -118,9 +119,10 @@ ChatGroup radio = ChatGroup(
               recognitionSampleDuration +=
                   (recognitionSampleDuration * 0.25).toInt();
 
-              Logger('radio-recognise').warning(
-                'TimeoutException while recognising song, retrying',
-                e,
+              log(
+                'Retrying recognition with a longer sample duration '
+                '($recognitionSampleDuration seconds)',
+                error: e,
               );
             },
           ).timeout(const Duration(minutes: 2));
@@ -159,7 +161,7 @@ ChatGroup radio = ChatGroup(
           }
 
           var addedLinks = 0;
-          final buttonRowBuilders = [ComponentRowBuilder()];
+          final buttonRowBuilders = <ComponentRowBuilder>[];
 
           void addOpenInButton(SongMetadataSource? metadata) {
             if (metadata == null) return;
@@ -167,16 +169,16 @@ ChatGroup radio = ChatGroup(
             final url = metadata.link;
             final label = metadata.songPlatform.label;
 
+            if (url == null) return;
+
             // the buttons in a button row can't be more than 5
-            if (addedLinks % 5 == 0 && addedLinks != 0) {
+            if (addedLinks % 5 == 0) {
               buttonRowBuilders.add(ComponentRowBuilder());
             }
 
-            if (url != null) {
-              final button = LinkButtonBuilder(label, url);
-              buttonRowBuilders.last.addComponent(button);
-              addedLinks++;
-            }
+            final button = LinkButtonBuilder(label, url);
+            buttonRowBuilders.last.addComponent(button);
+            addedLinks++;
           }
 
           for (final element in metadata.externalMetadata?.all ??
@@ -189,9 +191,15 @@ ChatGroup radio = ChatGroup(
             content: '${stopwatch.elapsedMilliseconds}ms',
           );
 
-          final messageBuilder = ComponentMessageBuilder()..embeds = [embed];
+          MessageBuilder messageBuilder;
+
           if (addedLinks > 0) {
-            buttonRowBuilders.forEach(messageBuilder.addComponentRow);
+            messageBuilder = ComponentMessageBuilder()..embeds = [embed];
+            buttonRowBuilders.forEach(
+              (messageBuilder as ComponentMessageBuilder).addComponentRow,
+            );
+          } else {
+            messageBuilder = MessageBuilder.embed(embed);
           }
 
           await context.respond(messageBuilder);
@@ -248,8 +256,7 @@ Future<RadioGardenSearchResponse?> radioByName(String name) async {
 }
 
 String handleRecognitionExceptions(Object e, StackTrace stackTrace) {
-  Logger('Radio#handleRecognitionExceptions')
-      .severe('Exception: ', e, stackTrace);
+  log('Exception: ', error: e, stackTrace: stackTrace);
 
   switch (e.runtimeType) {
     case RadioNotPlayingException:

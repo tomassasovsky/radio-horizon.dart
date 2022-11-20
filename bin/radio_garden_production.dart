@@ -11,7 +11,7 @@ import 'package:usage/usage.dart';
 
 Future<void> main() async {
   dotEnvFlavour = DotEnvFlavour.production;
-  await dotEnvFlavour.initialize();
+  dotEnvFlavour.initialize();
 
   usage?.analyticsOpt = AnalyticsOpt.optIn;
   usage?.enabled = true;

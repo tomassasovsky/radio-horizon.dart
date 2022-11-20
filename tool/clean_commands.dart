@@ -10,7 +10,7 @@ import 'package:radio_garden/radio_garden.dart';
 
 Future<void> main(List<String> args) async {
   dotEnvFlavour = DotEnvFlavour.development;
-  await dotEnvFlavour.initialize();
+  dotEnvFlavour.initialize();
 
   final bot = NyxxFactory.createNyxxWebsocket(
     token,

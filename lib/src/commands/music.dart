@@ -294,7 +294,9 @@ FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
   final response =
       await node.autoSearch(query).timeout(const Duration(milliseconds: 2500));
 
-  return response.tracks.map(
+  final tracks = response.tracks.where((element) => element.info != null);
+
+  return tracks.map(
     (e) => ArgChoiceBuilder(
       e.info!.title,
       e.info!.uri,

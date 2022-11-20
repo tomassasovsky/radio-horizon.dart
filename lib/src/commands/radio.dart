@@ -29,7 +29,7 @@ ChatGroup radio = ChatGroup(
       id('radio-play', (
         IChatContext context,
         @Description('The name of the Radio Station to play')
-        @Autocomplete(autocompleteRadioQuery)
+        @Autocomplete(autocompleteRadioQueryCallback)
             String query,
       ) async {
         await usage?.sendEvent(
@@ -87,7 +87,7 @@ ChatGroup radio = ChatGroup(
   ],
 );
 
-FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
+FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQueryCallback(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;

@@ -98,7 +98,7 @@ Future<SongRecognitionResponse> identify(
 
 Future<void> main(List<String> args) async {
   dotEnvFlavour = DotEnvFlavour.development;
-  await dotEnvFlavour.initialize();
+  dotEnvFlavour.initialize();
 
   final stopwatch = Stopwatch()..start();
   log('Recognising song...');

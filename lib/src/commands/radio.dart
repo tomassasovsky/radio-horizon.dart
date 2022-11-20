@@ -29,7 +29,7 @@ ChatGroup radio = ChatGroup(
       id('radio-play', (
         IChatContext context,
         @Description('The name of the Radio Station to play')
-        @Autocomplete(_autocompleteCallback)
+        @Autocomplete(autocompleteRadioQuery)
             String query,
       ) async {
         await usage?.sendEvent(
@@ -87,7 +87,7 @@ ChatGroup radio = ChatGroup(
   ],
 );
 
-FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
+FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;
@@ -100,10 +100,14 @@ FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
     return null;
   }
 
-  return hits.map(
+  final goodHits = hits.where(
+    (element) => element.source?.title != null && element.source?.url != null,
+  );
+
+  return goodHits.map(
     (e) => ArgChoiceBuilder(
-      e.source?.title ?? 'NO TITLE',
-      '${e.source?.title} (${e.source?.url.split('/').last})',
+      e.source!.title!,
+      '${e.source!.title!} (${e.source!.url.split('/').last})',
     ),
   );
 }

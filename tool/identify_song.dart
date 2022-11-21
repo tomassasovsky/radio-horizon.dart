@@ -5,95 +5,36 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:acrcloud_rest/acrcloud_rest.dart';
-import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:radio_garden/radio_garden.dart';
 
-String sign(String signString, String accessSecret) {
-  return base64Encode(
-    Hmac(sha1, utf8.encode(accessSecret))
-        .convert(utf8.encode(signString))
-        .bytes,
-  );
-}
-
-String buildStringToSign(
-  String method,
-  String uri,
-  String accessKey,
-  String dataType,
-  String signatureVersion,
-  String timestamp,
-) {
-  return [method, uri, accessKey, dataType, signatureVersion, timestamp]
-      .join('\n');
-}
-
-class SongRecognitionOptions {
-  SongRecognitionOptions({
-    required this.accessKey,
-    required this.accessSecret,
-    required this.host,
-    this.endpoint = '/v1/identify',
-    this.signatureVersion = '1',
-    this.dataType = 'audio',
-    this.secure = true,
-  }) : assert(
-          dataType == 'audio' || dataType == 'fingerprint',
-          'dataType must be audio or fingerprint',
-        );
-
-  final String host;
-  final String endpoint;
-  final String signatureVersion;
-  final String dataType;
-  final bool secure;
-  final String accessKey;
-  final String accessSecret;
-}
-
-Future<SongRecognitionResponse> identify(
-  Uint8List data,
-  SongRecognitionOptions options,
-) async {
-  final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-
-  final stringToSign = buildStringToSign(
-    'POST',
-    options.endpoint,
-    options.accessKey,
-    options.dataType,
-    options.signatureVersion,
-    timestamp.toString(),
-  );
-
-  final signature = sign(stringToSign, options.accessSecret);
+Future<ShazamSongRecognition> identify(Uint8List data) async {
   final sample = data.buffer.asUint8List();
-
-  final fields = {
-    'access_key': options.accessKey,
-    'data_type': options.dataType,
-    'signature_version': options.signatureVersion,
-    'signature': signature,
-    'sample_bytes': sample.length.toString(),
-    'timestamp': timestamp.toString(),
-  };
 
   final uri = Uri(
     scheme: 'https',
-    host: arcCloudHost,
-    path: 'v1/identify',
+    host: 'shazam-song-recognizer.p.rapidapi.com',
+    path: 'recognize',
   );
 
   final request = http.MultipartRequest('POST', uri);
-  request.fields.addAll(fields);
-  request.files.add(http.MultipartFile.fromBytes('sample', sample));
+
+  request.headers.addAll({
+    'X-RapidAPI-Key': 'YOUR_KEY',
+    'X-RapidAPI-Host': 'shazam-song-recognizer.p.rapidapi.com',
+  });
+
+  request.files.add(
+    http.MultipartFile.fromBytes(
+      'upload_file',
+      sample,
+    ),
+  );
 
   final streamedResponse = await request.send();
   final response = await http.Response.fromStream(streamedResponse);
-  return SongRecognitionResponse.fromJson(
-    jsonDecode(response.body) as Map,
+  return ShazamSongRecognition.fromJson(
+    (jsonDecode(response.body) as Map).cast(),
   );
 }
 
@@ -102,23 +43,17 @@ Future<void> main(List<String> args) async {
   await dotEnvFlavour.initialize();
 
   final stopwatch = Stopwatch()..start();
-  log('Recognising song...');
+  log('Recognizing song...');
 
   final fileContents = File('sample.mp3').readAsBytesSync();
-  final result = await identify(
-    fileContents,
-    SongRecognitionOptions(
-      accessKey: arcCloudAccessKey,
-      accessSecret: arcCloudAccessSecret,
-      host: arcCloudHost,
-    ),
-  );
+  final result = await identify(fileContents);
 
   log('Done in ${stopwatch.elapsedMilliseconds}ms');
-  final track = result.metadata?.music?.first;
+  final track = result.result;
   log(
     track == null
         ? 'No song found'
-        : 'Song found: ${'${track.title} - ${track.artists?.first.name}'}',
+        : 'Song found: ${'${track.title} - ${track.subtitle}'}',
   );
+  log(track!.share!.image!);
 }

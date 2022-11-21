@@ -25,9 +25,8 @@ Future<void> main(List<String> args) async {
 
   await bot.connect();
 
-  await interactions.interactionsEndpoints.bulkOverrideGuildCommands(
+  await interactions.interactionsEndpoints.bulkOverrideGlobalCommands(
     clientId!,
-    devGuildId!,
     [],
   ).toList();
 

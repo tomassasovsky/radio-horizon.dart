@@ -5,9 +5,9 @@
 // https://opensource.org/licenses/MIT.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:acrcloud_rest/acrcloud_rest.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:nyxx/nyxx.dart';
@@ -31,12 +31,6 @@ class SongRecognitionService {
       _instance ??
       (throw Exception('Song Recognition service must be initialised'));
   static SongRecognitionService? _instance;
-
-  static final SongRecognitionOptions _options = SongRecognitionOptions(
-    accessKey: arcCloudAccessKey,
-    accessSecret: arcCloudAccessSecret,
-    host: arcCloudHost,
-  );
 
   Uuid get uuid => const Uuid();
 
@@ -88,7 +82,7 @@ class SongRecognitionService {
   ///
   /// Receives a [radioId] to identify the radio and a [durationInSeconds] to
   /// grab that amount of time of the sample from the radio.
-  Future<Music> identify(String radioId, int? durationInSeconds) async {
+  Future<ShazamResult> identify(String radioId, int? durationInSeconds) async {
     final songFile = await generateSample(
       radioId: radioId,
       durationInSeconds: durationInSeconds ?? 10,
@@ -97,12 +91,33 @@ class SongRecognitionService {
     final sample = await songFile.readAsBytes();
 
     try {
-      final result = await ACRCloudRest().recogniseSong(
-        sample,
-        options: _options,
+      final uri = Uri(
+        scheme: 'https',
+        host: 'shazam-song-recognizer.p.rapidapi.com',
+        path: 'recognize',
       );
 
-      final track = result.metadata?.music?.first;
+      final request = http.MultipartRequest('POST', uri);
+
+      request.headers.addAll({
+        'X-RapidAPI-Key': rapidapiShazamSongRecognizerKey,
+        'X-RapidAPI-Host': 'shazam-song-recognizer.p.rapidapi.com',
+      });
+
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'upload_file',
+          sample,
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      final result = ShazamSongRecognition.fromJson(
+        (jsonDecode(response.body) as Map).cast(),
+      );
+
+      final track = result.result;
 
       // Deletes the file after the recognition is done
       songFile.deleteSync();
@@ -172,5 +187,33 @@ class SongRecognitionService {
     });
 
     return completer.future;
+  }
+
+  /// Gets a list of links to different streaming services where the song
+  /// is available.
+  Future<MusicLinksResponse> getMusicLinks(String songName) async {
+    final uri = Uri(
+      scheme: 'https',
+      host: 'musiclinkssapi.p.rapidapi.com',
+      path: 'apiSearch/track',
+      queryParameters: {
+        'query': songName,
+      },
+    );
+
+    final request = http.Request('GET', uri);
+
+    request.headers.addAll({
+      'X-RapidAPI-Key': rapidapiShazamSongRecognizerKey,
+      'X-RapidAPI-Host': 'musiclinkssapi.p.rapidapi.com',
+    });
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+    final result = MusicLinksResponse.fromJson(
+      (jsonDecode(response.body) as Map).cast(),
+    );
+
+    return result;
   }
 }

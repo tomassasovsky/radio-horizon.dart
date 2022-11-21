@@ -23,6 +23,7 @@ dependencies:
   nyxx_commands: ^4.3.0
   nyxx_interactions: ^4.4.0
   nyxx_lavalink: ^3.1.0
+  nyxx_pagination: ^2.3.0
   prometheus_client: ^1.0.0+1
   prometheus_client_shelf: ^1.0.0+1
   retry: ^3.1.0

@@ -6,12 +6,12 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'package:acrcloud_rest/acrcloud_rest.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
+import 'package:nyxx_pagination/nyxx_pagination.dart';
 import 'package:radio_garden/radio_garden.dart';
 import 'package:radio_garden/src/checks.dart';
 import 'package:radio_garden/src/util.dart';
@@ -91,9 +91,9 @@ ChatGroup radio = ChatGroup(
       }),
     ),
     ChatCommand(
-      'recognise',
-      'Recognise the current song playing',
-      id('radio-recognise', (
+      'recognize',
+      'Recognize the current song playing',
+      id('radio-recognize', (
         IChatContext context,
       ) async {
         try {
@@ -102,119 +102,63 @@ ChatGroup radio = ChatGroup(
 
           final stopwatch = Stopwatch()..start();
 
-          late Music result;
+          late ShazamResult result;
           var recognitionSampleDuration = 10;
-          late List<SongMetadata> metadataResult;
-
-          Future<void> processCurrentSong() async {
-            await retry(
-              () async {
-                final guildRadio = recognitionService.currentRadio(guildId);
-                result = await recognitionService.identify(
-                  guildRadio.radio.radioId,
-                  recognitionSampleDuration,
-                );
-              },
-              maxDelay: const Duration(minutes: 2),
-              retryIf: (e) => true,
-              onRetry: (e) {
-                recognitionSampleDuration +=
-                    (recognitionSampleDuration * 0.25).toInt();
-
-                log(
-                  'Retrying recognition with a longer sample duration '
-                  '($recognitionSampleDuration seconds)',
-                  error: e,
-                );
-              },
-            ).timeout(const Duration(minutes: 2));
-          }
-
-          await processCurrentSong();
-
-          final query = '${result.title} ${result.artists?.first.name}';
 
           await retry(
             () async {
-              metadataResult = await ACRCloudRest().getMetadata(
-                token: metadataToken,
-                query: query,
-                // get metadata for all platforms
-                platforms: SongPlatforms.values,
+              final guildRadio = recognitionService.currentRadio(guildId);
+              result = await recognitionService.identify(
+                guildRadio.radio.radioId,
+                recognitionSampleDuration,
               );
             },
-            retryIf: (exception) => exception is SongMetadataCameNull,
-            onRetry: (_) async {
-              await processCurrentSong();
+            maxDelay: const Duration(minutes: 2),
+            retryIf: (e) => true,
+            onRetry: (e) {
+              recognitionSampleDuration +=
+                  (recognitionSampleDuration * 0.25).toInt();
             },
-          );
+          ).timeout(const Duration(minutes: 2));
 
+          final links = await SongRecognitionService.instance
+              .getMusicLinks('${result.title} ${result.subtitle}')
+              .onError((error, stackTrace) => MusicLinksResponse.empty());
+
+          final color = getRandomColor();
           stopwatch.stop();
-          final metadata = metadataResult.first;
 
           final embed = EmbedBuilder()
-            ..color = getRandomColor()
+            ..color = color
             ..title = result.title
-            ..description = 'Requested by <@${context.member!.id}>'
-            ..imageUrl = metadata.album?.cover;
+            ..description = 'Requested by ${context.member?.mention}'
+            ..addField(
+              name: 'Artist',
+              content: result.subtitle,
+            )
+            ..imageUrl = result.share?.image;
 
-          final artists = metadata.artists;
-          if (artists != null && artists.isNotEmpty) {
+          final genre = result.genres?.primary;
+          if (genre != null) {
             embed.addField(
-              name: 'Artists',
-              content: artists.map((e) => e.name).join('\n'),
+              name: 'Genre',
+              content: genre,
             );
-          }
-
-          final album = metadata.album;
-          if (album != null) {
-            embed.addField(
-              name: 'Album',
-              content: album.name,
-            );
-          }
-
-          var addedLinks = 0;
-          final buttonRowBuilders = <ComponentRowBuilder>[];
-
-          void addOpenInButton(SongMetadataSource? metadata) {
-            if (metadata == null) return;
-
-            final url = metadata.link;
-            final label = metadata.songPlatform.label;
-
-            if (url == null) return;
-
-            // the buttons in a button row can't be more than 5
-            if (addedLinks % 5 == 0) {
-              buttonRowBuilders.add(ComponentRowBuilder());
-            }
-
-            final button = LinkButtonBuilder(label, url);
-            buttonRowBuilders.last.addComponent(button);
-            addedLinks++;
-          }
-
-          for (final element in metadata.externalMetadata?.all ??
-              <List<SongMetadataSource>>[]) {
-            addOpenInButton(element.maybeAt(0));
           }
 
           embed.addField(
-            name: 'Computation time',
+            name: 'Computational time',
             content: '${stopwatch.elapsedMilliseconds}ms',
           );
 
-          MessageBuilder messageBuilder;
+          final paginator = EmbedComponentPagination(
+            context.commands.interactions,
+            [embed, ...result.lyricsPages(color: color)],
+            user: context.user,
+          );
 
-          if (addedLinks > 0) {
-            messageBuilder = ComponentMessageBuilder()..embeds = [embed];
-            buttonRowBuilders.forEach(
-              (messageBuilder as ComponentMessageBuilder).addComponentRow,
-            );
-          } else {
-            messageBuilder = MessageBuilder.embed(embed);
-          }
+          final messageBuilder = paginator.initMessageBuilder();
+          links.componentRows.forEach(messageBuilder.addComponentRow);
 
           await context.respond(messageBuilder);
         } catch (e, stacktrace) {

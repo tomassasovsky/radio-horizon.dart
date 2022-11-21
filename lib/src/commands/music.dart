@@ -161,7 +161,11 @@ ChatGroup music = ChatGroup(
         MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id)
             .destroy(context.guild!.id);
-        context.guild!.shard.changeVoiceState(context.guild!.id, null);
+        context.guild!.shard.changeVoiceState(
+          context.guild!.id,
+          null,
+          selfDeafen: true,
+        );
         await context.respond(MessageBuilder.content('Channel left'));
       }),
     ),

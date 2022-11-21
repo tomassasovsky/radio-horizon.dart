@@ -33,7 +33,8 @@ class ShazamResult with _$ShazamResult {
   factory ShazamResult.fromJson(Map<String, dynamic> json) =>
       _$ShazamResultFromJson(json);
 
-  List<List<String>> paragraphedLyrics(int paragraphsPerPage) {
+  List<List<String>>? paragraphedLyrics(int paragraphsPerPage) {
+    if (lyrics == null || lyrics!.isEmpty) return null;
     final llyrics = lyrics ?? [];
     final paragraphs = llyrics.join('\n').split('\n\n');
 
@@ -49,14 +50,16 @@ class ShazamResult with _$ShazamResult {
     return lists;
   }
 
-  List<EmbedBuilder> lyricsPages({
+  List<EmbedBuilder>? lyricsPages({
     required DiscordColor color,
   }) {
     final lyricsPages = <EmbedBuilder>[];
     final llyrics = paragraphedLyrics(3);
 
+    if (llyrics == null) return null;
+
     // add 3 paragraphs per page
-    for (var i = 0; i < paragraphedLyrics(3).length; i++) {
+    for (var i = 0; i < llyrics.length; i++) {
       final embed = EmbedBuilder()
         ..color = color
         ..title = title

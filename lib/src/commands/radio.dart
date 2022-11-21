@@ -151,9 +151,16 @@ ChatGroup radio = ChatGroup(
             content: '${stopwatch.elapsedMilliseconds}ms',
           );
 
+          final lyricsPages = result.lyricsPages(color: color);
+          if (lyricsPages == null || lyricsPages.isEmpty) {
+            final builder = ComponentMessageBuilder()..embeds = [embed];
+            links.componentRows.forEach(builder.addComponentRow);
+            return await context.respond(builder);
+          }
+
           final paginator = EmbedComponentPagination(
             context.commands.interactions,
-            [embed, ...result.lyricsPages(color: color)],
+            [embed, ...lyricsPages],
             user: context.user,
           );
 

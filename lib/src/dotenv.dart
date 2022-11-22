@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT.
 
 import 'package:dotenv/dotenv.dart';
+import 'package:logging/logging.dart';
 
 enum DotEnvFlavour {
   development('.env/.env.development'),
@@ -13,9 +14,12 @@ enum DotEnvFlavour {
   const DotEnvFlavour(this.path);
 
   final String path;
-  Future<void> initialize() async {
-    _dotEnv = DotEnv(includePlatformEnvironment: true);
-    return dotenv.load([path]);
+  void initialize() {
+    try {
+      dotenv.load([path]);
+    } catch (_) {
+      Logger('DotEnv').warning('Failed to load $path');
+    }
   }
 
   DotEnv get dotenv => _dotEnv;

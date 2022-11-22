@@ -1,10 +1,7 @@
 version: '3.9'
 services:
   radio_garden:
-    build:
-      context: .
-      args:
-          dart_entryfile: radio_garden_production.dart
+    image: ghcr.io/tomassasovsky/radio-garden.dart:latest
     container_name: radio_garden
     expose:
       - 8080

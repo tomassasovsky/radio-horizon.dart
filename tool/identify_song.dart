@@ -40,7 +40,7 @@ Future<ShazamSongRecognition> identify(Uint8List data) async {
 
 Future<void> main(List<String> args) async {
   dotEnvFlavour = DotEnvFlavour.development;
-  await dotEnvFlavour.initialize();
+  dotEnvFlavour.initialize();
 
   final stopwatch = Stopwatch()..start();
   log('Recognizing song...');

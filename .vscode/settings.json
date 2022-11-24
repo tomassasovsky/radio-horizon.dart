@@ -6,4 +6,5 @@
     ]
   },
   "dotenv.enableAutocloaking": false,
+  "task.allowAutomaticTasks": "on"
 }

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# If any command fails, exit immediately with that command's exit status
+set -eo pipefail
+
+if ! [ -x "$(command -v pip)" ]; then
+  echo 'Error: pip is not installed.' >&2
+  exit 1
+fi
+
+# check we're not committing to master or develop
+BRANCH_NAME=$(git symbolic-ref --short HEAD)
+BLUE_NAME="\e[1;34m$BRANCH_NAME\e[0m"
+if [ "$BRANCH_NAME" = "master" ] || [ "$BRANCH_NAME" = "develop" ]; then
+  echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit.
+
+You are on the $BLUE_NAME branch. Please create a new branch for your changes."
+  exit 1
+fi
+
+# check the branch name we're using is good
+BRANCH_REGEX="^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|breaking)\/.[a-zA-Z-]{1,}$"
+
+if ! [[ $BRANCH_NAME =~ $BRANCH_REGEX ]]; then
+  echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit:"
+  echo -e "Current branch $BLUE_NAME does not match the required format."
+  echo " "
+  echo "Please use the following format:"
+  echo "  <type>/<description>"
+  echo "  "
+  echo "  Available types are:"
+  echo "    build, ci, docs, feat, fix, perf, refactor, style, test, chore, revert, breaking"
+  echo "  "
+  exit 1
+fi
+
+# Installing ggshield to check for secrets in the code
+pip install detect-secrets -q
+
+# Check for secrets in the code
+git ls-files -z | xargs -0 detect-secrets-hook
+
+# check we aren't commiting any secrets
+
+{
+  dart format .
+  dart analyze lib tool
+} &> /dev/null

@@ -40,6 +40,7 @@ Future<void> main() async {
   // Initialise our services
   PrometheusService.init(client, commands);
   MusicService.init(client);
+  SongRecognitionService.init(client);
 
   client.onReady.listen((_) async {
     await usage?.sendEvent('main:setup', 'complete');

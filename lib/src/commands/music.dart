@@ -27,7 +27,7 @@ ChatGroup music = ChatGroup(
       id('music-play', (
         IChatContext context,
         @Description('The name/url of the song/playlist to play')
-        @Autocomplete(autocompleteMusicQueryCallback)
+        @Autocomplete(_autocompleteCallback)
             String query,
       ) async {
         await usage?.sendEvent(
@@ -86,6 +86,9 @@ ChatGroup music = ChatGroup(
             ),
           );
         }
+
+        SongRecognitionService.instance
+            .deleteRadioFromList(context.guild!.id.toString());
       }),
     ),
     ChatCommand(
@@ -161,11 +164,7 @@ ChatGroup music = ChatGroup(
         MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id)
             .destroy(context.guild!.id);
-        context.guild!.shard.changeVoiceState(
-          context.guild!.id,
-          null,
-          selfDeafen: true,
-        );
+        context.guild!.shard.changeVoiceState(context.guild!.id, null);
         await context.respond(MessageBuilder.content('Channel left'));
       }),
     ),
@@ -271,11 +270,11 @@ ChatGroup music = ChatGroup(
             .resume(context.guild!.id);
         await context.respond(MessageBuilder.content('Player resumed'));
       }),
-    )
+    ),
   ],
 );
 
-FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteMusicQueryCallback(
+FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;
@@ -298,9 +297,7 @@ FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteMusicQueryCallback(
   final response =
       await node.autoSearch(query).timeout(const Duration(milliseconds: 2500));
 
-  final tracks = response.tracks.where((element) => element.info != null);
-
-  return tracks.map(
+  return response.tracks.map(
     (e) => ArgChoiceBuilder(
       e.info!.title,
       e.info!.uri,

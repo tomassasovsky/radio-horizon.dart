@@ -45,6 +45,12 @@ class RadioGardenSearchResponse {
   /// The play url of the first track
   String? get uri => hits?.hits?.first.source?.playUrl;
 
+  String get radioId {
+    final uriSplit = uri?.split('/');
+    // uri ends as **/radioId/song.mp3
+    return uriSplit?[uriSplit.length - 2] ?? '';
+  }
+
   Map<String, dynamic> toJson() => {
         'took': took,
         'hits': hits?.toJson(),

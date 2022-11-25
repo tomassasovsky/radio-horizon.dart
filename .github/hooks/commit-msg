@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# REGEX for conventional commits
+REGEX="^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|BREAKING\sCHANGE)(\([a-z\-]{1,}\))?!?:\s(\w{1,}-\d{1,})?!?\s?.*[a-z\-]{1,}\n{0,}$"
+
+if ! head -1 "$1" | grep -iqE $REGEX; then
+    echo -e "\e[1;31m[FATAL]: Aborting commit.\e[0m"
+    echo " "
+    echo "Commit message does not match conventional commit format."
+    echo "Please use the following format:"
+    echo "  <type>[optional scope]: <description>"
+    echo "  [optional body]"
+    echo "  [optional footer(s)]"
+    echo "  "
+    echo -e "For more information on how your commit message should be formatted, see:"
+    echo -e "https://www.conventionalcommits.org/en/v1.0.0/"
+
+    exit 1
+fi
+
+if ! head -1 "$1" | grep -qE ": {1,50}"; then
+    echo "Aborting commit. Your commit description must not be longer than 50 characters." >&2
+    exit 1
+fi

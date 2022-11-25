@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+# check pip is installed
+if ! [ -x "$(command -v pip)" ]; then
+  echo 'Error: pip is not installed.' >&2
+  exit 1
+fi
+
+# check we're not committing to master or develop
+BRANCH_NAME=$(git symbolic-ref --short HEAD)
+BLUE_NAME="\e[1;34m$BRANCH_NAME\e[0m"
+if [ "$BRANCH_NAME" = "master" ] || [ "$BRANCH_NAME" = "develop" ]; then
+  echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit.
+
+You are on the $BLUE_NAME branch. Please create a new branch for your changes."
+  exit 1
+fi
+
+# check the branch name we're using is good
+BRANCH_REGEX="^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|breaking)\/.[a-zA-Z-]{1,}$"
+
+if ! [[ $BRANCH_NAME =~ $BRANCH_REGEX ]]; then
+  echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit:"
+  echo -e "Current branch $BLUE_NAME does not match the required format."
+  echo " "
+  echo "Please use the following format:"
+  echo "  <type>/<description>"
+  echo "  "
+  echo "  Available types are:"
+  echo "    build, ci, docs, feat, fix, perf, refactor, style, test, chore, revert, breaking"
+  echo "  "
+  exit 1
+fi
+
+# Installing ggshield to check for secrets in the code
+pip install detect-secrets -q
+
+if [ $? -ne 0 ]; then
+  echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit."
+  echo -e "detect-secrets installation failed."
+  exit 1
+fi
+
+# Check for secrets in the code
+SECRETS_OUTPUT=$(git ls-files -z | xargs -0 detect-secrets-hook)
+
+if [ $? -ne 0 ]; then
+  echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit."
+  echo -e "Secrets found in the code."
+  echo ""
+  echo "$SECRETS_OUTPUT"
+  echo ""
+  exit 1
+fi
+
+# check we aren't commiting any secrets
+
+STAGED_DART_FILES=$(git diff --staged --name-only | grep -E "\.dart$")
+
+# if there are no dart files, exit
+if [ -z "$STAGED_DART_FILES" ]; then
+  exit 0
+fi
+
+# format the code
+dart format $STAGED_DART_FILES --fix > /dev/null
+
+# analyze the code, if any issues are found, exit with an error
+ANALISYS_OUTPUT=$(dart analyze --fatal-warnings --fatal-infos lib tool)
+
+# check if the analysis failed
+if [ $? -ne 0 ]; then
+  echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit."
+  echo -e "The code analysis failed. Please fix the following issues:"
+  echo " "
+  echo "$ANALISYS_OUTPUT"
+  exit 1
+fi
+
+git add $STAGED_DART_FILES

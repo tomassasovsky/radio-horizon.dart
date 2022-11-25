@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-# If any command fails, exit immediately with that command's exit status
-set -eo pipefail
-
+# check pip is installed
 if ! [ -x "$(command -v pip)" ]; then
   echo 'Error: pip is not installed.' >&2
   exit 1
@@ -37,12 +35,46 @@ fi
 # Installing ggshield to check for secrets in the code
 pip install detect-secrets -q
 
+if [ $? -ne 0 ]; then
+  echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit."
+  echo -e "detect-secrets installation failed."
+  exit 1
+fi
+
 # Check for secrets in the code
-git ls-files -z | xargs -0 detect-secrets-hook
+SECRETS_OUTPUT=$(git ls-files -z | xargs -0 detect-secrets-hook)
+
+if [ $? -ne 0 ]; then
+  echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit."
+  echo -e "Secrets found in the code."
+  echo ""
+  echo "$SECRETS_OUTPUT"
+  echo ""
+  exit 1
+fi
 
 # check we aren't commiting any secrets
 
-{
-  dart format .
-  dart analyze lib tool
-} &> /dev/null
+STAGED_DART_FILES=$(git diff --staged --name-only | grep -E "\.dart$")
+
+# if there are no dart files, exit
+if [ -z "$STAGED_DART_FILES" ]; then
+  exit 0
+fi
+
+# format the code
+dart format $STAGED_DART_FILES --fix > /dev/null
+
+# analyze the code, if any issues are found, exit with an error
+ANALISYS_OUTPUT=$(dart analyze --fatal-warnings --fatal-infos lib tool)
+
+# check if the analysis failed
+if [ $? -ne 0 ]; then
+  echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit."
+  echo -e "The code analysis failed. Please fix the following issues:"
+  echo " "
+  echo "$ANALISYS_OUTPUT"
+  exit 1
+fi
+
+git add $STAGED_DART_FILES

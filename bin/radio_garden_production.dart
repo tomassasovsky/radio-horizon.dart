@@ -11,7 +11,11 @@ import 'package:usage/usage.dart';
 
 Future<void> main() async {
   dotEnvFlavour = DotEnvFlavour.production;
-  await dotEnvFlavour.initialize();
+  dotEnvFlavour.initialize();
+
+  usage?.analyticsOpt = AnalyticsOpt.optIn;
+  usage?.enabled = true;
+  await usage?.sendEvent('main:setup', 'start');
 
   usage?.analyticsOpt = AnalyticsOpt.optIn;
   usage?.enabled = true;
@@ -41,6 +45,7 @@ Future<void> main() async {
   PrometheusService.init(client, commands);
   MusicService.init(client);
   DB.init(client);
+  SongRecognitionService.init(client);
 
   client.onReady.listen((_) async {
     await usage?.sendEvent('main:setup', 'complete');

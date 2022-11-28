@@ -19,7 +19,11 @@ Future<void> connectIfNeeded(
     MusicService.instance.cluster
         .getOrCreatePlayerNode(context.guild!.id)
         .destroy(context.guild!.id);
-    context.guild!.shard.changeVoiceState(context.guild!.id, null);
+    context.guild!.shard.changeVoiceState(
+      context.guild!.id,
+      null,
+      selfDeafen: true,
+    );
   }
 
   await Future<void>.delayed(const Duration(milliseconds: 500));
@@ -33,6 +37,7 @@ Future<void> connectIfNeeded(
     context.guild!.shard.changeVoiceState(
       context.guild!.id,
       context.member!.voiceState!.channel!.id,
+      selfDeafen: true,
     );
   }
 }

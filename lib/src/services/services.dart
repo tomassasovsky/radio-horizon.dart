@@ -4,6 +4,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-export 'db.dart';
 export 'music.dart';
 export 'prometheus.dart';
+export 'song_recognition.dart';

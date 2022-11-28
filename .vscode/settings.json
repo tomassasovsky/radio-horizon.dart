@@ -6,5 +6,5 @@
     ]
   },
   "dotenv.enableAutocloaking": false,
-  "git.ignoreLimitWarning": true,
+  "task.allowAutomaticTasks": "on"
 }

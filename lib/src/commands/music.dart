@@ -86,6 +86,9 @@ ChatGroup music = ChatGroup(
             ),
           );
         }
+
+        SongRecognitionService.instance
+            .deleteRadioFromList(context.guild!.id.toString());
       }),
     ),
     ChatCommand(
@@ -267,7 +270,7 @@ ChatGroup music = ChatGroup(
             .resume(context.guild!.id);
         await context.respond(MessageBuilder.content('Player resumed'));
       }),
-    )
+    ),
   ],
 );
 

@@ -3,7 +3,7 @@ server:
   address: 0.0.0.0
 lavalink:
   server:
-    password: "youshallnotpass"
+    password: "youshallnotpass" # pragma: allowlist secret
     sources:
       youtube: true
       bandcamp: true

@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
+import 'package:radio_garden/radio_garden.dart';
 import 'package:radio_garden/src/util.dart';
 import 'package:time_ago_provider/time_ago_provider.dart';
 
@@ -24,6 +25,18 @@ ChatCommand info = ChatCommand(
   id('info', (IChatContext context) async {
     final client = context.client as INyxxWebsocket;
     final color = getRandomColor();
+
+    await usage?.sendEvent(
+      'ChatCommand:info',
+      'call',
+      parameters: {
+        'guild': context.guild?.id.toString() ?? 'null',
+        'guild_name': context.guild?.name ?? 'null',
+        'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
+        'channel': context.channel.id.toString(),
+        'user': context.member?.id.toString() ?? 'null',
+      },
+    );
 
     final button = LinkButtonBuilder(
       'Add Radio Garden to your server',

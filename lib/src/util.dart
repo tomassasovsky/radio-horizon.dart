@@ -6,6 +6,7 @@
 
 import 'dart:math';
 import 'package:nyxx/nyxx.dart';
+import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 
 DiscordColor getRandomColor() {
   final random = Random();
@@ -15,4 +16,19 @@ DiscordColor getRandomColor() {
     random.nextInt(255),
     random.nextInt(255),
   );
+}
+
+Map<String, String> queuedTrackToAnalyticsParameters(IQueuedTrack track) {
+  return {
+    'channel_id': track.channelId?.id.toString() ?? 'null',
+    'track_uri': track.track.info?.uri ?? 'null',
+    'track_title': track.track.info?.title ?? 'null',
+    'track_author': track.track.info?.author ?? 'null',
+    'track_identifier': track.track.info?.identifier ?? 'null',
+    'track_duration': track.track.info?.length.toString() ?? 'null',
+    'track_position': track.track.info?.position.toString() ?? 'null',
+    'track_is_stream': track.track.info?.stream.toString() ?? 'null',
+    'track_is_seekable': track.track.info?.seekable.toString() ?? 'null',
+    'track_base64': track.track.track,
+  };
 }

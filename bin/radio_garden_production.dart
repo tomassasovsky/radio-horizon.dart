@@ -7,10 +7,15 @@
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_garden/radio_garden.dart';
+import 'package:usage/usage.dart';
 
 Future<void> main() async {
   dotEnvFlavour = DotEnvFlavour.production;
   await dotEnvFlavour.initialize();
+
+  usage?.analyticsOpt = AnalyticsOpt.optIn;
+  usage?.enabled = true;
+  await usage?.sendEvent('main:setup', 'start');
 
   // Create nyxx client and nyxx_commands plugin
   final client = NyxxFactory.createNyxxWebsocket(token, intents);
@@ -36,6 +41,10 @@ Future<void> main() async {
   PrometheusService.init(client, commands);
   MusicService.init(client);
   DB.init(client);
+
+  client.onReady.listen((_) async {
+    await usage?.sendEvent('main:setup', 'complete');
+  });
 
   // Connect
   await client.connect();

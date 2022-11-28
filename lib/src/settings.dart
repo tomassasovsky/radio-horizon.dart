@@ -110,3 +110,9 @@ final usage = googleAnalyticsTrackingId == null
 const int intents = GatewayIntents.directMessages |
     GatewayIntents.guilds |
     GatewayIntents.guildVoiceState;
+
+/// Your MongoDB connection string.
+///
+/// Find yours in https://www.mongodb.com/cloud/atlas.
+/// You can also use a local MongoDB instance.
+String mongoDBConnection = getEnv('MONGO_CONNECTION');

@@ -21,10 +21,8 @@ class DatabaseService {
   late Db _db;
 
   Future<void> _initialize() async {
-    final mongoConnection = getEnv('MONGO_CONNECTION');
-
     /// Connects to the MongoDB database
-    _db = await Db.create(mongoConnection);
+    _db = await Db.create(mongoDBConnection);
     await _db.open();
   }
 

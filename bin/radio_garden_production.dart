@@ -17,6 +17,10 @@ Future<void> main() async {
   usage?.enabled = true;
   await usage?.sendEvent('main:setup', 'start');
 
+  usage?.analyticsOpt = AnalyticsOpt.optIn;
+  usage?.enabled = true;
+  await usage?.sendEvent('main:setup', 'start');
+
   // Create nyxx client and nyxx_commands plugin
   final client = NyxxFactory.createNyxxWebsocket(token, intents);
 
@@ -40,6 +44,7 @@ Future<void> main() async {
   // Initialise our services
   PrometheusService.init(client, commands);
   MusicService.init(client);
+  DatabaseService.init(client);
   SongRecognitionService.init(client);
 
   client.onReady.listen((_) async {

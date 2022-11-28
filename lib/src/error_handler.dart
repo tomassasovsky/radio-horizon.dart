@@ -7,12 +7,17 @@
 import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
+import 'package:nyxx_interactions/nyxx_interactions.dart';
+import 'package:radio_garden/radio_garden.dart';
 
 final _logger = Logger('ROD.CommandErrors');
 
 Future<void> commandErrorHandler(CommandsException error) async {
   if (error is CommandInvocationException) {
     final context = error.context;
+
+    final locale = context.guild?.preferredLocale ?? Locale.englishUs.code;
+    final translations = AppLocaleUtils.parse(locale).translations;
 
     String? title;
     String? description;
@@ -23,29 +28,28 @@ Future<void> commandErrorHandler(CommandsException error) async {
           case 'musicConnectedToVC':
             await context.respond(
               MessageBuilder.content(
-                'I have to be in a voice channel to use this command',
+                translations.errorHandler.musicConnectedToVC,
               ),
             );
             break;
           case 'musicNotConnectedToVC':
             await context.respond(
               MessageBuilder.content(
-                "I'm already connected to a voice channel",
+                translations.errorHandler.musicNotConnectedToVC,
               ),
             );
             break;
           case 'musicSameVC':
             await context.respond(
               MessageBuilder.content(
-                "I'm already being used on other voice channel",
+                translations.errorHandler.musicSameVC,
               ),
             );
             break;
           case 'musicUserConnectedToVC':
             await context.respond(
               MessageBuilder.content(
-                'You need to be connected to a voice channel '
-                'to use this command',
+                translations.errorHandler.musicUserConnectedToVC,
               ),
             );
             break;
@@ -59,30 +63,20 @@ Future<void> commandErrorHandler(CommandsException error) async {
       final failed = error.failed;
 
       if (failed is CooldownCheck) {
-        title = 'Command on cooldown';
-        description =
-            "You can't use this command right now because it is on cooldown. "
-            'Please wait ${failed.remaining(context).inSeconds}s '
-            'and try again.';
+        title = translations.errorHandler.cooldown.title;
+        description = translations.errorHandler.cooldown.description(
+          inSeconds: failed.remaining(context).inSeconds,
+        );
       } else {
-        title = "You can't use this command!";
-        description = 'This command can only be used by certain users '
-            'in certain contexts. '
-            'Check that you have permission to execute the command, '
-            'or contact a developer for more information.';
+        title = translations.errorHandler.unauthorizedCommand.title;
+        description = translations.errorHandler.unauthorizedCommand.description;
       }
     } else if (error is NotEnoughArgumentsException) {
-      title = 'Not enough arguments';
-      description = "You didn't provide enough arguments for this command. "
-          'Please try again and use the Slash Command menu for help, '
-          'or contact a developer for more information.';
+      title = translations.errorHandler.missingArguments.title;
+      description = translations.errorHandler.missingArguments.description;
     } else if (error is BadInputException) {
-      title = "Couldn't parse input";
-      description =
-          "Your command couldn't be executed because we were unable to "
-          'understand your input. '
-          'Please try again with different inputs or contact a '
-          'developer for more information.';
+      title = translations.errorHandler.inputParsingFailure.title;
+      description = translations.errorHandler.inputParsingFailure.description;
     } else if (error is UncaughtException) {
       _logger.severe('Uncaught exception in command: ${error.exception}');
     }
@@ -90,10 +84,9 @@ Future<void> commandErrorHandler(CommandsException error) async {
     // Send a generic "an error occurred" response
     final embed = EmbedBuilder()
       ..color = DiscordColor.red
-      ..title = title ?? 'An error has occurred'
-      ..description = description ??
-          "Your command couldn't be executed because of an error. "
-              'Please contact a developer for more information.'
+      ..title = title ?? translations.errorHandler.title
+      ..description =
+          description ?? translations.errorHandler.fallbackDescription
       ..addFooter((footer) {
         footer.text = error.runtimeType.toString();
       })

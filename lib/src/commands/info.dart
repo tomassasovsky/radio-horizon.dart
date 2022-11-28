@@ -10,7 +10,6 @@ import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_garden/radio_garden.dart';
-import 'package:radio_garden/src/util.dart';
 import 'package:time_ago_provider/time_ago_provider.dart';
 
 String getCurrentMemoryString() {
@@ -19,10 +18,15 @@ String getCurrentMemoryString() {
   return '$current/$rss MB';
 }
 
+final _enInfoCommand = AppLocale.en.translations.commands.info;
+
 ChatCommand info = ChatCommand(
-  'info',
-  'Get generic information about the bot',
+  _enInfoCommand.command,
+  _enInfoCommand.description,
   id('info', (IChatContext context) async {
+    context as InteractionChatContext;
+    final commandTranslations = getCommandTranslations(context).info;
+
     final client = context.client as INyxxWebsocket;
     final color = getRandomColor();
 
@@ -39,7 +43,7 @@ ChatCommand info = ChatCommand(
     );
 
     final button = LinkButtonBuilder(
-      'Add Radio Garden to your server',
+      commandTranslations.addToServer,
       client.app.getInviteUrl(),
     );
 
@@ -53,39 +57,42 @@ ChatCommand info = ChatCommand(
       })
       ..addFooter((footer) {
         footer.text = 'Radio Garden'
-            ' | Shard ${(context.guild?.shard.id ?? 0) + 1} of '
+            ' | ${commandTranslations.shardOf(
+          index: context.guild?.shard.id ?? 0 + 1,
+          count: client.shards,
+        )}'
             '${client.shards}'
             ' | Dart SDK version ${Platform.version.split('(').first}';
       })
       ..addField(
-        name: 'Cached guilds',
+        name: commandTranslations.cachedGuilds,
         content: context.client.guilds.length,
         inline: true,
       )
       ..addField(
-        name: 'Cached users',
+        name: commandTranslations.cachedUsers,
         content: context.client.users.length,
         inline: true,
       )
       ..addField(
-        name: 'Cached channels',
+        name: commandTranslations.cachedChannels,
         content: context.client.channels.length,
         inline: true,
       )
       ..addField(
-        name: 'Cached voice states',
+        name: commandTranslations.cachedVoiceStates,
         content: context.client.guilds.values
             .map((g) => g.voiceStates.length)
             .reduce((value, element) => value + element),
         inline: true,
       )
       ..addField(
-        name: 'Shard count',
+        name: commandTranslations.shardCount,
         content: client.shards,
         inline: true,
       )
       ..addField(
-        name: 'Cached messages',
+        name: commandTranslations.cachedMessages,
         content: context.client.channels.values
             .whereType<ITextChannel>()
             .map((c) => c.messageCache.length)
@@ -93,12 +100,12 @@ ChatCommand info = ChatCommand(
         inline: true,
       )
       ..addField(
-        name: 'Memory usage (current/RSS)',
+        name: commandTranslations.memoryUsage,
         content: getCurrentMemoryString(),
         inline: true,
       )
       ..addField(
-        name: 'Uptime',
+        name: commandTranslations.uptime,
         content: formatFull(context.client.startTime),
         inline: true,
       );
@@ -109,4 +116,10 @@ ChatCommand info = ChatCommand(
 
     await context.respond(messageBuilder);
   }),
+  localizedDescriptions: localizedValues(
+    (translations) => translations.commands.info.description,
+  ),
+  localizedNames: localizedValues(
+    (translations) => translations.commands.info.command,
+  ),
 );

@@ -14,12 +14,15 @@ import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:nyxx_pagination/nyxx_pagination.dart';
 import 'package:radio_garden/radio_garden.dart';
 import 'package:radio_garden/src/checks.dart';
-import 'package:radio_garden/src/util.dart';
 import 'package:retry/retry.dart';
 
+final _enRadioCommand = AppLocale.en.translations.commands.radio;
+final _enPlayCommand = _enRadioCommand.children.play;
+final _enRecognizeCommand = _enRadioCommand.children.recognize;
+
 ChatGroup radio = ChatGroup(
-  'radio',
-  'Radio related commands',
+  _enRadioCommand.command,
+  _enRadioCommand.description,
   checks: [
     GuildCheck.all(),
     userConnectedToVoiceChannelCheck,
@@ -27,14 +30,18 @@ ChatGroup radio = ChatGroup(
   ],
   children: [
     ChatCommand(
-      'play',
-      'Plays music from the specified radio station',
+      _enPlayCommand.command,
+      _enPlayCommand.description,
       id('radio-play', (
         IChatContext context,
         @Description('The name of the Radio Station to play')
         @Autocomplete(_autocompleteCallback)
             String query,
       ) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).radio.children.play;
+
         await usage?.sendEvent(
           'ChatCommand:radio-play',
           'call',
@@ -55,15 +62,21 @@ ChatGroup radio = ChatGroup(
 
         final radio = await radioByName(query);
         if (radio == null || (radio.hits?.hits?.isEmpty ?? true)) {
-          await context
-              .respond(MessageBuilder.content('No results were found'));
+          await context.respond(
+            MessageBuilder.content(
+              commandTranslations.noResults(query: query),
+            ),
+          );
           return;
         }
 
         final result = await node.searchTracks(radio.uri!);
         if (result.tracks.isEmpty) {
-          await context
-              .respond(MessageBuilder.content('We could not find that track'));
+          await context.respond(
+            MessageBuilder.content(
+              commandTranslations.noResults(query: query),
+            ),
+          );
           return;
         }
 
@@ -83,19 +96,31 @@ ChatGroup radio = ChatGroup(
 
         final embed = EmbedBuilder()
           ..color = getRandomColor()
-          ..title = 'Started playing'
-          ..description = 'Radio ${radio.title} '
-              'started playing.\n\nRequested by ${context.member?.mention}';
+          ..title = commandTranslations.startedPlaying
+          ..description = commandTranslations.startedPlayingDescription(
+            radio: radio.title.toString(),
+            mention: context.member?.mention ?? '(Unknown)',
+          );
 
         await context.respond(MessageBuilder.embed(embed));
       }),
+      localizedDescriptions: localizedValues(
+        (translations) => translations.commands.radio.children.play.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.radio.children.play.command,
+      ),
     ),
     ChatCommand(
-      'recognize',
-      'Recognize the current song playing',
+      _enRecognizeCommand.command,
+      _enRecognizeCommand.description,
       id('radio-recognize', (
         IChatContext context,
       ) async {
+        context as InteractionChatContext;
+        final translations = getCommandTranslations(context);
+        final commandTranslations = translations.radio.children.recognize;
+
         try {
           final recognitionService = SongRecognitionService.instance;
           final guildId = context.guild!.id.toString();
@@ -105,9 +130,9 @@ ChatGroup radio = ChatGroup(
           late ShazamResult result;
           var recognitionSampleDuration = 10;
 
+          final guildRadio = recognitionService.currentRadio(guildId);
           await retry(
             () async {
-              final guildRadio = recognitionService.currentRadio(guildId);
               result = await recognitionService.identify(
                 guildRadio.radio.radioId,
                 recognitionSampleDuration,
@@ -131,9 +156,11 @@ ChatGroup radio = ChatGroup(
           final embed = EmbedBuilder()
             ..color = color
             ..title = result.title
-            ..description = 'Requested by ${context.member?.mention}'
+            ..description = commandTranslations.requestedBy(
+              mention: context.member?.mention ?? '(Unknown)',
+            )
             ..addField(
-              name: 'Artist',
+              name: commandTranslations.artistField,
               content: result.subtitle,
             )
             ..imageUrl = result.share?.image;
@@ -141,13 +168,13 @@ ChatGroup radio = ChatGroup(
           final genre = result.genres?.primary;
           if (genre != null) {
             embed.addField(
-              name: 'Genre',
+              name: commandTranslations.genreField,
               content: genre,
             );
           }
 
           embed.addField(
-            name: 'Computational time',
+            name: commandTranslations.computationalTimeField,
             content: '${stopwatch.elapsedMilliseconds}ms',
           );
 
@@ -173,14 +200,29 @@ ChatGroup radio = ChatGroup(
             MessageBuilder.embed(
               EmbedBuilder()
                 ..color = DiscordColor.red
-                ..title = 'An error has occurred'
-                ..description = handleRecognitionExceptions(e, stacktrace),
+                ..title = commandTranslations.errors.title
+                ..description =
+                    handleRecognitionExceptions(e, stacktrace, translations),
             ),
           );
         }
       }),
+      localizedDescriptions: localizedValues(
+        (translations) =>
+            translations.commands.radio.children.recognize.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) =>
+            translations.commands.radio.children.recognize.command,
+      ),
     ),
   ],
+  localizedDescriptions: localizedValues(
+    (translations) => translations.commands.radio.description,
+  ),
+  localizedNames: localizedValues(
+    (translations) => translations.commands.radio.command,
+  ),
 );
 
 FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
@@ -220,16 +262,21 @@ Future<RadioGardenSearchResponse?> radioByName(String name) async {
   return searchResponse;
 }
 
-String handleRecognitionExceptions(Object e, StackTrace stackTrace) {
+String handleRecognitionExceptions(
+  Object e,
+  StackTrace stackTrace,
+  StringsCommandsEn commandTranslations,
+) {
   log('Exception: ', error: e, stackTrace: stackTrace);
+  final errors = commandTranslations.radio.children.recognize.errors;
 
   switch (e.runtimeType) {
     case RadioNotPlayingException:
-      return "Couldn't find a radio playing!";
+      return errors.noRadioPlaying;
     case RadioCantCommunicateWithServer:
-      return 'There was communicating with the server, please try again.';
+      return errors.radioCantCommunicate;
     case RadioCantIdentifySongException:
     default:
-      return "Couldn't identify the current song playing :(";
+      return errors.noResults;
   }
 }

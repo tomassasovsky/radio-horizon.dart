@@ -6,7 +6,9 @@
 
 import 'dart:math';
 import 'package:nyxx/nyxx.dart';
+import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
+import 'package:radio_garden/radio_garden.dart';
 
 DiscordColor getRandomColor() {
   final random = Random();
@@ -31,4 +33,23 @@ Map<String, String> queuedTrackToAnalyticsParameters(IQueuedTrack track) {
     'track_is_seekable': track.track.info?.seekable.toString() ?? 'null',
     'track_base64': track.track.track,
   };
+}
+
+Map<Locale, String> localizedValues(
+  String Function(StringsEn translations) getter,
+) {
+  final locales = AppLocaleUtils.instance.locales;
+  final translations = <Locale, String>{};
+
+  for (final locale in locales) {
+    final key = Locale.values.firstWhere(
+      (element) => element.code.startsWith(locale.languageTag),
+      orElse: () => Locale.englishUs,
+    );
+
+    final result = getter(locale.translations);
+    translations[key] = result;
+  }
+
+  return translations;
 }

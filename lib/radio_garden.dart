@@ -7,6 +7,7 @@
 /// radio_garden, a Dart program for the Radio Garden API.
 library radio_garden;
 
+export 'i18n/strings.g.dart';
 export 'src/commands/commands.dart';
 export 'src/dotenv.dart';
 export 'src/error_handler.dart';
@@ -14,4 +15,5 @@ export 'src/helpers/maybe_at.dart';
 export 'src/models/models.dart';
 export 'src/services/services.dart';
 export 'src/settings.dart';
+export 'src/util.dart';
 export 'src/version.dart';

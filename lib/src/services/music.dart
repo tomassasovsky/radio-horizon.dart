@@ -8,7 +8,8 @@ import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:radio_garden/radio_garden.dart';
-import 'package:radio_garden/src/util.dart';
+
+final _enMusicService = AppLocale.en.translations.services.music;
 
 class MusicService {
   MusicService._(this._client) {
@@ -127,15 +128,17 @@ class MusicService {
 
       final embed = EmbedBuilder()
         ..color = getRandomColor()
-        ..title = 'Track started'
-        ..description =
-            'Track [${track?.track.info?.title}](${track?.track.info?.uri}) '
-                'started playing.\n\nRequested by <@${track?.requester!}>'
+        ..title = _enMusicService.trackStarted.title
+        ..description = _enMusicService.trackStarted.description(
+          track: track!.track.info!.title,
+          uri: track.track.info!.uri,
+          requester: track.requester!,
+        )
         ..thumbnailUrl =
-            'https://img.youtube.com/vi/${track?.track.info?.identifier}/hqdefault.jpg';
+            'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
 
       await _client.httpEndpoints.sendMessage(
-        track!.channelId!,
+        track.channelId!,
         MessageBuilder.embed(embed),
       );
     }
@@ -192,10 +195,12 @@ class MusicService {
 
       final embed = EmbedBuilder()
         ..color = getRandomColor()
-        ..title = 'Track stuck'
-        ..description =
-            'Track [${track.track.info?.title}](${track.track.info?.uri}) '
-                'stuck playing.\n\nRequested by <@${track.requester!}>'
+        ..title = _enMusicService.trackStuck.title
+        ..description = _enMusicService.trackStuck.description(
+          track: track.track.info!.title,
+          uri: track.track.info!.uri,
+          requester: track.requester!,
+        )
         ..thumbnailUrl =
             'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
 
@@ -219,10 +224,12 @@ class MusicService {
 
       final embed = EmbedBuilder()
         ..color = getRandomColor()
-        ..title = 'Track exception'
-        ..description =
-            'Track [${track.track.info?.title}](${track.track.info?.uri}) '
-                'exception playing.\n\nRequested by <@${track.requester!}>'
+        ..title = _enMusicService.trackException.title
+        ..description = _enMusicService.trackException.description(
+          track: track.track.info!.title,
+          uri: track.track.info!.uri,
+          requester: track.requester!,
+        )
         ..thumbnailUrl =
             'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
 

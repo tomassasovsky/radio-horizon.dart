@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT.
 
 import 'package:nyxx_commands/nyxx_commands.dart';
+import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_garden/radio_garden.dart';
 
 export 'info.dart';
@@ -40,4 +41,24 @@ Future<void> connectIfNeeded(
       selfDeafen: true,
     );
   }
+}
+
+StringsCommandsEn getCommandTranslations(InteractionChatContext context) {
+  final userLocale = context.interaction.locale ??
+      context.guild?.preferredLocale ??
+      Locale.englishUs.code;
+  final commandTranslations =
+      AppLocaleUtils.parse(userLocale).translations.commands;
+
+  return commandTranslations;
+}
+
+StringsCommandsEn getLocale(InteractionChatContext context) {
+  final userLocale = context.interaction.locale ??
+      context.guild?.preferredLocale ??
+      Locale.englishUs.code;
+  final commandTranslations =
+      AppLocaleUtils.parse(userLocale).translations.commands;
+
+  return commandTranslations;
 }

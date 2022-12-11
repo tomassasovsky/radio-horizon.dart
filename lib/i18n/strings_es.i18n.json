@@ -12,7 +12,8 @@
       "shardCount": "Fragmentos",
       "cachedMessages": "Mensajes en caché",
       "memoryUsage": "Uso de memoria (current/RSS)",
-      "uptime": "Tiempo de actividad"
+      "uptime": "Tiempo de actividad",
+      "currentPlayers": "Reproductores actuales"
     },
     "music": {
       "command": "musica",

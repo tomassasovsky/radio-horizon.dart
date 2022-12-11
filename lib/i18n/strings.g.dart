@@ -1,9 +1,9 @@
 /// Generated file. Do not edit.
 ///
 /// Locales: 2
-/// Strings: 164 (82 per locale)
+/// Strings: 166 (83 per locale)
 ///
-/// Built on 2022-11-29 at 13:03 UTC
+/// Built on 2022-12-11 at 20:09 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -205,6 +205,7 @@ class StringsCommandsInfoEn {
   String get cachedMessages => 'Cached messages';
   String get memoryUsage => 'Memory usage (current/RSS)';
   String get uptime => 'Uptime';
+  String get currentPlayers => 'Current players';
 }
 
 // Path: commands.music
@@ -685,6 +686,8 @@ class StringsCommandsInfoEs extends StringsCommandsInfoEn {
   String get memoryUsage => 'Uso de memoria (current/RSS)';
   @override
   String get uptime => 'Tiempo de actividad';
+  @override
+  String get currentPlayers => 'Reproductores actuales';
 }
 
 // Path: commands.music
@@ -1216,6 +1219,8 @@ extension on StringsEn {
         return 'Memory usage (current/RSS)';
       case 'commands.info.uptime':
         return 'Uptime';
+      case 'commands.info.currentPlayers':
+        return 'Current players';
       case 'commands.music.command':
         return 'music';
       case 'commands.music.description':
@@ -1407,6 +1412,8 @@ extension on StringsEs {
         return 'Uso de memoria (current/RSS)';
       case 'commands.info.uptime':
         return 'Tiempo de actividad';
+      case 'commands.info.currentPlayers':
+        return 'Reproductores actuales';
       case 'commands.music.command':
         return 'musica';
       case 'commands.music.description':

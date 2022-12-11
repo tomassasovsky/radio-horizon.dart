@@ -12,7 +12,8 @@
       "shardCount": "Shard count",
       "cachedMessages": "Cached messages",
       "memoryUsage": "Memory usage (current/RSS)",
-      "uptime": "Uptime"
+      "uptime": "Uptime",
+      "currentPlayers": "Current players"
     },
     "music": {
       "command": "music",

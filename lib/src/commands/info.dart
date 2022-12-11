@@ -26,6 +26,10 @@ ChatCommand info = ChatCommand(
   id('info', (IChatContext context) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).info;
+    final nodes = MusicService.instance.cluster.connectedNodes;
+    final players = nodes.values
+        .map((b) => b.players.length)
+        .reduce((value, element) => value + element);
 
     final client = context.client as INyxxWebsocket;
     final color = getRandomColor();
@@ -84,6 +88,11 @@ ChatCommand info = ChatCommand(
         content: context.client.guilds.values
             .map((g) => g.voiceStates.length)
             .reduce((value, element) => value + element),
+        inline: true,
+      )
+      ..addField(
+        name: commandTranslations.currentPlayers,
+        content: players,
         inline: true,
       )
       ..addField(

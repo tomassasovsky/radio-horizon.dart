@@ -35,7 +35,7 @@ ChatGroup radio = ChatGroup(
       id('radio-play', (
         IChatContext context,
         @Description('The name of the Radio Station to play')
-        @Autocomplete(_autocompleteCallback)
+        @Autocomplete(autocompleteRadioQuery)
             String query,
       ) async {
         context as InteractionChatContext;
@@ -186,7 +186,7 @@ ChatGroup radio = ChatGroup(
           }
 
           final paginator = EmbedComponentPagination(
-            context.commands.interactions,
+            context.commands.interactions!,
             [embed, ...lyricsPages],
             user: context.user,
           );
@@ -225,7 +225,7 @@ ChatGroup radio = ChatGroup(
   ),
 );
 
-FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
+FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;

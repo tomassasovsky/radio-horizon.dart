@@ -18,19 +18,11 @@ Future<void> main() async {
 
   await usage?.sendEvent('main:setup', 'start');
 
-  usage?.analyticsOpt = AnalyticsOpt.optIn;
-  usage?.enabled = true;
-
-  await usage?.sendEvent('main:setup', 'start');
-
   // Create nyxx client and nyxx_commands plugin
   final client = NyxxFactory.createNyxxWebsocket(token, intents);
 
   final commands = CommandsPlugin(
     prefix: mentionOr((_) => prefix),
-    options: const CommandsOptions(
-      hideOriginalResponse: false,
-    ),
   )
     ..addCommand(info)
     ..addCommand(music)

@@ -16,7 +16,7 @@ services:
       - lavalink
 
   lavalink:
-    image: fredboat/lavalink:master
+    image: fredboat/lavalink:3.6.2
     container_name: lavalink
     restart: always
     expose:

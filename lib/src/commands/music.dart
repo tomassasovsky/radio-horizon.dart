@@ -37,7 +37,7 @@ ChatGroup music = ChatGroup(
       id('music-play', (
         IChatContext context,
         @Description('The name/url of the song/playlist to play')
-        @Autocomplete(_autocompleteCallback)
+        @Autocomplete(autocompleteMusicQuery)
             String query,
       ) async {
         context as InteractionChatContext;
@@ -393,7 +393,7 @@ ChatGroup music = ChatGroup(
   ),
 );
 
-FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
+FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteMusicQuery(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;

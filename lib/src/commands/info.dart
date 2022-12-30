@@ -51,6 +51,11 @@ ChatCommand info = ChatCommand(
       client.app.getInviteUrl(),
     );
 
+    final gatewayLatency = (context.client as INyxxWebsocket)
+        .shardManager
+        .gatewayLatency
+        .inMilliseconds;
+
     final embed = EmbedBuilder()
       ..color = color
       ..addAuthor((author) {
@@ -116,6 +121,11 @@ ChatCommand info = ChatCommand(
       ..addField(
         name: commandTranslations.uptime,
         content: formatFull(context.client.startTime),
+        inline: true,
+      )
+      ..addField(
+        name: commandTranslations.gatewayLatency,
+        content: gatewayLatency,
         inline: true,
       );
 

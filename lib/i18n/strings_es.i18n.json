@@ -13,7 +13,8 @@
       "cachedMessages": "Mensajes en caché",
       "memoryUsage": "Uso de memoria (current/RSS)",
       "uptime": "Tiempo de actividad",
-      "currentPlayers": "Reproductores actuales"
+      "currentPlayers": "Reproductores actuales",
+      "gatewayLatency": "Latencia de la puerta de enlace"
     },
     "music": {
       "command": "musica",

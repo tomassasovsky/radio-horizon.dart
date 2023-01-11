@@ -5,7 +5,7 @@
 
 **Radio Garden Discord Bot** is a Discord radio playing bot that brings a whole new level of listening experience to your server. With its powerful song recognition technology, radio-garden.dart can identify and announce the songs currently playing on the radio, making it easy to keep track of your favorite tunes. Whether you're a music lover, DJ or just looking for an easy way to discover new music, radio-garden.dart is the perfect companion.
 
-Features
+## Features
 - A wide range of radio stations from around the world
 - Song recognition technology to announce the songs currently playing
 - Easy to use commands

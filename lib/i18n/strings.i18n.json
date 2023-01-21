@@ -93,6 +93,18 @@
             "radioCantCommunicate": "There was an error communicating with the server, please try again.",
             "noResults": "Couldn't identify the current song playing :("
           }
+        },
+        "random": {
+          "command": "random",
+          "description": "Selects a random radio station",
+          "requestedBy": "Requested by $mention",
+          "startedPlaying": "Started playing",
+          "startedPlayingDescription": "Radio $radio started playing.\n\nRequested by $mention",
+          "errors": {
+            "title": "An error occurred while finding a random radio",
+            "noResults": "Couldn't find a radio to play :("
+
+          }
         }
       }
     }

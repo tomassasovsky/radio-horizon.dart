@@ -19,6 +19,7 @@ import 'package:retry/retry.dart';
 final _enRadioCommand = AppLocale.en.translations.commands.radio;
 final _enPlayCommand = _enRadioCommand.children.play;
 final _enRecognizeCommand = _enRadioCommand.children.recognize;
+final _enRandomCommand = _enRadioCommand.children.random;
 
 ChatGroup radio = ChatGroup(
   _enRadioCommand.command,
@@ -216,6 +217,86 @@ ChatGroup radio = ChatGroup(
             translations.commands.radio.children.recognize.command,
       ),
     ),
+    ChatCommand(
+      _enRandomCommand.command,
+      _enRandomCommand.description,
+      id('radio-random', (
+        IChatContext context,
+      ) async {
+        context as InteractionChatContext;
+        final translations = getCommandTranslations(context);
+        final commandTranslations = translations.radio.children.random;
+
+        try {
+          await connectIfNeeded(context, replace: true);
+
+          final node = MusicService.instance.cluster
+              .getOrCreatePlayerNode(context.guild!.id);
+
+          final radio = await startRandomRadio();
+          if (radio == null || (radio.hits?.hits?.isEmpty ?? true)) {
+            await context.respond(
+              MessageBuilder.content(
+                commandTranslations.errors.noResults,
+              ),
+            );
+            return;
+          }
+
+          final result = await node.searchTracks(radio.randomUri!);
+          if (result.tracks.isEmpty) {
+            await context.respond(
+              MessageBuilder.content(
+                commandTranslations.errors.noResults,
+              ),
+            );
+            return;
+          }
+
+          final track = result.tracks.first;
+          node
+            ..players[context.guild!.id]!.queue.clear()
+            ..play(
+              context.guild!.id,
+              track,
+              replace: true,
+              requester: context.member!.id,
+              channelId: context.channel.id,
+            ).startPlaying();
+
+          SongRecognitionService.instance
+              .setCurrentRadio(context.guild!.id.toString(), radio);
+
+          final embed = EmbedBuilder()
+            ..color = getRandomColor()
+            ..title = commandTranslations.startedPlaying
+            ..description = commandTranslations.startedPlayingDescription(
+              // TODO: Hide this title and say something random
+              radio: radio.title.toString(),
+              mention: context.member?.mention ?? '(Unknown)',
+            );
+
+          await context.respond(MessageBuilder.embed(embed));
+        } catch (e, stacktrace) {
+          await context.respond(
+            MessageBuilder.embed(
+              EmbedBuilder()
+                ..color = DiscordColor.red
+                ..title = commandTranslations.errors.title
+                ..description =
+                    handleRecognitionExceptions(e, stacktrace, translations),
+            ),
+          );
+        }
+      }),
+      localizedDescriptions: localizedValues(
+        (translations) =>
+            translations.commands.radio.children.random.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.radio.children.random.command,
+      ),
+    ),
   ],
   localizedDescriptions: localizedValues(
     (translations) => translations.commands.radio.description,
@@ -259,6 +340,31 @@ Future<RadioGardenSearchResponse?> radioByName(String name) async {
   Logger('Radio#radioByName').info(
     'Found ${searchResponse.hits?.hits?.length ?? 0} radio stations for $name',
   );
+  return searchResponse;
+}
+
+Future<RadioGardenSearchResponse?> startRandomRadio() async {
+  const locationUrl = 'http://radio.garden/api/geo';
+  const searchUrl = 'http://radio.garden/api/search?q=';
+
+  final locationResponse = await http.get(
+    Uri.parse(locationUrl),
+  );
+
+  final country =
+      radioGardenLocationResponseFromJson(locationResponse.body).country;
+
+  Logger('Radio#radioByName').info('Searching for radio station in $country ');
+  final response = await http.get(
+    Uri.parse('$searchUrl$country'),
+  );
+  final searchResponse = radioGardenSearchResponseFromJson(response.body);
+  final radioNumberFound = searchResponse.hits?.hits?.length;
+
+  Logger('Radio#radioRandom').info(
+    'Found ${radioNumberFound ?? 0} radio stations for $country',
+  );
+
   return searchResponse;
 }
 

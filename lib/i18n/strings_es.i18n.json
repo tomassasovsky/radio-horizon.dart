@@ -93,6 +93,17 @@
             "radioCantCommunicate": "La radio no puede comunicarse con el servidor de reconocimiento de canciones. Inténtalo de nuevo más tarde",
             "noResults": "No se han encontrado resultados para la canción que se está reproduciendo :("
           }
+        },
+        "random": {
+          "command": "azar",
+          "description": "Selecciona una radio al azar",
+          "requestedBy": "Pedido por $mention",
+          "startedPlaying": "Se ha comenzado a reproducir",
+          "startedPlayingDescription": "La radio $radio ha comenzado a reproducirse.\n\nPedido por $mention",
+          "errors": {
+            "title": "Hubo un error encontrando una radio al azar",
+            "noResults": "No pude encontrar una radio al azar :("
+          }
         }
       }
     }

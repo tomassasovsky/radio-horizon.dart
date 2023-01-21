@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT.
 
 import 'dart:convert';
+import 'dart:math';
 
 RadioGardenSearchResponse radioGardenSearchResponseFromJson(String str) =>
     RadioGardenSearchResponse.fromJson(json.decode(str) as Map);
@@ -44,6 +45,11 @@ class RadioGardenSearchResponse {
 
   /// The play url of the first track
   String? get uri => hits?.hits?.first.source?.playUrl;
+
+  /// They play url of a random track
+  // TODO: Improve this
+  String? get randomUri =>
+      hits?.hits?[Random().nextInt(hits!.hits!.length)].source?.playUrl;
 
   String get radioId {
     final uriSplit = uri?.split('/');
@@ -160,6 +166,52 @@ class Source {
 
   static const _basePlayUrl = 'https://radio.garden/api/ara/content/listen/';
   static const _playUrlSuffix = '/channel.mp3';
+}
+
+Location radioGardenLocationResponseFromJson(String str) =>
+    Location.fromJson(json.decode(str) as Map);
+
+class Location {
+  Location({
+    this.ip,
+    this.country,
+    this.countryCode,
+    this.region,
+    this.regionCode,
+    this.city,
+    this.zipCode,
+  });
+
+  factory Location.fromJson(Map<dynamic, dynamic> json) {
+    json = json.cast<String, dynamic>();
+    return Location(
+      ip: json['ip'] as String?,
+      country: json['country_name'] as String?,
+      countryCode: json['country_code'] as String?,
+      region: json['region_name'] as String?,
+      regionCode: json['region_code'] as String?,
+      city: json['city'] as String?,
+      zipCode: json['zip_code'] as String?,
+    );
+  }
+
+  final String? ip;
+  final String? country;
+  final String? countryCode;
+  final String? region;
+  final String? regionCode;
+  final String? city;
+  final String? zipCode;
+
+  Map<String, dynamic> toJson() => {
+        'ip': ip,
+        'country_name': country,
+        'country_code': countryCode,
+        'region_name': region,
+        'region_code': regionCode,
+        'city': city,
+        'zip_code': zipCode
+      };
 }
 
 enum Type {

@@ -42,7 +42,6 @@ ChatGroup radio = ChatGroup(
         final commandTranslations =
             getCommandTranslations(context).radio.children.play;
 
-        // final interaction = context.interactionEvent;
         await context.respond(
           MessageBuilder.content(
             commandTranslations.searching(query: query),

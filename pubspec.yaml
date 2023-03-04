@@ -18,10 +18,7 @@ dependencies:
   logging: ^1.1.1
   mongo_dart: ^0.8.2
   nyxx: ^4.5.0
-  nyxx_commands: 
-    git:
-      url: https://github.com/tomassasovsky/nyxx_commands.git
-      ref: fix/private-files-included-in-analysis
+  nyxx_commands: ^4.4.1
   nyxx_interactions: ^4.5.0
   nyxx_lavalink: ^3.1.0
   nyxx_pagination: ^2.3.0

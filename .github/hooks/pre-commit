@@ -55,7 +55,7 @@ fi
 
 # check we aren't commiting any secrets
 
-STAGED_DART_FILES=$(git diff --staged --name-only | grep -E "\.dart$")
+STAGED_DART_FILES=$(git diff --diff-filter=ACM --name-only | grep -E "\.dart$")
 
 # if there are no dart files, exit
 if [ -z "$STAGED_DART_FILES" ]; then

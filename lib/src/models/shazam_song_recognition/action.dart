@@ -1,17 +1,21 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'action.freezed.dart';
 part 'action.g.dart';
 
-@freezed
-class ShazamAction with _$ShazamAction {
-  factory ShazamAction({
-    String? id,
-    String? name,
-    String? type,
-    String? uri,
-  }) = _ShazamAction;
+@JsonSerializable()
+class ShazamAction {
+  const ShazamAction({
+    this.id,
+    this.name,
+    this.type,
+    this.uri,
+  });
 
   factory ShazamAction.fromJson(Map<String, dynamic> json) =>
       _$ShazamActionFromJson(json);
+
+  final String? id;
+  final String? name;
+  final String? type;
+  final String? uri;
 }

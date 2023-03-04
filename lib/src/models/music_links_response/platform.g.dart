@@ -6,15 +6,13 @@ part of 'platform.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_MusicLinksPlatform _$$_MusicLinksPlatformFromJson(
-        Map<String, dynamic> json) =>
-    _$_MusicLinksPlatform(
+MusicLinksPlatform _$MusicLinksPlatformFromJson(Map<String, dynamic> json) =>
+    MusicLinksPlatform(
       name: json['name'] as String?,
       url: json['url'] as String?,
     );
 
-Map<String, dynamic> _$$_MusicLinksPlatformToJson(
-        _$_MusicLinksPlatform instance) =>
+Map<String, dynamic> _$MusicLinksPlatformToJson(MusicLinksPlatform instance) =>
     <String, dynamic>{
       'name': instance.name,
       'url': instance.url,

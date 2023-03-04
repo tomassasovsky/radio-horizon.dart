@@ -42,6 +42,12 @@ ChatGroup radio = ChatGroup(
         final commandTranslations =
             getCommandTranslations(context).radio.children.play;
 
+        await context.respond(
+          MessageBuilder.content(
+            commandTranslations.searching(query: query),
+          ),
+        );
+
         await usage?.sendEvent(
           'ChatCommand:radio-play',
           'call',
@@ -186,7 +192,7 @@ ChatGroup radio = ChatGroup(
           }
 
           final paginator = EmbedComponentPagination(
-            context.commands.interactions!,
+            context.commands.interactions,
             [embed, ...lyricsPages],
             user: context.user,
           );

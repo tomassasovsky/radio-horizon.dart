@@ -1,15 +1,17 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'beacondata.freezed.dart';
 part 'beacondata.g.dart';
 
-@freezed
-class ShazamBeacondata with _$ShazamBeacondata {
-  factory ShazamBeacondata({
-    String? providername,
-    String? type,
-  }) = _ShazamBeacondata;
+@JsonSerializable()
+class ShazamBeacondata {
+  const ShazamBeacondata({
+    this.providername,
+    this.type,
+  });
 
   factory ShazamBeacondata.fromJson(Map<String, dynamic> json) =>
       _$ShazamBeacondataFromJson(json);
+
+  final String? providername;
+  final String? type;
 }

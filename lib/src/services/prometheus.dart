@@ -145,7 +145,7 @@ class PrometheusService {
           : context.command.name;
 
       totalCommands.labels([name]).inc();
-      if (context is IInteractionCommandContext) {
+      if (context is IInteractionContext) {
         totalSlashCommands.labels([name]).inc();
       } else {
         totalTextCommands.labels([name]).inc();
@@ -186,7 +186,7 @@ class PrometheusService {
     commands.onPreCall
         .listen((context) => contextStartTimes[context] = DateTime.now());
 
-    void handleDone(ICommandContext context) {
+    void handleDone(IContext context) {
       final start = contextStartTimes[context];
 
       if (start == null) {
@@ -213,7 +213,7 @@ class PrometheusService {
     final router = Router()..get('/metrics', prometheusHandler());
     final handler = const Pipeline()
         .addMiddleware(shelf_metrics.register())
-        .addHandler(router);
+        .addHandler(router.call);
 
     final server = await serve(handler, 'localhost', 8080);
     _logger.info('Serving at http://${server.address.host}:${server.port}');

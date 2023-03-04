@@ -23,6 +23,9 @@ Future<void> main() async {
 
   final commands = CommandsPlugin(
     prefix: mentionOr((_) => prefix),
+    options: const CommandsOptions(
+      hideOriginalResponse: false,
+    ),
   )
     ..addCommand(info)
     ..addCommand(music)

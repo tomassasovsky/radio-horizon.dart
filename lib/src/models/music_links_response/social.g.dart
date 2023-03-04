@@ -6,13 +6,13 @@ part of 'social.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_MusicLinksSocial _$$_MusicLinksSocialFromJson(Map<String, dynamic> json) =>
-    _$_MusicLinksSocial(
+MusicLinksSocial _$MusicLinksSocialFromJson(Map<String, dynamic> json) =>
+    MusicLinksSocial(
       name: json['name'] as String?,
       url: json['url'] as String?,
     );
 
-Map<String, dynamic> _$$_MusicLinksSocialToJson(_$_MusicLinksSocial instance) =>
+Map<String, dynamic> _$MusicLinksSocialToJson(MusicLinksSocial instance) =>
     <String, dynamic>{
       'name': instance.name,
       'url': instance.url,

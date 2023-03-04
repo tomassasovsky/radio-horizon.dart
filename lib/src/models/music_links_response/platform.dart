@@ -1,15 +1,17 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'platform.freezed.dart';
 part 'platform.g.dart';
 
-@freezed
-class MusicLinksPlatform with _$MusicLinksPlatform {
-  const factory MusicLinksPlatform({
-    String? name,
-    String? url,
-  }) = _MusicLinksPlatform;
+@JsonSerializable()
+class MusicLinksPlatform {
+  const MusicLinksPlatform({
+    this.name,
+    this.url,
+  });
 
   factory MusicLinksPlatform.fromJson(Map<String, dynamic> json) =>
       _$MusicLinksPlatformFromJson(json);
+
+  final String? name;
+  final String? url;
 }

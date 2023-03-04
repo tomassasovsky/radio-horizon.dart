@@ -6,17 +6,17 @@ part of 'shazam_song_recognition.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ShazamSongRecognition _$$_ShazamSongRecognitionFromJson(
+ShazamSongRecognition _$ShazamSongRecognitionFromJson(
         Map<String, dynamic> json) =>
-    _$_ShazamSongRecognition(
+    ShazamSongRecognition(
       ok: json['ok'] as bool?,
       result: json['result'] == null
           ? null
           : ShazamResult.fromJson(json['result'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_ShazamSongRecognitionToJson(
-        _$_ShazamSongRecognition instance) =>
+Map<String, dynamic> _$ShazamSongRecognitionToJson(
+        ShazamSongRecognition instance) =>
     <String, dynamic>{
       'ok': instance.ok,
       'result': instance.result,

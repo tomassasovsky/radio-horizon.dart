@@ -6,13 +6,13 @@ part of 'metadatum.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ShazamMetadatum _$$_ShazamMetadatumFromJson(Map<String, dynamic> json) =>
-    _$_ShazamMetadatum(
+ShazamMetadatum _$ShazamMetadatumFromJson(Map<String, dynamic> json) =>
+    ShazamMetadatum(
       text: json['text'] as String?,
       title: json['title'] as String?,
     );
 
-Map<String, dynamic> _$$_ShazamMetadatumToJson(_$_ShazamMetadatum instance) =>
+Map<String, dynamic> _$ShazamMetadatumToJson(ShazamMetadatum instance) =>
     <String, dynamic>{
       'text': instance.text,
       'title': instance.title,

@@ -6,13 +6,12 @@ part of 'artist.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ShazamArtist _$$_ShazamArtistFromJson(Map<String, dynamic> json) =>
-    _$_ShazamArtist(
+ShazamArtist _$ShazamArtistFromJson(Map<String, dynamic> json) => ShazamArtist(
       adamid: json['adamid'] as String?,
       id: json['id'] as String?,
     );
 
-Map<String, dynamic> _$$_ShazamArtistToJson(_$_ShazamArtist instance) =>
+Map<String, dynamic> _$ShazamArtistToJson(ShazamArtist instance) =>
     <String, dynamic>{
       'adamid': instance.adamid,
       'id': instance.id,

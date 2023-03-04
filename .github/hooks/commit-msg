@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # REGEX for conventional commits
-REGEX="^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|BREAKING\sCHANGE)(\([a-z\-]{1,}\))?!?:\s(\w{1,}-\d{1,})?!?\s?.*[a-z\-]{1,}\n{0,}$"
+REGEX="^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|BREAKING\sCHANGE)(\([a-zA-Z0-9.-]{1,}\))?!?:\s(\w{1,}-\d{1,})?!?\s?.*[a-zA-Z0-9.-]{1,}\n{0,}$"
 
 if ! head -1 "$1" | grep -iqE $REGEX; then
     echo -e "\e[1;31m[FATAL]: Aborting commit.\e[0m"

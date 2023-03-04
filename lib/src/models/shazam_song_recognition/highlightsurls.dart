@@ -1,15 +1,17 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'highlightsurls.freezed.dart';
 part 'highlightsurls.g.dart';
 
-@freezed
-class ShazamHighlightsurls with _$ShazamHighlightsurls {
-  factory ShazamHighlightsurls({
-    String? artisthighlightsurl,
-    String? trackhighlighturl,
-  }) = _ShazamHighlightsurls;
+@JsonSerializable()
+class ShazamHighlightsurls {
+  const ShazamHighlightsurls({
+    this.artisthighlightsurl,
+    this.trackhighlighturl,
+  });
 
   factory ShazamHighlightsurls.fromJson(Map<String, dynamic> json) =>
       _$ShazamHighlightsurlsFromJson(json);
+
+  final String? artisthighlightsurl;
+  final String? trackhighlighturl;
 }

@@ -7,11 +7,10 @@
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_garden/radio_garden.dart';
 
-final administratorCheck =
-    UserCheck.anyId(adminIds, name: 'Administrator check');
+final administratorCheck = UserCheck.anyId(adminIds, 'Administrator check');
 
 final connectedToAVoiceChannelCheck = Check(
-  (ICommandContextData context) async {
+  (IContext context) async {
     final selfMember = await context.guild!.selfMember.getOrDownload();
 
     if (selfMember.voiceState == null ||
@@ -20,11 +19,11 @@ final connectedToAVoiceChannelCheck = Check(
     }
     return true;
   },
-  name: 'musicConnectedToVC',
+  'musicConnectedToVC',
 );
 
 final notConnectedToAVoiceChannelCheck = Check(
-  (ICommandContextData context) async {
+  (IContext context) async {
     final selfMember = await context.guild!.selfMember.getOrDownload();
 
     if (selfMember.voiceState == null ||
@@ -33,11 +32,11 @@ final notConnectedToAVoiceChannelCheck = Check(
     }
     return false;
   },
-  name: 'musicNotConnectedToVC',
+  'musicNotConnectedToVC',
 );
 
 final userConnectedToVoiceChannelCheck = Check(
-  (ICommandContextData context) {
+  (IContext context) {
     final memberVoiceState = context.member!.voiceState;
 
     if (memberVoiceState == null || memberVoiceState.channel == null) {
@@ -45,11 +44,11 @@ final userConnectedToVoiceChannelCheck = Check(
     }
     return true;
   },
-  name: 'musicUserConnectedToVC',
+  'musicUserConnectedToVC',
 );
 
 final sameVoiceChannelOrDisconnectedCheck = Check(
-  (ICommandContextData context) async {
+  (IContext context) async {
     // If this is an interaction, acknowledge it just in case the check
     // takes too long to run.
     if (context is InteractionChatContext) {
@@ -71,5 +70,5 @@ final sameVoiceChannelOrDisconnectedCheck = Check(
     }
     return true;
   },
-  name: 'musicSameVC',
+  'musicSameVC',
 );

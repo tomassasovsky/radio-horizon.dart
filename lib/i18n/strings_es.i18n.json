@@ -75,6 +75,7 @@
           "command": "reproducir",
           "description": "Reproduce una radio basada en una búsqueda",
           "queryDescription": "El nombre de una estación de radio",
+          "searching": "Buscando radio $query...",
           "noResults": "No se encontraron resultados para $query",
           "startedPlaying": "Se ha comenzado a reproducir",
           "startedPlayingDescription": "La radio $radio ha comenzado a reproducirse.\n\nPedido por $mention",

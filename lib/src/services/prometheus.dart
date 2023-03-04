@@ -213,7 +213,7 @@ class PrometheusService {
     final router = Router()..get('/metrics', prometheusHandler());
     final handler = const Pipeline()
         .addMiddleware(shelf_metrics.register())
-        .addHandler(router);
+        .addHandler(router.call);
 
     final server = await serve(handler, 'localhost', 8080);
     _logger.info('Serving at http://${server.address.host}:${server.port}');

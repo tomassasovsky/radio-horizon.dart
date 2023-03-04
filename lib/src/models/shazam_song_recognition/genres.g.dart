@@ -6,12 +6,11 @@ part of 'genres.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ShazamGenres _$$_ShazamGenresFromJson(Map<String, dynamic> json) =>
-    _$_ShazamGenres(
+ShazamGenres _$ShazamGenresFromJson(Map<String, dynamic> json) => ShazamGenres(
       primary: json['primary'] as String?,
     );
 
-Map<String, dynamic> _$$_ShazamGenresToJson(_$_ShazamGenres instance) =>
+Map<String, dynamic> _$ShazamGenresToJson(ShazamGenres instance) =>
     <String, dynamic>{
       'primary': instance.primary,
     };

@@ -1,21 +1,29 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'share.freezed.dart';
 part 'share.g.dart';
 
-@freezed
-class ShazamShare with _$ShazamShare {
-  factory ShazamShare({
-    String? avatar,
-    String? href,
-    String? html,
-    String? image,
-    String? snapchat,
-    String? subject,
-    String? text,
-    String? twitter,
-  }) = _ShazamShare;
+@JsonSerializable()
+class ShazamShare {
+  const ShazamShare({
+    this.avatar,
+    this.href,
+    this.html,
+    this.image,
+    this.snapchat,
+    this.subject,
+    this.text,
+    this.twitter,
+  });
 
   factory ShazamShare.fromJson(Map<String, dynamic> json) =>
       _$ShazamShareFromJson(json);
+
+  final String? avatar;
+  final String? href;
+  final String? html;
+  final String? image;
+  final String? snapchat;
+  final String? subject;
+  final String? text;
+  final String? twitter;
 }

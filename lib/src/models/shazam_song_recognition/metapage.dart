@@ -1,15 +1,17 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'metapage.freezed.dart';
 part 'metapage.g.dart';
 
-@freezed
-class ShazamMetapage with _$ShazamMetapage {
-  factory ShazamMetapage({
-    String? caption,
-    String? image,
-  }) = _ShazamMetapage;
+@JsonSerializable()
+class ShazamMetapage {
+  const ShazamMetapage({
+    this.caption,
+    this.image,
+  });
 
   factory ShazamMetapage.fromJson(Map<String, dynamic> json) =>
       _$ShazamMetapageFromJson(json);
+
+  final String? caption;
+  final String? image;
 }

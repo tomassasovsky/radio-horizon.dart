@@ -6,8 +6,8 @@ part of 'provider.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ShazamProvider _$$_ShazamProviderFromJson(Map<String, dynamic> json) =>
-    _$_ShazamProvider(
+ShazamProvider _$ShazamProviderFromJson(Map<String, dynamic> json) =>
+    ShazamProvider(
       actions: (json['actions'] as List<dynamic>?)
           ?.map((e) => ShazamAction.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -18,7 +18,7 @@ _$_ShazamProvider _$$_ShazamProviderFromJson(Map<String, dynamic> json) =>
       type: json['type'] as String?,
     );
 
-Map<String, dynamic> _$$_ShazamProviderToJson(_$_ShazamProvider instance) =>
+Map<String, dynamic> _$ShazamProviderToJson(ShazamProvider instance) =>
     <String, dynamic>{
       'actions': instance.actions,
       'caption': instance.caption,

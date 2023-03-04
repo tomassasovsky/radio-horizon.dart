@@ -1,18 +1,22 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:radio_garden/radio_garden.dart';
 
-part 'provider.freezed.dart';
 part 'provider.g.dart';
 
-@freezed
-class ShazamProvider with _$ShazamProvider {
-  factory ShazamProvider({
-    List<ShazamAction>? actions,
-    String? caption,
-    ShazamImages? images,
-    String? type,
-  }) = _ShazamProvider;
+@JsonSerializable()
+class ShazamProvider {
+  const ShazamProvider({
+    this.actions,
+    this.caption,
+    this.images,
+    this.type,
+  });
 
   factory ShazamProvider.fromJson(Map<String, dynamic> json) =>
       _$ShazamProviderFromJson(json);
+
+  final List<ShazamAction>? actions;
+  final String? caption;
+  final ShazamImages? images;
+  final String? type;
 }

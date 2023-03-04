@@ -1,9 +1,9 @@
 /// Generated file. Do not edit.
 ///
 /// Locales: 2
-/// Strings: 166 (83 per locale)
+/// Strings: 168 (84 per locale)
 ///
-/// Built on 2022-12-11 at 20:09 UTC
+/// Built on 2023-03-04 at 10:38 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -66,6 +66,7 @@ class LocaleSettings extends BaseLocaleSettings<AppLocale, StringsEn> {
   static AppLocale setLocale(AppLocale locale) => instance.setLocale(locale);
   static AppLocale setLocaleRaw(String rawLocale) =>
       instance.setLocaleRaw(rawLocale);
+  @Deprecated('Use [AppLocaleUtils.supportedLocalesRaw]')
   static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
   static void setPluralResolver(
           {String? language,
@@ -97,6 +98,7 @@ class AppLocaleUtils extends BaseAppLocaleUtils<AppLocale, StringsEn> {
           languageCode: languageCode,
           scriptCode: scriptCode,
           countryCode: countryCode);
+  static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
 }
 
 // translations
@@ -495,6 +497,8 @@ class StringsCommandsRadioChildrenPlayEn {
   String get command => 'play';
   String get description => 'Plays a radio station based on the given query';
   String get queryDescription => 'The name of the radio station to play';
+  String searching({required Object query}) =>
+      'Searching for radio ${query}...';
   String noResults({required Object query}) => 'No results found for ${query}';
   String get startedPlaying => 'Started playing';
   String startedPlayingDescription(
@@ -1123,6 +1127,8 @@ class StringsCommandsRadioChildrenPlayEs
   @override
   String get queryDescription => 'El nombre de una estación de radio';
   @override
+  String searching({required Object query}) => 'Buscando radio ${query}...';
+  @override
   String noResults({required Object query}) =>
       'No se encontraron resultados para ${query}';
   @override
@@ -1295,6 +1301,8 @@ extension on StringsEn {
         return 'Plays a radio station based on the given query';
       case 'commands.radio.children.play.queryDescription':
         return 'The name of the radio station to play';
+      case 'commands.radio.children.play.searching':
+        return ({required Object query}) => 'Searching for radio ${query}...';
       case 'commands.radio.children.play.noResults':
         return ({required Object query}) => 'No results found for ${query}';
       case 'commands.radio.children.play.startedPlaying':
@@ -1489,6 +1497,8 @@ extension on StringsEs {
         return 'Reproduce una radio basada en una búsqueda';
       case 'commands.radio.children.play.queryDescription':
         return 'El nombre de una estación de radio';
+      case 'commands.radio.children.play.searching':
+        return ({required Object query}) => 'Buscando radio ${query}...';
       case 'commands.radio.children.play.noResults':
         return ({required Object query}) =>
             'No se encontraron resultados para ${query}';

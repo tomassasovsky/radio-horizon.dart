@@ -6,13 +6,12 @@ part of 'urlparams.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Urlparams _$$_UrlparamsFromJson(Map<String, dynamic> json) => _$_Urlparams(
+Urlparams _$UrlparamsFromJson(Map<String, dynamic> json) => Urlparams(
       trackartist: json['{trackartist}'] as String?,
       tracktitle: json['{tracktitle}'] as String?,
     );
 
-Map<String, dynamic> _$$_UrlparamsToJson(_$_Urlparams instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$UrlparamsToJson(Urlparams instance) => <String, dynamic>{
       '{trackartist}': instance.trackartist,
       '{tracktitle}': instance.tracktitle,
     };

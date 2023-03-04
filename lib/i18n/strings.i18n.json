@@ -74,6 +74,7 @@
           "command": "play",
           "description": "Plays a radio station based on the given query",
           "queryDescription": "The name of the radio station to play",
+          "searching": "Searching for radio $query...",
           "noResults": "No results found for $query",
           "startedPlaying": "Started playing",
           "startedPlayingDescription": "Radio $radio started playing.\n\nRequested by $mention",

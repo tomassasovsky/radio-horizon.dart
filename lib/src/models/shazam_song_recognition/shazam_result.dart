@@ -1,37 +1,53 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:radio_garden/radio_garden.dart';
 
-part 'shazam_result.freezed.dart';
 part 'shazam_result.g.dart';
 
-@freezed
-class ShazamResult with _$ShazamResult {
-  const factory ShazamResult({
-    String? albumadamid,
-    List<ShazamArtist>? artists,
-    ShazamGenres? genres,
-    ShazamHighlightsurls? highlightsurls,
-    ShazamHub? hub,
-    ShazamImages? images,
-    String? isrc,
-    String? key,
-    String? layout,
-    String? relatedtracksurl,
-    List<ShazamSection>? sections,
-    ShazamShare? share,
-    String? subtitle,
-    String? title,
-    String? type,
-    String? url,
-    Urlparams? urlparams,
-    List<String>? lyrics,
-  }) = _ShazamResult;
-
-  const ShazamResult._();
+@JsonSerializable()
+class ShazamResult {
+  const ShazamResult({
+    this.albumadamid,
+    this.artists,
+    this.genres,
+    this.highlightsurls,
+    this.hub,
+    this.images,
+    this.isrc,
+    this.key,
+    this.layout,
+    this.relatedtracksurl,
+    this.sections,
+    this.share,
+    this.subtitle,
+    this.title,
+    this.type,
+    this.url,
+    this.urlparams,
+    this.lyrics,
+  });
 
   factory ShazamResult.fromJson(Map<String, dynamic> json) =>
       _$ShazamResultFromJson(json);
+
+  final String? albumadamid;
+  final List<ShazamArtist>? artists;
+  final ShazamGenres? genres;
+  final ShazamHighlightsurls? highlightsurls;
+  final ShazamHub? hub;
+  final ShazamImages? images;
+  final String? isrc;
+  final String? key;
+  final String? layout;
+  final String? relatedtracksurl;
+  final List<ShazamSection>? sections;
+  final ShazamShare? share;
+  final String? subtitle;
+  final String? title;
+  final String? type;
+  final String? url;
+  final Urlparams? urlparams;
+  final List<String>? lyrics;
 
   List<List<String>>? paragraphedLyrics(int paragraphsPerPage) {
     if (lyrics == null || lyrics!.isEmpty) return null;

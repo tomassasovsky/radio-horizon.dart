@@ -208,6 +208,7 @@ class StringsCommandsInfoEn {
   String get memoryUsage => 'Memory usage (current/RSS)';
   String get uptime => 'Uptime';
   String get currentPlayers => 'Current players';
+  String get gatewayLatency => 'Latencia de la puerta de enlace';
 }
 
 // Path: commands.music
@@ -692,6 +693,8 @@ class StringsCommandsInfoEs extends StringsCommandsInfoEn {
   String get uptime => 'Tiempo de actividad';
   @override
   String get currentPlayers => 'Reproductores actuales';
+  @override
+  String get gatewayLatency => 'Latencia de la puerta de enlace';
 }
 
 // Path: commands.music
@@ -1227,6 +1230,8 @@ extension on StringsEn {
         return 'Uptime';
       case 'commands.info.currentPlayers':
         return 'Current players';
+      case 'commands.info.gatewayLatency':
+        return 'Latencia de la puerta de enlace';
       case 'commands.music.command':
         return 'music';
       case 'commands.music.description':
@@ -1422,6 +1427,8 @@ extension on StringsEs {
         return 'Tiempo de actividad';
       case 'commands.info.currentPlayers':
         return 'Reproductores actuales';
+      case 'commands.info.gatewayLatency':
+        return 'Latencia de la puerta de enlace';
       case 'commands.music.command':
         return 'musica';
       case 'commands.music.description':

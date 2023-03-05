@@ -42,7 +42,8 @@
         "leave": {
           "command": "dejar",
           "description": "Abandona el canal de voz",
-          "left": "El canal de voz ha sido abandonado"
+          "left": "El canal de voz ha sido abandonado",
+          "leftDueToInactivity": "El canal de voz ha sido abandonado debido a la inactividad"
         },
         "join": {
           "command": "unirse",

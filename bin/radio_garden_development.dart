@@ -25,6 +25,7 @@ Future<void> main() async {
     prefix: mentionOr((_) => prefix),
     options: const CommandsOptions(
       hideOriginalResponse: false,
+      logErrors: false,
     ),
   )
     ..addCommand(info)

@@ -74,6 +74,7 @@ class MusicService {
         cluster.eventDispatcher.onTrackStuck.listen(_trackStuck);
         cluster.eventDispatcher.onTrackEnd.listen(_trackEnded);
         cluster.eventDispatcher.onTrackException.listen(_trackException);
+        _client.eventsWs.onVoiceStateUpdate.listen(_voiceStateUpdate);
       }
     });
   }
@@ -240,5 +241,73 @@ class MusicService {
 
   static void init(INyxxWebsocket client) {
     _instance = MusicService._(client);
+  }
+
+  Future<void> _voiceStateUpdate(IVoiceStateUpdateEvent event) async {
+    if (event.state.user.id == _client.appId) return;
+    if (event.oldState == null) return;
+
+    final channelId = event.state.channel?.id ?? event.oldState?.channel?.id;
+    final cachedGuild = event.state.guild;
+    if (cachedGuild == null || channelId == null) {
+      Logger('VoiceStateUpdate').warning(
+        'VoiceStateUpdate event with null guild or channel: '
+        '$cachedGuild, $channelId',
+      );
+      return;
+    }
+
+    var guild = await cachedGuild.getOrDownload();
+    final botMember = await guild.selfMember.getOrDownload();
+    if (botMember.voiceState == null) return;
+
+    /// Returns a list of members connected to the same voice channel as the
+    /// [event] member. Excludes the bot, if present.
+    List<IMember> getConnectedMembers(IGuild guild) {
+      final members = guild.members.values.where(
+        (m) => m.voiceState?.channel?.id == channelId && m.id != botMember.id,
+      );
+      return members.toList();
+    }
+
+    var connectedMembers = getConnectedMembers(guild);
+    if (connectedMembers.isEmpty) {
+      // Wait 30 seconds before destroying the player
+      await Future<void>.delayed(const Duration(seconds: 30));
+
+      // get the guild again in case it was updated
+      guild = await cachedGuild.download();
+      connectedMembers = getConnectedMembers(guild);
+
+      if (connectedMembers.isEmpty) {
+        try {
+          MusicService.instance.cluster
+              .getOrCreatePlayerNode(guild.id)
+              .destroy(guild.id);
+
+          guild.shard.changeVoiceState(guild.id, null);
+
+          final channel = await guild.publicUpdatesChannel?.getOrDownload();
+          if (channel == null) {
+            return;
+          }
+
+          final commandTranslations = getCommandTranslationsForGuild(guild);
+
+          final embed = EmbedBuilder()
+            ..color = getRandomColor()
+            ..title = commandTranslations.music.children.leave.left
+            ..description =
+                commandTranslations.music.children.leave.leftDueToInactivity;
+
+          await channel.sendMessage(MessageBuilder.embed(embed));
+        } catch (e) {
+          if (e.toString().contains('LateInitializationError')) return;
+          Logger('MusicService').warning(
+            'Failed to destroy player for guild ${guild.id}: $e',
+          );
+        }
+      }
+    }
   }
 }

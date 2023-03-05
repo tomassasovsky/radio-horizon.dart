@@ -1,9 +1,9 @@
 /// Generated file. Do not edit.
 ///
 /// Locales: 2
-/// Strings: 168 (84 per locale)
+/// Strings: 172 (86 per locale)
 ///
-/// Built on 2023-03-04 at 10:38 UTC
+/// Built on 2023-03-05 at 08:29 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -436,6 +436,7 @@ class StringsCommandsMusicChildrenLeaveEn {
   String get command => 'leave';
   String get description => 'Leaves the current voice channel';
   String get left => 'Left voice channel';
+  String get leftDueToInactivity => 'Left voice channel due to inactivity';
 }
 
 // Path: commands.music.children.join
@@ -1031,6 +1032,9 @@ class StringsCommandsMusicChildrenLeaveEs
   String get description => 'Abandona el canal de voz';
   @override
   String get left => 'El canal de voz ha sido abandonado';
+  @override
+  String get leftDueToInactivity =>
+      'El canal de voz ha sido abandonado debido a la inactividad';
 }
 
 // Path: commands.music.children.join
@@ -1270,6 +1274,8 @@ extension on StringsEn {
         return 'Leaves the current voice channel';
       case 'commands.music.children.leave.left':
         return 'Left voice channel';
+      case 'commands.music.children.leave.leftDueToInactivity':
+        return 'Left voice channel due to inactivity';
       case 'commands.music.children.join.command':
         return 'join';
       case 'commands.music.children.join.description':
@@ -1468,6 +1474,8 @@ extension on StringsEs {
         return 'Abandona el canal de voz';
       case 'commands.music.children.leave.left':
         return 'El canal de voz ha sido abandonado';
+      case 'commands.music.children.leave.leftDueToInactivity':
+        return 'El canal de voz ha sido abandonado debido a la inactividad';
       case 'commands.music.children.join.command':
         return 'unirse';
       case 'commands.music.children.join.description':

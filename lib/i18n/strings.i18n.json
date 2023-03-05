@@ -42,7 +42,8 @@
         "leave": {
           "command": "leave",
           "description": "Leaves the current voice channel",
-          "left": "Left voice channel"
+          "left": "Left voice channel",
+          "leftDueToInactivity": "Left voice channel due to inactivity"
         },
         "join": {
           "command": "join",

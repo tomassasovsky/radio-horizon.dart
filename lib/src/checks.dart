@@ -11,10 +11,14 @@ final administratorCheck = UserCheck.anyId(adminIds, 'Administrator check');
 
 final connectedToAVoiceChannelCheck = Check(
   (IContext context) async {
-    final selfMember = await context.guild!.selfMember.getOrDownload();
+    final selfMember = await context.guild?.selfMember.getOrDownload();
+
+    if (selfMember == null) {
+      return false;
+    }
 
     if (selfMember.voiceState == null ||
-        selfMember.voiceState!.channel == null) {
+        selfMember.voiceState?.channel == null) {
       return false;
     }
     return true;
@@ -24,10 +28,14 @@ final connectedToAVoiceChannelCheck = Check(
 
 final notConnectedToAVoiceChannelCheck = Check(
   (IContext context) async {
-    final selfMember = await context.guild!.selfMember.getOrDownload();
+    final selfMember = await context.guild?.selfMember.getOrDownload();
+
+    if (selfMember == null) {
+      return false;
+    }
 
     if (selfMember.voiceState == null ||
-        selfMember.voiceState!.channel == null) {
+        selfMember.voiceState?.channel == null) {
       return true;
     }
     return false;
@@ -37,7 +45,7 @@ final notConnectedToAVoiceChannelCheck = Check(
 
 final userConnectedToVoiceChannelCheck = Check(
   (IContext context) {
-    final memberVoiceState = context.member!.voiceState;
+    final memberVoiceState = context.member?.voiceState;
 
     if (memberVoiceState == null || memberVoiceState.channel == null) {
       return false;
@@ -56,16 +64,16 @@ final sameVoiceChannelOrDisconnectedCheck = Check(
     }
 
     final selfMemberVoiceState =
-        (await context.guild!.selfMember.getOrDownload()).voiceState;
+        (await context.guild?.selfMember.getOrDownload())?.voiceState;
     // The upper check should be executed before, so its okay to
     // assume the voice state exists.
-    final memberVoiceState = context.member!.voiceState!;
+    final memberVoiceState = context.member?.voiceState;
 
     if (selfMemberVoiceState == null || selfMemberVoiceState.channel == null) {
       return true;
     }
 
-    if (selfMemberVoiceState.channel!.id != memberVoiceState.channel!.id) {
+    if (selfMemberVoiceState.channel?.id != memberVoiceState?.channel?.id) {
       return false;
     }
     return true;

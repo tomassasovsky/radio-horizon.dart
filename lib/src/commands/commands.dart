@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_garden/radio_garden.dart';
@@ -47,6 +48,14 @@ StringsCommandsEn getCommandTranslations(InteractionChatContext context) {
   final userLocale = context.interaction.locale ??
       context.guild?.preferredLocale ??
       Locale.englishUs.code;
+  final commandTranslations =
+      AppLocaleUtils.parse(userLocale).translations.commands;
+
+  return commandTranslations;
+}
+
+StringsCommandsEn getCommandTranslationsForGuild(IGuild guild) {
+  final userLocale = guild.preferredLocale;
   final commandTranslations =
       AppLocaleUtils.parse(userLocale).translations.commands;
 

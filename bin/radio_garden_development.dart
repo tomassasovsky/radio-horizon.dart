@@ -37,7 +37,12 @@ Future<void> main() async {
     ..onCommandError.listen(commandErrorHandler);
 
   client
-    ..registerPlugin(Logging())
+    ..registerPlugin(
+      Logging(
+        logLevel: Level.FINE,
+        truncateLogsAt: 10000,
+      ),
+    )
     ..registerPlugin(CliIntegration())
     ..registerPlugin(IgnoreExceptions())
     ..registerPlugin(commands);

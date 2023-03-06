@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_garden/radio_garden.dart';
@@ -12,6 +13,8 @@ import 'package:usage/usage.dart';
 Future<void> main() async {
   dotEnvFlavour = DotEnvFlavour.development;
   dotEnvFlavour.initialize();
+
+  Logger.root.level = Level.FINE;
 
   usage?.analyticsOpt = AnalyticsOpt.optIn;
   usage?.enabled = true;

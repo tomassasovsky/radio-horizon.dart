@@ -16,7 +16,7 @@ dependencies:
   http: ^0.13.5
   json_annotation: ^4.8.0
   logging: ^1.1.1
-  mongo_dart: ^0.8.2
+  mongo_dart: ^0.9.0
   nyxx: ^4.5.0
   nyxx_commands: ^4.4.1
   nyxx_interactions: ^4.5.0

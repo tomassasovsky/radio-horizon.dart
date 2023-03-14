@@ -247,39 +247,59 @@ class MusicService {
     if (event.state.user.id == _client.appId) return;
     if (event.oldState == null) return;
 
-    final channelId = event.state.channel?.id ?? event.oldState?.channel?.id;
+    final eventChannelId =
+        event.state.channel?.id ?? event.oldState?.channel?.id;
     final cachedGuild = event.state.guild;
-    if (cachedGuild == null || channelId == null) {
+    if (cachedGuild == null || eventChannelId == null) {
       Logger('VoiceStateUpdate').warning(
         'VoiceStateUpdate event with null guild or channel: '
-        '$cachedGuild, $channelId',
+        '$cachedGuild, $eventChannelId',
       );
       return;
     }
 
     var guild = await cachedGuild.getOrDownload();
     final botMember = await guild.selfMember.getOrDownload();
+
     if (botMember.voiceState == null) return;
+    final currentChannelId = botMember.voiceState?.channel?.id;
+
+    if (currentChannelId == null) {
+      Logger('VoiceStateUpdate').warning(
+        'VoiceStateUpdate event with null bot channel: '
+        '$currentChannelId',
+      );
+      return;
+    }
+
+    if (eventChannelId != currentChannelId) {
+      // the event is not for the bot's current channel
+      Logger('VoiceStateUpdate').info(
+        'VoiceStateUpdate event for channel $eventChannelId '
+        'does not match bot channel $currentChannelId',
+      );
+      return;
+    }
 
     /// Returns a list of members connected to the same voice channel as the
     /// [event] member. Excludes the bot, if present.
-    List<IMember> getConnectedMembers(IGuild guild) {
-      final members = guild.members.values.where(
-        (m) => m.voiceState?.channel?.id == channelId && m.id != botMember.id,
-      );
-      return members.toList();
+    bool hasConnectedMembers(IGuild iGuild) {
+      // the bot represents one of these voice states, so we subtract 1 and see
+      // if there are any other members connected
+      final voiceStatesInChannel = iGuild.voiceStates.entries.where((element) {
+        return element.value.channel?.id == currentChannelId;
+      });
+      return (voiceStatesInChannel.length - 1) > 0;
     }
 
-    var connectedMembers = getConnectedMembers(guild);
-    if (connectedMembers.isEmpty) {
+    if (!hasConnectedMembers(guild)) {
       // Wait 30 seconds before destroying the player
       await Future<void>.delayed(const Duration(seconds: 30));
 
       // get the guild again in case it was updated
       guild = await cachedGuild.download();
-      connectedMembers = getConnectedMembers(guild);
 
-      if (connectedMembers.isEmpty) {
+      if (!hasConnectedMembers(guild)) {
         try {
           MusicService.instance.cluster
               .getOrCreatePlayerNode(guild.id)
@@ -289,6 +309,10 @@ class MusicService {
 
           final channel = await guild.publicUpdatesChannel?.getOrDownload();
           if (channel == null) {
+            Logger('MusicService').warning(
+              'Destroyed player for guild ${guild.id} but the guild '
+              'public updates channel is null',
+            );
             return;
           }
 

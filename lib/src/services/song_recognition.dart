@@ -9,8 +9,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:nyxx/nyxx.dart';
+import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_garden/radio_garden.dart';
 import 'package:uuid/uuid.dart';
 
@@ -60,7 +60,7 @@ class SongRecognitionService {
   }
 
   /// Adds or not the current radio that the guild is playing
-  void setCurrentRadio(String guildId, RadioGardenSearchResponse radio) {
+  void setCurrentRadio(String guildId, Station radio) {
     final newRadio = GuildRadio(guildId: guildId, radio: radio);
     final radioIndex = _guildRadiosList
         .indexWhere((element) => element.guildId == newRadio.guildId);
@@ -80,11 +80,11 @@ class SongRecognitionService {
 
   /// Identifies the current song playing in the radio.
   ///
-  /// Receives a [radioId] to identify the radio and a [durationInSeconds] to
+  /// Receives a [url] to identify the radio and a [durationInSeconds] to
   /// grab that amount of time of the sample from the radio.
-  Future<ShazamResult> identify(String radioId, int? durationInSeconds) async {
+  Future<ShazamResult> identify(String url, int? durationInSeconds) async {
     final songFile = await generateSample(
-      radioId: radioId,
+      url: url,
       durationInSeconds: durationInSeconds ?? 10,
     );
 
@@ -134,17 +134,15 @@ class SongRecognitionService {
   ///
   /// Returns a [File] stored in the /tmp directory.
   Future<File> generateSample({
-    required String radioId,
+    required String url,
     int durationInSeconds = 10,
   }) async {
     final completer = Completer<File>();
 
-    final url =
-        'https://radio.garden/api/ara/content/listen/$radioId/channel.mp3';
     final uri = Uri.parse(url);
 
     final request = http.Request('GET', uri);
-    StreamedResponse? response;
+    http.StreamedResponse? response;
     try {
       response = await httpClient.send(request);
     } catch (e) {

@@ -7,6 +7,7 @@ COPY pubspec.* /app/
 RUN dart pub get
 
 COPY . /app
+COPY /radiobrowser_config /radiobrowser_config
 RUN dart pub get --offline
 
 RUN dart run nyxx_commands:compile bin/$dart_entryfile -o bot.dart

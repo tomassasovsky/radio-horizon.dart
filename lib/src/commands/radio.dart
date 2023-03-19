@@ -6,12 +6,11 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'package:http/http.dart' as http;
-import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:nyxx_pagination/nyxx_pagination.dart';
+import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_garden/radio_garden.dart';
 import 'package:radio_garden/src/checks.dart';
 import 'package:retry/retry.dart';
@@ -19,6 +18,9 @@ import 'package:retry/retry.dart';
 final _enRadioCommand = AppLocale.en.translations.commands.radio;
 final _enPlayCommand = _enRadioCommand.children.play;
 final _enRecognizeCommand = _enRadioCommand.children.recognize;
+
+const _radioBrowserClient =
+    RadioBrowserApi.fromHost('de1.api.radio-browser.info');
 
 ChatGroup radio = ChatGroup(
   _enRadioCommand.command,
@@ -66,8 +68,9 @@ ChatGroup radio = ChatGroup(
         final node = MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id);
 
-        final radio = await radioByName(query);
-        if (radio == null || (radio.hits?.hits?.isEmpty ?? true)) {
+        final stations =
+            await _radioBrowserClient.getStationsByName(name: query);
+        if (stations.items.isEmpty) {
           await context.respond(
             MessageBuilder.content(
               commandTranslations.noResults(query: query),
@@ -76,7 +79,10 @@ ChatGroup radio = ChatGroup(
           return;
         }
 
-        final result = await node.searchTracks(radio.uri!);
+        final bestMatch = stations.items.first;
+
+        final result =
+            await node.searchTracks(bestMatch.urlResolved ?? bestMatch.url);
         if (result.tracks.isEmpty) {
           await context.respond(
             MessageBuilder.content(
@@ -98,13 +104,13 @@ ChatGroup radio = ChatGroup(
           ).startPlaying();
 
         SongRecognitionService.instance
-            .setCurrentRadio(context.guild!.id.toString(), radio);
+            .setCurrentRadio(context.guild!.id.toString(), bestMatch);
 
         final embed = EmbedBuilder()
           ..color = getRandomColor()
           ..title = commandTranslations.startedPlaying
           ..description = commandTranslations.startedPlayingDescription(
-            radio: radio.title.toString(),
+            radio: bestMatch.name,
             mention: context.member?.mention ?? '(Unknown)',
           );
 
@@ -140,7 +146,7 @@ ChatGroup radio = ChatGroup(
           await retry(
             () async {
               result = await recognitionService.identify(
-                guildRadio.radio.radioId,
+                guildRadio.radio.urlResolved ?? guildRadio.radio.url,
                 recognitionSampleDuration,
               );
             },
@@ -235,37 +241,21 @@ FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;
-  final response = await radioByName(query)
-      .timeout(const Duration(milliseconds: 2500), onTimeout: () => null);
+  final response = await _radioBrowserClient.getStationsByName(name: query);
+  //.timeout(const Duration(milliseconds: 2500));
 
-  final hits = response?.hits?.hits;
+  final hits = response.items;
 
-  if (hits == null || hits.isEmpty) {
+  if (hits.isEmpty) {
     return null;
   }
 
   return hits.map(
     (e) => ArgChoiceBuilder(
-      e.source?.title ?? 'NO TITLE',
-      '${e.source?.title} (${e.source?.url.split('/').last})',
+      e.name,
+      e.name,
     ),
   );
-}
-
-Future<RadioGardenSearchResponse?> radioByName(String name) async {
-  const searchUrl = 'http://radio.garden/api/search?q=';
-
-  Logger('Radio#radioByName').info('Searching for radio station $name');
-  final response = await http.get(
-    Uri.parse('$searchUrl$name'),
-  );
-
-  final searchResponse = radioGardenSearchResponseFromJson(response.body);
-
-  Logger('Radio#radioByName').info(
-    'Found ${searchResponse.hits?.hits?.length ?? 0} radio stations for $name',
-  );
-  return searchResponse;
 }
 
 String handleRecognitionExceptions(

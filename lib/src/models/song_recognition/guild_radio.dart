@@ -4,22 +4,23 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import 'package:radio_garden/radio_garden.dart';
+import 'package:nyxx/nyxx.dart';
+import 'package:radio_browser_api/radio_browser_api.dart';
 
 class GuildRadio {
-  const GuildRadio({
-    required this.guildId,
-    required this.radio,
+  const GuildRadio(
+    this.id, {
+    required this.station,
   });
 
   factory GuildRadio.fromJson(Map<dynamic, dynamic> json) {
     json = json.cast<String, dynamic>();
     return GuildRadio(
-      guildId: json['guildId'] as String,
-      radio: RadioGardenSearchResponse.fromJson(json),
+      Snowflake(json['guildId'] as String),
+      station: Station.fromJson(json.cast()),
     );
   }
 
-  final String guildId;
-  final RadioGardenSearchResponse radio;
+  final Snowflake id;
+  final Station station;
 }

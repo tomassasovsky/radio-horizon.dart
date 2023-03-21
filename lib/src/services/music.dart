@@ -36,7 +36,7 @@ class MusicService {
             port: port,
             password: password,
             ssl: ssl,
-            clientName: 'RadioGarden',
+            clientName: 'RadioHorizon',
             shards: shards,
             // Bump up connection attempts to avoid timeouts in Docker
             maxConnectAttempts: 10,
@@ -146,12 +146,34 @@ class MusicService {
   }
 
   Future<void> _trackEnded(ITrackEndEvent event) async {
-    await Future<void>.delayed(const Duration(minutes: 5));
+    await Future<void>.delayed(const Duration(seconds: 30));
+
+    if (!event.node.players.containsKey(event.guildId)) {
+      return;
+    }
 
     // disconnect the bot if the queue is empty
     final player = event.node.players[event.guildId];
-    if (player != null && player.queue.isEmpty) {
-      event.node.destroy(event.guildId);
+    if (player != null && player.queue.isEmpty && player.nowPlaying == null) {
+      final guildId = event.guildId;
+      final hasGuild = event.client.guilds.containsKey(guildId);
+
+      if (!hasGuild) {
+        return;
+      }
+
+      final guild = await event.client.httpEndpoints.fetchGuild(guildId);
+
+      event.node.destroy(guild.id);
+      guild.shard.changeVoiceState(guild.id, null);
+
+      // delete the current radio station from the list, if it exists
+      SongRecognitionService.instance.deleteRadioFromList(guild.id);
+
+      Logger('MusicService').info(
+        'Disconnected from voice channel in guild ${guild.id} '
+        '(${guild.name})',
+      );
     }
   }
 

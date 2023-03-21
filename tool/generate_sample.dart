@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:radio_browser_api/radio_browser_api.dart';
 
 Future<void> generateSample({
-  required String radioId,
+  required Station radio,
   required String outputPath,
   int durationInSeconds = 10,
 }) async {
-  final url =
-      'https://radio.garden/api/ara/content/listen/$radioId/channel.mp3';
+  final url = radio.urlResolved ?? radio.url;
   final uri = Uri.parse(url);
 
   final client = http.Client();
@@ -18,7 +18,7 @@ Future<void> generateSample({
 
   StreamSubscription<List<int>>? streamSubscription;
 
-  final bitRate = int.parse(response.headers['icy-br'] ?? '128');
+  final bitRate = radio.bitrate;
 
   final outputFile = File(outputPath);
   if (!outputFile.existsSync()) outputFile.createSync();
@@ -60,7 +60,38 @@ Future<void> main(List<String> args) async {
 
   await generateSample(
     outputPath: 'sample.mp3',
-    radioId: '-AE_qyMq',
+    radio: Station(
+      changeUUID: '',
+      stationUUID: '',
+      serverUUID: '',
+      name: "America's Greatest 80s Hits",
+      url: 'https://ais-edge49-nyc04.cdnstream.com/2281_128.mp3',
+      urlResolved: null,
+      homepage: null,
+      favicon: null,
+      tags: null,
+      country: '',
+      countryCode: '',
+      state: null,
+      language: null,
+      languageCodes: null,
+      votes: 0,
+      lastChangeTime: DateTime(2023),
+      codec: null,
+      bitrate: 128,
+      hls: false,
+      lastCheckOk: true,
+      lastCheckTime: null,
+      lastCheckOkTime: null,
+      lastLocalCheckTime: null,
+      clickTimestamp: null,
+      clickCount: 10,
+      clickTrend: 10,
+      sslError: false,
+      geoLat: null,
+      geoLong: null,
+      hasExtendedInfo: false,
+    ),
   );
 
   log('Done in ${stopwatch.elapsedMilliseconds}ms');

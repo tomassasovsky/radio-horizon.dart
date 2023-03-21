@@ -110,8 +110,7 @@ ChatGroup music = ChatGroup(
           );
         }
 
-        SongRecognitionService.instance
-            .deleteRadioFromList(context.guild!.id.toString());
+        SongRecognitionService.instance.deleteRadioFromList(context.guild!.id);
       }),
       localizedDescriptions: localizedValues(
         (translations) => translations.commands.music.children.play.description,

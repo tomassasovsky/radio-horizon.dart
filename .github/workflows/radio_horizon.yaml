@@ -1,9 +1,9 @@
-name: radio_garden
+name: radio_horizon
 
 on:
   pull_request:
     paths:
-      - ".github/workflows/radio_garden.yaml"
+      - ".github/workflows/radio_horizon.yaml"
       - "lib/**"
       - "test/**"
       - "pubspec.yaml"
@@ -11,7 +11,7 @@ on:
     branches:
       - master
     paths:
-      - ".github/workflows/radio_garden.yaml"
+      - ".github/workflows/radio_horizon.yaml"
       - "lib/**"
       - "test/**"
       - "pubspec.yaml"

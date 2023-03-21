@@ -3,7 +3,7 @@
     "info": {
       "command": "info",
       "description": "Muestra información sobre el bot",
-      "addToServer": "Añadir Radio Garden a mi servidor",
+      "addToServer": "Añadir Radio Horizon a mi servidor",
       "shardOf": "Fragmento $index de $count",
       "cachedGuilds": "Servidores en caché",
       "cachedUsers": "Usuarios en caché",

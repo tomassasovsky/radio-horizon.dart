@@ -8,7 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  ENTRY_FILE: radio_garden_production.dart
+  ENTRY_FILE: radio_horizon_production.dart
 
 jobs:
   build-and-push-image:

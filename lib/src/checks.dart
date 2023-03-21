@@ -5,7 +5,7 @@
 // https://opensource.org/licenses/MIT.
 
 import 'package:nyxx_commands/nyxx_commands.dart';
-import 'package:radio_garden/radio_garden.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 
 final administratorCheck = UserCheck.anyId(adminIds, 'Administrator check');
 

@@ -1,11 +1,11 @@
 version: '3.9'
 services:
-  radio_garden:
+  radio_horizon:
     build:
       context: .
       args:
-          dart_entryfile: radio_garden_development.dart
-    container_name: radio_garden
+          dart_entryfile: radio_horizon_development.dart
+    container_name: radio_horizon
     expose:
       - 8080
     env_file:

@@ -11,8 +11,8 @@ import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:nyxx_pagination/nyxx_pagination.dart';
 import 'package:radio_browser_api/radio_browser_api.dart';
-import 'package:radio_garden/radio_garden.dart';
-import 'package:radio_garden/src/checks.dart';
+import 'package:radio_horizon/radio_horizon.dart';
+import 'package:radio_horizon/src/checks.dart';
 import 'package:retry/retry.dart';
 
 final _enRadioCommand = AppLocale.en.translations.commands.radio;

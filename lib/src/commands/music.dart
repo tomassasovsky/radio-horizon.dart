@@ -9,8 +9,8 @@ import 'dart:async';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
-import 'package:radio_garden/radio_garden.dart';
-import 'package:radio_garden/src/checks.dart';
+import 'package:radio_horizon/radio_horizon.dart';
+import 'package:radio_horizon/src/checks.dart';
 
 final _enMusicCommand = AppLocale.en.translations.commands.music;
 final _enPlayCommand = _enMusicCommand.children.play;

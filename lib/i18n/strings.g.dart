@@ -196,7 +196,7 @@ class StringsCommandsInfoEn {
   // Translations
   String get command => 'info';
   String get description => 'Show information about the current project';
-  String get addToServer => 'Add Radio Garden to your server';
+  String get addToServer => 'Add Radio Horizon to your server';
   String shardOf({required Object index, required Object count}) =>
       'Shard ${index} of ${count}';
   String get cachedGuilds => 'Cached guilds';
@@ -672,7 +672,7 @@ class StringsCommandsInfoEs extends StringsCommandsInfoEn {
   @override
   String get description => 'Muestra información sobre el bot';
   @override
-  String get addToServer => 'Añadir Radio Garden a mi servidor';
+  String get addToServer => 'Añadir Radio Horizon a mi servidor';
   @override
   String shardOf({required Object index, required Object count}) =>
       'Fragmento ${index} de ${count}';
@@ -1212,7 +1212,7 @@ extension on StringsEn {
       case 'commands.info.description':
         return 'Show information about the current project';
       case 'commands.info.addToServer':
-        return 'Add Radio Garden to your server';
+        return 'Add Radio Horizon to your server';
       case 'commands.info.shardOf':
         return ({required Object index, required Object count}) =>
             'Shard ${index} of ${count}';
@@ -1411,7 +1411,7 @@ extension on StringsEs {
       case 'commands.info.description':
         return 'Muestra información sobre el bot';
       case 'commands.info.addToServer':
-        return 'Añadir Radio Garden a mi servidor';
+        return 'Añadir Radio Horizon a mi servidor';
       case 'commands.info.shardOf':
         return ({required Object index, required Object count}) =>
             'Fragmento ${index} de ${count}';

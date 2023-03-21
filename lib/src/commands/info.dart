@@ -9,7 +9,7 @@ import 'dart:io';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
-import 'package:radio_garden/radio_garden.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 import 'package:time_ago_provider/time_ago_provider.dart';
 
 String getCurrentMemoryString() {
@@ -62,10 +62,10 @@ ChatCommand info = ChatCommand(
         author
           ..name = client.self.tag
           ..iconUrl = client.self.avatarURL()
-          ..url = 'https://github.com/tomassasovsky/radio-garden.dart';
+          ..url = 'https://github.com/tomassasovsky/radio-horizon.dart';
       })
       ..addFooter((footer) {
-        footer.text = 'Radio Garden'
+        footer.text = 'Radio Horizon'
             ' | ${commandTranslations.shardOf(
           index: context.guild?.shard.id ?? 0 + 1,
           count: client.shards,

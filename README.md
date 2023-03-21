@@ -1,9 +1,9 @@
-## Radio Garden Discord Bot
+## Radio Horizon
 
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
 [![License: MIT][license_badge]][license_link]
 
-**Radio Garden Discord Bot** is a Discord radio playing bot that brings a whole new level of listening experience to your server. With its powerful song recognition technology, radio-garden.dart can identify and announce the songs currently playing on the radio, making it easy to keep track of your favorite tunes. Whether you're a music lover, DJ or just looking for an easy way to discover new music, radio-garden.dart is the perfect companion.
+**Radio Horizon** is a Discord radio playing bot that brings a whole new level of listening experience to your server. With its powerful song recognition technology, radio-horizon.dart can identify and announce the songs currently playing on the radio, making it easy to keep track of your favorite tunes. Whether you're a music lover, DJ or just looking for an easy way to discover new music, radio-horizon.dart is the perfect companion.
 
 ## Features
 - A wide range of radio stations from around the world
@@ -40,7 +40,7 @@ By running the server in a dev container you'll be able to use zsh and you'll no
 From there you can run:
 
 ```dart
-dart bin/radio_garden_development.dart
+dart bin/radio_horizon_development.dart
 ```
 
 
@@ -73,7 +73,7 @@ $ open coverage/index.html
 
 ## Credits
 
-Huge shoutout to the developers of [nyxx](https://github.com/nyxx-discord) and [Radio Garden](https://radio.garden) for their incredible work. Without the amazing contributions of these developers, creating our Discord radio-playing bot wouldn't have been possible.
+Huge shoutout to the developers of [nyxx](https://github.com/nyxx-discord) and [Radio Horizon](https://radio.horizon) for their incredible work. Without the amazing contributions of these developers, creating our Discord radio-playing bot wouldn't have been possible.
 
 ## Contact Us
 

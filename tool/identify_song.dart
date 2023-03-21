@@ -6,7 +6,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:radio_garden/radio_garden.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 
 Future<ShazamSongRecognition> identify(Uint8List data) async {
   final sample = data.buffer.asUint8List();

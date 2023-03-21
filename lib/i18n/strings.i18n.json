@@ -3,7 +3,7 @@
     "info": {
       "command": "info",
       "description": "Show information about the current project",
-      "addToServer": "Add Radio Garden to your server",
+      "addToServer": "Add Radio Horizon to your server",
       "shardOf": "Shard $index of $count",
       "cachedGuilds": "Cached guilds",
       "cachedUsers": "Cached users",

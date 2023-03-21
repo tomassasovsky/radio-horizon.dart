@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:radio_garden/radio_garden.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 
 export 'action.dart';
 export 'artist.dart';

@@ -1,6 +1,6 @@
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:nyxx/nyxx.dart';
-import 'package:radio_garden/src/settings.dart';
+import 'package:radio_horizon/src/settings.dart';
 
 class DatabaseService {
   DatabaseService._(this._client) {

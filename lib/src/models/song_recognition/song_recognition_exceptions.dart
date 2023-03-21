@@ -8,7 +8,7 @@ class SongRecognitionException implements Exception {
   const SongRecognitionException();
 }
 
-/// Throws when there is no RadioGardenSearchResponse associated with the
+/// Throws when there is no RadioHorizonSearchResponse associated with the
 /// SongRecognitionService
 class RadioNotPlayingException extends SongRecognitionException {
   const RadioNotPlayingException();

@@ -1,10 +1,10 @@
-name: radio_garden
-description: Radio Garden discord bot.
+name: radio_horizon
+description: Radio Horizon discord bot.
 version: 0.1.1
-homepage: https://github.com/tomassasovsky/radio_garden
-repository: https://github.com/tomassasovsky/radio_garden
-documentation: https://github.com/tomassasovsky/radio_garden
-issue_tracker: https://github.com/tomassasovsky/radio_garden/issues
+homepage: https://github.com/tomassasovsky/radio_horizon
+repository: https://github.com/tomassasovsky/radio_horizon
+documentation: https://github.com/tomassasovsky/radio_horizon
+issue_tracker: https://github.com/tomassasovsky/radio_horizon/issues
 publish_to: none
 
 environment:

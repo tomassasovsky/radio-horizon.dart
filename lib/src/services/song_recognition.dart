@@ -12,7 +12,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:nyxx/nyxx.dart';
 import 'package:radio_browser_api/radio_browser_api.dart';
-import 'package:radio_garden/radio_garden.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 import 'package:uuid/uuid.dart';
 
 class SongRecognitionService {

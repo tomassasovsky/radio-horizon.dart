@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:nyxx/nyxx.dart';
-import 'package:radio_garden/radio_garden.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 
 part 'shazam_result.g.dart';
 

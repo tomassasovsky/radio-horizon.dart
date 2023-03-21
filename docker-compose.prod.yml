@@ -1,8 +1,8 @@
 version: '3.9'
 services:
-  radio_garden:
-    image: ghcr.io/tomassasovsky/radio-garden.dart:latest
-    container_name: radio_garden
+  radio_horizon:
+    image: ghcr.io/tomassasovsky/radio-horizon.dart:latest
+    container_name: radio_horizon
     expose:
       - 8080
     env_file:

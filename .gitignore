@@ -5,7 +5,6 @@
 .packages
 build/
 pubspec.lock
-dbdata/
 
 # Files generated during tests
 .test_coverage.dart

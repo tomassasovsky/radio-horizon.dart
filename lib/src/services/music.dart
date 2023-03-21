@@ -146,12 +146,26 @@ class MusicService {
   }
 
   Future<void> _trackEnded(ITrackEndEvent event) async {
-    await Future<void>.delayed(const Duration(minutes: 5));
+    await Future<void>.delayed(const Duration(seconds: 30));
+
+    if (!event.node.players.containsKey(event.guildId)) {
+      return;
+    }
 
     // disconnect the bot if the queue is empty
     final player = event.node.players[event.guildId];
-    if (player != null && player.queue.isEmpty) {
-      event.node.destroy(event.guildId);
+    if (player != null && player.queue.isEmpty && player.nowPlaying == null) {
+      final guildId = event.guildId;
+      final hasGuild = event.client.guilds.containsKey(guildId);
+
+      if (!hasGuild) {
+        return;
+      }
+
+      final guild = await event.client.httpEndpoints.fetchGuild(guildId);
+
+      event.node.destroy(guild.id);
+      guild.shard.changeVoiceState(guild.id, null);
     }
   }
 

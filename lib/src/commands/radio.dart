@@ -241,8 +241,17 @@ FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;
-  final response = await _radioBrowserClient.getStationsByName(name: query);
-  //.timeout(const Duration(milliseconds: 2500));
+  late final RadioBrowserListResponse<Station> response;
+  if (query.isEmpty) {
+    response = await _radioBrowserClient.getAllStations(
+      parameters: const InputParameters(limit: 10),
+    );
+  } else {
+    response = await _radioBrowserClient.getStationsByName(
+      name: query,
+      parameters: const InputParameters(limit: 10),
+    );
+  }
 
   final hits = response.items;
 

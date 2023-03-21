@@ -7,7 +7,7 @@ services:
           dart_entryfile: radio_garden_development.dart
     container_name: radio_garden
     expose:
-      - 8081
+      - 8080
     env_file:
      - .env/.env.development
     links:
@@ -23,34 +23,3 @@ services:
       - 2333
     volumes:
      - ./lavalink.yml:/opt/Lavalink/application.yml
-
-  dbserver:
-    image: mysql
-    container_name: dbserver
-    environment:
-      MYSQL_DATABASE: radio # pragma: allowlist secret
-      MYSQL_USER: radiouser # pragma: allowlist secret
-      MYSQL_PASSWORD: password # pragma: allowlist secret
-      MYSQL_ROOT_PASSWORD: "12345678" # pragma: allowlist secret
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./dbdata:/var/lib/mysql
-    command: ["mysqld",
-              "--character-set-server=utf8mb4",
-              "--collation-server=utf8mb4_unicode_ci"]
-
-  radiobrowserapi:
-    image: segleralex/radiobrowser-api-rust:latest
-    container_name: radiobrowserapi
-    environment:
-      - CONFIG_FILE=/app/radiobrowser_config/config.toml
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./radiobrowser_config:/app/radiobrowser_config
-    links:
-      - dbserver
-    depends_on:
-      - dbserver
-    command: radiobrowser-api-rust -vvv

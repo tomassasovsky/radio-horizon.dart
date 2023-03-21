@@ -36,7 +36,7 @@ class MusicService {
             port: port,
             password: password,
             ssl: ssl,
-            clientName: 'RadioGarden',
+            clientName: 'RadioHorizon',
             shards: shards,
             // Bump up connection attempts to avoid timeouts in Docker
             maxConnectAttempts: 10,
@@ -166,6 +166,14 @@ class MusicService {
 
       event.node.destroy(guild.id);
       guild.shard.changeVoiceState(guild.id, null);
+
+      // delete the current radio station from the list, if it exists
+      SongRecognitionService.instance.deleteRadioFromList(guild.id);
+
+      Logger('MusicService').info(
+        'Disconnected from voice channel in guild ${guild.id} '
+        '(${guild.name})',
+      );
     }
   }
 

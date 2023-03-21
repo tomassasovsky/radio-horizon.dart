@@ -19,6 +19,10 @@ final _enRadioCommand = AppLocale.en.translations.commands.radio;
 final _enPlayCommand = _enRadioCommand.children.play;
 final _enRecognizeCommand = _enRadioCommand.children.recognize;
 
+final uuidRegExp = RegExp(
+  '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
+);
+
 const _radioBrowserClient =
     RadioBrowserApi.fromHost('de1.api.radio-browser.info');
 
@@ -68,8 +72,16 @@ ChatGroup radio = ChatGroup(
         final node = MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id);
 
-        final stations =
-            await _radioBrowserClient.getStationsByName(name: query);
+        late final RadioBrowserListResponse<Station> stations;
+
+        if (uuidRegExp.hasMatch(query)) {
+          final match = uuidRegExp.stringMatch(query)!;
+          stations =
+              await _radioBrowserClient.getStationsByUUID(uuids: [match]);
+        } else {
+          stations = await _radioBrowserClient.getStationsByName(name: query);
+        }
+
         if (stations.items.isEmpty) {
           await context.respond(
             MessageBuilder.content(
@@ -104,7 +116,7 @@ ChatGroup radio = ChatGroup(
           ).startPlaying();
 
         SongRecognitionService.instance
-            .setCurrentRadio(context.guild!.id.toString(), bestMatch);
+            .setCurrentRadio(context.guild!.id, bestMatch);
 
         final embed = EmbedBuilder()
           ..color = getRandomColor()
@@ -135,7 +147,7 @@ ChatGroup radio = ChatGroup(
 
         try {
           final recognitionService = SongRecognitionService.instance;
-          final guildId = context.guild!.id.toString();
+          final guildId = context.guild!.id;
 
           final stopwatch = Stopwatch()..start();
 
@@ -146,7 +158,7 @@ ChatGroup radio = ChatGroup(
           await retry(
             () async {
               result = await recognitionService.identify(
-                guildRadio.radio.urlResolved ?? guildRadio.radio.url,
+                guildRadio.station.urlResolved ?? guildRadio.station.url,
                 recognitionSampleDuration,
               );
             },
@@ -262,7 +274,7 @@ FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
   return hits.map(
     (e) => ArgChoiceBuilder(
       e.name,
-      e.name,
+      '${e.name} (${e.stationUUID})',
     ),
   );
 }

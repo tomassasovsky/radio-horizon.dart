@@ -14,7 +14,7 @@
       "memoryUsage": "Memory usage (current/RSS)",
       "uptime": "Uptime",
       "currentPlayers": "Current players",
-      "gatewayLatency": "Latencia de la puerta de enlace"
+      "gatewayLatency": "Gateway latency"
     },
     "music": {
       "command": "music",

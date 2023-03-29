@@ -145,7 +145,7 @@ class PrometheusService {
           : context.command.name;
 
       totalCommands.labels([name]).inc();
-      if (context is IInteractionContext) {
+      if (context is IInteractionCommandContext) {
         totalSlashCommands.labels([name]).inc();
       } else {
         totalTextCommands.labels([name]).inc();
@@ -186,7 +186,7 @@ class PrometheusService {
     commands.onPreCall
         .listen((context) => contextStartTimes[context] = DateTime.now());
 
-    void handleDone(IContext context) {
+    void handleDone(ICommandContext context) {
       final start = contextStartTimes[context];
 
       if (start == null) {

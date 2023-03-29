@@ -86,7 +86,7 @@
           "command": "reconocer",
           "description": "Reconoce la cancion que se está reproduciendo en la radio",
           "requestedBy": "Pedido por $mention",
-          "artistField": "Artista",
+          "radioStationField": "Estación",
           "genreField": "Género",
           "computationalTimeField": "Tiempo de cálculo",
           "errors": {

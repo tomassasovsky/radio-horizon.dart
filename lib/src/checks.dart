@@ -5,50 +5,61 @@
 // https://opensource.org/licenses/MIT.
 
 import 'package:nyxx_commands/nyxx_commands.dart';
-import 'package:radio_garden/radio_garden.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 
-final administratorCheck = UserCheck.anyId(adminIds, 'Administrator check');
+final administratorCheck = UserCheck.anyId(
+  adminIds,
+  name: 'Administrator check',
+);
 
 final connectedToAVoiceChannelCheck = Check(
-  (IContext context) async {
-    final selfMember = await context.guild!.selfMember.getOrDownload();
+  (ICommandContextData context) async {
+    final selfMember = await context.guild?.selfMember.getOrDownload();
+
+    if (selfMember == null) {
+      return false;
+    }
 
     if (selfMember.voiceState == null ||
-        selfMember.voiceState!.channel == null) {
+        selfMember.voiceState?.channel == null) {
       return false;
     }
     return true;
   },
-  'musicConnectedToVC',
+  name: 'musicConnectedToVC',
 );
 
 final notConnectedToAVoiceChannelCheck = Check(
-  (IContext context) async {
-    final selfMember = await context.guild!.selfMember.getOrDownload();
+  (ICommandContextData context) async {
+    final selfMember = await context.guild?.selfMember.getOrDownload();
+
+    if (selfMember == null) {
+      return false;
+    }
 
     if (selfMember.voiceState == null ||
-        selfMember.voiceState!.channel == null) {
+        selfMember.voiceState?.channel == null) {
       return true;
     }
     return false;
   },
-  'musicNotConnectedToVC',
+  name: 'musicNotConnectedToVC',
 );
 
 final userConnectedToVoiceChannelCheck = Check(
-  (IContext context) {
-    final memberVoiceState = context.member!.voiceState;
+  (ICommandContextData context) {
+    final memberVoiceState = context.member?.voiceState;
 
     if (memberVoiceState == null || memberVoiceState.channel == null) {
       return false;
     }
     return true;
   },
-  'musicUserConnectedToVC',
+  name: 'musicUserConnectedToVC',
 );
 
 final sameVoiceChannelOrDisconnectedCheck = Check(
-  (IContext context) async {
+  (ICommandContextData context) async {
     // If this is an interaction, acknowledge it just in case the check
     // takes too long to run.
     if (context is InteractionChatContext) {
@@ -56,19 +67,19 @@ final sameVoiceChannelOrDisconnectedCheck = Check(
     }
 
     final selfMemberVoiceState =
-        (await context.guild!.selfMember.getOrDownload()).voiceState;
+        (await context.guild?.selfMember.getOrDownload())?.voiceState;
     // The upper check should be executed before, so its okay to
     // assume the voice state exists.
-    final memberVoiceState = context.member!.voiceState!;
+    final memberVoiceState = context.member?.voiceState;
 
     if (selfMemberVoiceState == null || selfMemberVoiceState.channel == null) {
       return true;
     }
 
-    if (selfMemberVoiceState.channel!.id != memberVoiceState.channel!.id) {
+    if (selfMemberVoiceState.channel?.id != memberVoiceState?.channel?.id) {
       return false;
     }
     return true;
   },
-  'musicSameVC',
+  name: 'musicSameVC',
 );

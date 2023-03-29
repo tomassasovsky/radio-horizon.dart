@@ -6,20 +6,30 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'package:http/http.dart' as http;
-import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:nyxx_pagination/nyxx_pagination.dart';
-import 'package:radio_garden/radio_garden.dart';
-import 'package:radio_garden/src/checks.dart';
-import 'package:radio_garden/src/util.dart';
+import 'package:radio_browser_api/radio_browser_api.dart';
+import 'package:radio_horizon/radio_horizon.dart';
+import 'package:radio_horizon/src/checks.dart';
+import 'package:radio_horizon/src/models/song_recognition/current_station_info.dart';
 import 'package:retry/retry.dart';
 
+final _enRadioCommand = AppLocale.en.translations.commands.radio;
+final _enPlayCommand = _enRadioCommand.children.play;
+final _enRecognizeCommand = _enRadioCommand.children.recognize;
+
+final uuidRegExp = RegExp(
+  '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
+);
+
+const _radioBrowserClient =
+    RadioBrowserApi.fromHost('de1.api.radio-browser.info');
+
 ChatGroup radio = ChatGroup(
-  'radio',
-  'Radio related commands',
+  _enRadioCommand.command,
+  _enRadioCommand.description,
   checks: [
     GuildCheck.all(),
     userConnectedToVoiceChannelCheck,
@@ -27,14 +37,24 @@ ChatGroup radio = ChatGroup(
   ],
   children: [
     ChatCommand(
-      'play',
-      'Plays music from the specified radio station',
+      _enPlayCommand.command,
+      _enPlayCommand.description,
       id('radio-play', (
         IChatContext context,
         @Description('The name of the Radio Station to play')
-        @Autocomplete(_autocompleteCallback)
+        @Autocomplete(autocompleteRadioQuery)
             String query,
       ) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).radio.children.play;
+
+        await context.respond(
+          MessageBuilder.content(
+            commandTranslations.searching(query: query),
+          ),
+        );
+
         await usage?.sendEvent(
           'ChatCommand:radio-play',
           'call',
@@ -53,17 +73,35 @@ ChatGroup radio = ChatGroup(
         final node = MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id);
 
-        final radio = await radioByName(query);
-        if (radio == null || (radio.hits?.hits?.isEmpty ?? true)) {
-          await context
-              .respond(MessageBuilder.content('No results were found'));
+        late final RadioBrowserListResponse<Station> stations;
+
+        if (uuidRegExp.hasMatch(query)) {
+          final match = uuidRegExp.stringMatch(query)!;
+          stations =
+              await _radioBrowserClient.getStationsByUUID(uuids: [match]);
+        } else {
+          stations = await _radioBrowserClient.getStationsByName(name: query);
+        }
+
+        if (stations.items.isEmpty) {
+          await context.respond(
+            MessageBuilder.content(
+              commandTranslations.noResults(query: query),
+            ),
+          );
           return;
         }
 
-        final result = await node.searchTracks(radio.uri!);
+        final bestMatch = stations.items.first;
+
+        final result =
+            await node.searchTracks(bestMatch.urlResolved ?? bestMatch.url);
         if (result.tracks.isEmpty) {
-          await context
-              .respond(MessageBuilder.content('We could not find that track'));
+          await context.respond(
+            MessageBuilder.content(
+              commandTranslations.noResults(query: query),
+            ),
+          );
           return;
         }
 
@@ -79,93 +117,141 @@ ChatGroup radio = ChatGroup(
           ).startPlaying();
 
         SongRecognitionService.instance
-            .setCurrentRadio(context.guild!.id.toString(), radio);
+            .setCurrentRadio(context.guild!.id, bestMatch);
 
         final embed = EmbedBuilder()
           ..color = getRandomColor()
-          ..title = 'Started playing'
-          ..description = 'Radio ${radio.title} '
-              'started playing.\n\nRequested by ${context.member?.mention}';
+          ..title = commandTranslations.startedPlaying
+          ..description = commandTranslations.startedPlayingDescription(
+            radio: bestMatch.name,
+            mention: context.member?.mention ?? '(Unknown)',
+          );
 
         await context.respond(MessageBuilder.embed(embed));
       }),
+      localizedDescriptions: localizedValues(
+        (translations) => translations.commands.radio.children.play.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.radio.children.play.command,
+      ),
     ),
     ChatCommand(
-      'recognize',
-      'Recognize the current song playing',
+      _enRecognizeCommand.command,
+      _enRecognizeCommand.description,
       id('radio-recognize', (
         IChatContext context,
       ) async {
+        context as InteractionChatContext;
+        final translations = getCommandTranslations(context);
+        final commandTranslations = translations.radio.children.recognize;
+        CurrentStationInfo? stationInfo;
+        MusicLinksResponse? linksResponse;
+
         try {
           final recognitionService = SongRecognitionService.instance;
-          final guildId = context.guild!.id.toString();
+          final guildId = context.guild!.id;
 
           final stopwatch = Stopwatch()..start();
-
-          late ShazamResult result;
           var recognitionSampleDuration = 10;
 
-          await retry(
-            () async {
-              final guildRadio = recognitionService.currentRadio(guildId);
-              result = await recognitionService.identify(
-                guildRadio.radio.radioId,
-                recognitionSampleDuration,
-              );
-            },
-            maxDelay: const Duration(minutes: 2),
-            retryIf: (e) => true,
-            onRetry: (e) {
-              recognitionSampleDuration +=
-                  (recognitionSampleDuration * 0.25).toInt();
-            },
-          ).timeout(const Duration(minutes: 2));
+          final guildRadio = recognitionService.currentRadio(guildId);
 
-          final links = await SongRecognitionService.instance
-              .getMusicLinks('${result.title} ${result.subtitle}')
-              .onError((error, stackTrace) => MusicLinksResponse.empty());
+          try {
+            final info =
+                await recognitionService.getCurrentStationInfo(guildRadio);
+            if (!info.hasTitle) {
+              throw Exception('No title');
+            }
+            final node = MusicService.instance.cluster
+                .getOrCreatePlayerNode(context.guild!.id);
+            final tracks = await node.autoSearch(info.title!);
+            stationInfo = info.copyWith(
+              image:
+                  'https://img.youtube.com/vi/${tracks.tracks.first.info?.identifier}/hqdefault.jpg',
+            );
+          } catch (e) {
+            ShazamResult? result;
+            await retry(
+              () async {
+                result = await recognitionService.identify(
+                  guildRadio.station.urlResolved ?? guildRadio.station.url,
+                  recognitionSampleDuration,
+                );
+              },
+              maxDelay: const Duration(minutes: 2),
+              retryIf: (e) => true,
+              onRetry: (e) {
+                recognitionSampleDuration +=
+                    (recognitionSampleDuration * 0.25).toInt();
+              },
+            ).timeout(const Duration(minutes: 1));
+
+            if (result == null) {
+              await context.respond(
+                MessageBuilder.embed(
+                  EmbedBuilder()
+                    ..color = DiscordColor.red
+                    ..title = commandTranslations.errors.noResults,
+                ),
+              );
+              return null;
+            }
+
+            stationInfo =
+                CurrentStationInfo.fromShazamResult(result!, guildRadio);
+          }
+
+          try {
+            linksResponse = await SongRecognitionService.instance
+                .getMusicLinks(stationInfo.title!);
+          } catch (e) {
+            await usage?.sendEvent('ChatCommand:radio-recognize', 'links');
+          }
 
           final color = getRandomColor();
           stopwatch.stop();
 
           final embed = EmbedBuilder()
             ..color = color
-            ..title = result.title
-            ..description = 'Requested by ${context.member?.mention}'
-            ..addField(
-              name: 'Artist',
-              content: result.subtitle,
+            ..title = stationInfo.title
+            ..description = commandTranslations.requestedBy(
+              mention: context.member?.mention ?? '(Unknown)',
             )
-            ..imageUrl = result.share?.image;
+            ..addField(
+              name: commandTranslations.radioStationField,
+              content: stationInfo.name,
+            )
+            ..thumbnailUrl = stationInfo.image;
 
-          final genre = result.genres?.primary;
+          final genre = stationInfo.genre;
           if (genre != null) {
             embed.addField(
-              name: 'Genre',
+              name: commandTranslations.genreField,
               content: genre,
             );
           }
 
           embed.addField(
-            name: 'Computational time',
+            name: commandTranslations.computationalTimeField,
             content: '${stopwatch.elapsedMilliseconds}ms',
           );
 
-          final lyricsPages = result.lyricsPages(color: color);
+          final lyricsPages = stationInfo.lyricsPages(color: color);
           if (lyricsPages == null || lyricsPages.isEmpty) {
             final builder = ComponentMessageBuilder()..embeds = [embed];
-            links.componentRows.forEach(builder.addComponentRow);
+            linksResponse?.componentRows.forEach(builder.addComponentRow);
             return await context.respond(builder);
           }
 
           final paginator = EmbedComponentPagination(
-            context.commands.interactions,
+            context.commands.interactions!,
             [embed, ...lyricsPages],
             user: context.user,
           );
 
           final messageBuilder = paginator.initMessageBuilder();
-          links.componentRows.forEach(messageBuilder.addComponentRow);
+          linksResponse?.componentRows.forEach(messageBuilder.addComponentRow);
 
           await context.respond(messageBuilder);
         } catch (e, stacktrace) {
@@ -173,63 +259,76 @@ ChatGroup radio = ChatGroup(
             MessageBuilder.embed(
               EmbedBuilder()
                 ..color = DiscordColor.red
-                ..title = 'An error has occurred'
-                ..description = handleRecognitionExceptions(e, stacktrace),
+                ..title = commandTranslations.errors.title
+                ..description =
+                    handleRecognitionExceptions(e, stacktrace, translations),
             ),
           );
         }
       }),
+      localizedDescriptions: localizedValues(
+        (translations) =>
+            translations.commands.radio.children.recognize.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) =>
+            translations.commands.radio.children.recognize.command,
+      ),
     ),
   ],
+  localizedDescriptions: localizedValues(
+    (translations) => translations.commands.radio.description,
+  ),
+  localizedNames: localizedValues(
+    (translations) => translations.commands.radio.command,
+  ),
 );
 
-FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
+FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;
-  final response = await radioByName(query)
-      .timeout(const Duration(milliseconds: 2500), onTimeout: () => null);
+  late final RadioBrowserListResponse<Station> response;
+  if (query.isEmpty) {
+    response = await _radioBrowserClient.getAllStations(
+      parameters: const InputParameters(limit: 10),
+    );
+  } else {
+    response = await _radioBrowserClient.getStationsByName(
+      name: query,
+      parameters: const InputParameters(limit: 10),
+    );
+  }
 
-  final hits = response?.hits?.hits;
+  final hits = response.items;
 
-  if (hits == null || hits.isEmpty) {
+  if (hits.isEmpty) {
     return null;
   }
 
   return hits.map(
     (e) => ArgChoiceBuilder(
-      e.source?.title ?? 'NO TITLE',
-      '${e.source?.title} (${e.source?.url.split('/').last})',
+      e.name,
+      '${e.name} (${e.stationUUID})',
     ),
   );
 }
 
-Future<RadioGardenSearchResponse?> radioByName(String name) async {
-  const searchUrl = 'http://radio.garden/api/search?q=';
-
-  Logger('Radio#radioByName').info('Searching for radio station $name');
-  final response = await http.get(
-    Uri.parse('$searchUrl$name'),
-  );
-
-  final searchResponse = radioGardenSearchResponseFromJson(response.body);
-
-  Logger('Radio#radioByName').info(
-    'Found ${searchResponse.hits?.hits?.length ?? 0} radio stations for $name',
-  );
-  return searchResponse;
-}
-
-String handleRecognitionExceptions(Object e, StackTrace stackTrace) {
+String handleRecognitionExceptions(
+  Object e,
+  StackTrace stackTrace,
+  StringsCommandsEn commandTranslations,
+) {
   log('Exception: ', error: e, stackTrace: stackTrace);
+  final errors = commandTranslations.radio.children.recognize.errors;
 
   switch (e.runtimeType) {
     case RadioNotPlayingException:
-      return "Couldn't find a radio playing!";
+      return errors.noRadioPlaying;
     case RadioCantCommunicateWithServer:
-      return 'There was communicating with the server, please try again.';
+      return errors.radioCantCommunicate;
     case RadioCantIdentifySongException:
     default:
-      return "Couldn't identify the current song playing :(";
+      return errors.noResults;
   }
 }

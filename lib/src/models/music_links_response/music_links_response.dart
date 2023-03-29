@@ -1,33 +1,35 @@
 import 'dart:convert';
 
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
-import 'package:radio_garden/radio_garden.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 
 export 'platform.dart';
 export 'social.dart';
 
-part 'music_links_response.freezed.dart';
 part 'music_links_response.g.dart';
 
 MusicLinksResponse musicLinksResponseFromJson(String str) =>
     MusicLinksResponse.fromJson(json.decode(str) as Map);
 
-@freezed
-class MusicLinksResponse with _$MusicLinksResponse {
-  const factory MusicLinksResponse({
-    String? image,
-    String? name,
-    List<MusicLinksPlatform>? platforms,
-    List<MusicLinksSocial>? social,
-  }) = _MusicLinksResponse;
-
-  const MusicLinksResponse._();
+@JsonSerializable()
+class MusicLinksResponse {
+  const MusicLinksResponse({
+    this.image,
+    this.name,
+    this.platforms,
+    this.social,
+  });
 
   factory MusicLinksResponse.fromJson(Map<dynamic, dynamic> json) =>
       _$MusicLinksResponseFromJson(json.cast());
 
   factory MusicLinksResponse.empty() => const MusicLinksResponse();
+
+  final String? image;
+  final String? name;
+  final List<MusicLinksPlatform>? platforms;
+  final List<MusicLinksSocial>? social;
 
   Set<MusicLinksPlatform> get uniquePlatforms {
     if (platforms == null) return {};

@@ -1,0 +1,142 @@
+{
+  "commands": {
+    "info": {
+      "command": "info",
+      "description": "Show information about the current project",
+      "addToServer": "Add Radio Horizon to your server",
+      "shardOf": "Shard $index of $count",
+      "cachedGuilds": "Cached guilds",
+      "cachedUsers": "Cached users",
+      "cachedChannels": "Cached channels",
+      "cachedVoiceStates": "Cached voice states",
+      "shardCount": "Shard count",
+      "cachedMessages": "Cached messages",
+      "memoryUsage": "Memory usage (current/RSS)",
+      "uptime": "Uptime",
+      "currentPlayers": "Current players",
+      "gatewayLatency": "Gateway latency"
+    },
+    "music": {
+      "command": "music",
+      "description": "Music related commands",
+      "children": {
+        "play": {
+          "command": "play",
+          "description": "Plays music based on the given query",
+          "queryDescription": "The name/url of the song/playlist to play",
+          "noResults": "No results found for $query",
+          "playlistEnqueued": "Playlist $name (${query}) enqueued",
+          "songEnqueued": "Song $title (${query}) enqueued"
+        },
+        "skip": {
+          "command": "skip",
+          "description": "Skips the current song",
+          "skipped": "Skipped current track",
+          "nothingPlaying": "The queue is clear!"
+        },
+        "stop": {
+          "command": "stop",
+          "description": "Stops the current player and clears its track queue",
+          "stopped": "Player stopped"
+        },
+        "leave": {
+          "command": "leave",
+          "description": "Leaves the current voice channel",
+          "left": "Left voice channel",
+          "leftDueToInactivity": "Left voice channel due to inactivity"
+        },
+        "join": {
+          "command": "join",
+          "description": "Joins the voice channel you are in",
+          "joined": "Joined voice channel"
+        },
+        "volume": {
+          "command": "volume",
+          "description": "Sets the volume of the current player",
+          "volumeDescription": "The volume to set, this value must be contained between 0 and 1000",
+          "volumeSet": "Volume set to $volume"
+        },
+        "pause": {
+          "command": "pause",
+          "description": "Pauses the current player",
+          "paused": "Player paused"
+        },
+        "resume": {
+          "command": "resume",
+          "description": "Resumes the current player",
+          "resumed": "Player resumed"
+        }
+      }
+    },
+    "radio": {
+      "command": "radio",
+      "description": "Radio related commands",
+      "children": {
+        "play": {
+          "command": "play",
+          "description": "Plays a radio station based on the given query",
+          "queryDescription": "The name of the radio station to play",
+          "searching": "Searching for radio $query...",
+          "noResults": "No results found for $query",
+          "startedPlaying": "Started playing",
+          "startedPlayingDescription": "Radio $radio started playing.\n\nRequested by $mention",
+          "stationEnqueued": "Station $name (${query}) enqueued"
+        },
+        "recognize": {
+          "command": "recognize",
+          "description": "Recognizes the current song playing",
+          "requestedBy": "Requested by $mention",
+          "radioStationField": "Radio Station",
+          "genreField": "Genre",
+          "computationalTimeField": "Computational time",
+          "errors": {
+            "title": "An error occurred while recognizing the song",
+            "noRadioPlaying": "Couldn't find a radio playing!",
+            "radioCantCommunicate": "There was an error communicating with the server, please try again.",
+            "noResults": "Couldn't identify the current song playing :("
+          }
+        }
+      }
+    }
+  },
+  "services": {
+    "music": {
+      "trackStuck": {
+        "title": "Track stuck",
+        "description": "Track [$track]($uri}) stuck playing.\n\nRequested by <@$requester>"
+      },
+      "trackStarted": {
+        "title": "Track started",
+        "description": "Track [$track]($uri}) started playing.\n\nRequested by <@$requester>"
+      },
+      "trackException": {
+        "title": "Track exception",
+        "description": "Track [$track]($uri}) threw an exception.\n\nRequested by <@$requester>"
+      }
+    }
+  },
+  "errorHandler": {
+    "title": "An error has occurred",
+    "fallbackDescription": "Your command couldn't be executed because of an error. Please contact a developer for more information.",
+    "musicConnectedToVC": "I have to be in a voice channel to use this command",
+    "musicNotConnectedToVC": "I'm already connected to a voice channel",
+    "musicSameVC": "I'm already being used on other voice channel",
+    "musicUserConnectedToVC": "You need to be connected to a voice channel to use this command",
+    "cooldown": {
+      "title": "Command on cooldown",
+      "description": "You can't use this command right now because it is on cooldown. Please wait ${inSeconds}s and try again."
+    },
+    "unauthorizedCommand": {
+      "title": "You can't use this command!",
+      "description": "This command can only be used by certain users in certain contexts. Check that you have permission to execute the command, or contact a developer for more information."
+    },
+    "missingArguments": {
+      "title": "Not enough arguments",
+      "description": "You didn't provide enough arguments for this command. Please try again and use the Slash Command menu for help, or contact a developer for more information."
+    },
+    "inputParsingFailure": {
+      "title": "Couldn't parse input",
+      "description": "Your command couldn't be executed because we were unable to understand your input. Please try again with different inputs or contact a developer for more information."
+    }
+  }
+}

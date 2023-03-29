@@ -1,15 +1,17 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'metadatum.freezed.dart';
 part 'metadatum.g.dart';
 
-@freezed
-class ShazamMetadatum with _$ShazamMetadatum {
-  factory ShazamMetadatum({
-    String? text,
-    String? title,
-  }) = _ShazamMetadatum;
+@JsonSerializable()
+class ShazamMetadatum {
+  const ShazamMetadatum({
+    this.text,
+    this.title,
+  });
 
   factory ShazamMetadatum.fromJson(Map<String, dynamic> json) =>
       _$ShazamMetadatumFromJson(json);
+
+  final String? text;
+  final String? title;
 }

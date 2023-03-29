@@ -1,17 +1,21 @@
 // ignore_for_file: invalid_annotation_target
 
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-part 'images.freezed.dart';
 part 'images.g.dart';
 
-@freezed
-class ShazamImages with _$ShazamImages {
-  factory ShazamImages({
-    @JsonKey(name: 'default') String? imagesDefault,
-    String? overflow,
-  }) = _ShazamImages;
+@JsonSerializable()
+class ShazamImages {
+  const ShazamImages({
+    this.imagesDefault,
+    this.overflow,
+  });
 
   factory ShazamImages.fromJson(Map<String, dynamic> json) =>
       _$ShazamImagesFromJson(json);
+
+  @JsonKey(name: 'default')
+  final String? imagesDefault;
+
+  final String? overflow;
 }

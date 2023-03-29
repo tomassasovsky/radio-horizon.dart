@@ -7,8 +7,9 @@
 import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
-import 'package:radio_garden/radio_garden.dart';
-import 'package:radio_garden/src/util.dart';
+import 'package:radio_horizon/radio_horizon.dart';
+
+final _enMusicService = AppLocale.en.translations.services.music;
 
 class MusicService {
   MusicService._(this._client) {
@@ -35,7 +36,7 @@ class MusicService {
             port: port,
             password: password,
             ssl: ssl,
-            clientName: 'RadioGarden',
+            clientName: 'RadioHorizon',
             shards: shards,
             // Bump up connection attempts to avoid timeouts in Docker
             maxConnectAttempts: 10,
@@ -73,6 +74,7 @@ class MusicService {
         cluster.eventDispatcher.onTrackStuck.listen(_trackStuck);
         cluster.eventDispatcher.onTrackEnd.listen(_trackEnded);
         cluster.eventDispatcher.onTrackException.listen(_trackException);
+        _client.eventsWs.onVoiceStateUpdate.listen(_voiceStateUpdate);
       }
     });
   }
@@ -127,27 +129,51 @@ class MusicService {
 
       final embed = EmbedBuilder()
         ..color = getRandomColor()
-        ..title = 'Track started'
-        ..description =
-            'Track [${track?.track.info?.title}](${track?.track.info?.uri}) '
-                'started playing.\n\nRequested by <@${track?.requester!}>'
+        ..title = _enMusicService.trackStarted.title
+        ..description = _enMusicService.trackStarted.description(
+          track: track!.track.info!.title,
+          uri: track.track.info!.uri,
+          requester: track.requester!,
+        )
         ..thumbnailUrl =
-            'https://img.youtube.com/vi/${track?.track.info?.identifier}/hqdefault.jpg';
+            'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
 
       await _client.httpEndpoints.sendMessage(
-        track!.channelId!,
+        track.channelId!,
         MessageBuilder.embed(embed),
       );
     }
   }
 
   Future<void> _trackEnded(ITrackEndEvent event) async {
-    await Future<void>.delayed(const Duration(minutes: 5));
+    await Future<void>.delayed(const Duration(seconds: 30));
+
+    if (!event.node.players.containsKey(event.guildId)) {
+      return;
+    }
 
     // disconnect the bot if the queue is empty
     final player = event.node.players[event.guildId];
-    if (player != null && player.queue.isEmpty) {
-      event.node.destroy(event.guildId);
+    if (player != null && player.queue.isEmpty && player.nowPlaying == null) {
+      final guildId = event.guildId;
+      final hasGuild = event.client.guilds.containsKey(guildId);
+
+      if (!hasGuild) {
+        return;
+      }
+
+      final guild = await event.client.httpEndpoints.fetchGuild(guildId);
+
+      event.node.destroy(guild.id);
+      guild.shard.changeVoiceState(guild.id, null);
+
+      // delete the current radio station from the list, if it exists
+      SongRecognitionService.instance.deleteRadioFromList(guild.id);
+
+      Logger('MusicService').info(
+        'Disconnected from voice channel in guild ${guild.id} '
+        '(${guild.name})',
+      );
     }
   }
 
@@ -192,10 +218,12 @@ class MusicService {
 
       final embed = EmbedBuilder()
         ..color = getRandomColor()
-        ..title = 'Track stuck'
-        ..description =
-            'Track [${track.track.info?.title}](${track.track.info?.uri}) '
-                'stuck playing.\n\nRequested by <@${track.requester!}>'
+        ..title = _enMusicService.trackStuck.title
+        ..description = _enMusicService.trackStuck.description(
+          track: track.track.info!.title,
+          uri: track.track.info!.uri,
+          requester: track.requester!,
+        )
         ..thumbnailUrl =
             'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
 
@@ -219,10 +247,12 @@ class MusicService {
 
       final embed = EmbedBuilder()
         ..color = getRandomColor()
-        ..title = 'Track exception'
-        ..description =
-            'Track [${track.track.info?.title}](${track.track.info?.uri}) '
-                'exception playing.\n\nRequested by <@${track.requester!}>'
+        ..title = _enMusicService.trackException.title
+        ..description = _enMusicService.trackException.description(
+          track: track.track.info!.title,
+          uri: track.track.info!.uri,
+          requester: track.requester!,
+        )
         ..thumbnailUrl =
             'https://img.youtube.com/vi/${track.track.info?.identifier}/hqdefault.jpg';
 
@@ -233,5 +263,97 @@ class MusicService {
 
   static void init(INyxxWebsocket client) {
     _instance = MusicService._(client);
+  }
+
+  Future<void> _voiceStateUpdate(IVoiceStateUpdateEvent event) async {
+    if (event.state.user.id == _client.appId) return;
+    if (event.oldState == null) return;
+
+    final eventChannelId =
+        event.state.channel?.id ?? event.oldState?.channel?.id;
+    final cachedGuild = event.state.guild;
+    if (cachedGuild == null || eventChannelId == null) {
+      Logger('VoiceStateUpdate').warning(
+        'VoiceStateUpdate event with null guild or channel: '
+        '$cachedGuild, $eventChannelId',
+      );
+      return;
+    }
+
+    var guild = await cachedGuild.getOrDownload();
+    final botMember = await guild.selfMember.getOrDownload();
+
+    if (botMember.voiceState == null) return;
+    final currentChannelId = botMember.voiceState?.channel?.id;
+
+    if (currentChannelId == null) {
+      Logger('VoiceStateUpdate').warning(
+        'VoiceStateUpdate event with null bot channel: '
+        '$currentChannelId',
+      );
+      return;
+    }
+
+    if (eventChannelId != currentChannelId) {
+      // the event is not for the bot's current channel
+      Logger('VoiceStateUpdate').info(
+        'VoiceStateUpdate event for channel $eventChannelId '
+        'does not match bot channel $currentChannelId',
+      );
+      return;
+    }
+
+    /// Returns a list of members connected to the same voice channel as the
+    /// [event] member. Excludes the bot, if present.
+    bool hasConnectedMembers(IGuild iGuild) {
+      // the bot represents one of these voice states, so we subtract 1 and see
+      // if there are any other members connected
+      final voiceStatesInChannel = iGuild.voiceStates.entries.where((element) {
+        return element.value.channel?.id == currentChannelId;
+      });
+      return (voiceStatesInChannel.length - 1) > 0;
+    }
+
+    if (!hasConnectedMembers(guild)) {
+      // Wait 30 seconds before destroying the player
+      await Future<void>.delayed(const Duration(seconds: 30));
+
+      // get the guild again in case it was updated
+      guild = await cachedGuild.download();
+
+      if (!hasConnectedMembers(guild)) {
+        try {
+          MusicService.instance.cluster
+              .getOrCreatePlayerNode(guild.id)
+              .destroy(guild.id);
+
+          guild.shard.changeVoiceState(guild.id, null);
+
+          final channel = await guild.publicUpdatesChannel?.getOrDownload();
+          if (channel == null) {
+            Logger('MusicService').warning(
+              'Destroyed player for guild ${guild.id} but the guild '
+              'public updates channel is null',
+            );
+            return;
+          }
+
+          final commandTranslations = getCommandTranslationsForGuild(guild);
+
+          final embed = EmbedBuilder()
+            ..color = getRandomColor()
+            ..title = commandTranslations.music.children.leave.left
+            ..description =
+                commandTranslations.music.children.leave.leftDueToInactivity;
+
+          await channel.sendMessage(MessageBuilder.embed(embed));
+        } catch (e) {
+          if (e.toString().contains('LateInitializationError')) return;
+          Logger('MusicService').warning(
+            'Failed to destroy player for guild ${guild.id}: $e',
+          );
+        }
+      }
+    }
   }
 }

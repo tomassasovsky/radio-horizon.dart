@@ -6,8 +6,7 @@ part of 'option.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ShazamOption _$$_ShazamOptionFromJson(Map<String, dynamic> json) =>
-    _$_ShazamOption(
+ShazamOption _$ShazamOptionFromJson(Map<String, dynamic> json) => ShazamOption(
       actions: (json['actions'] as List<dynamic>?)
           ?.map((e) => ShazamAction.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -24,7 +23,7 @@ _$_ShazamOption _$$_ShazamOptionFromJson(Map<String, dynamic> json) =>
       type: json['type'] as String?,
     );
 
-Map<String, dynamic> _$$_ShazamOptionToJson(_$_ShazamOption instance) =>
+Map<String, dynamic> _$ShazamOptionToJson(ShazamOption instance) =>
     <String, dynamic>{
       'actions': instance.actions,
       'beacondata': instance.beacondata,

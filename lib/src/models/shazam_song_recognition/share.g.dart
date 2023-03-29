@@ -6,8 +6,7 @@ part of 'share.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ShazamShare _$$_ShazamShareFromJson(Map<String, dynamic> json) =>
-    _$_ShazamShare(
+ShazamShare _$ShazamShareFromJson(Map<String, dynamic> json) => ShazamShare(
       avatar: json['avatar'] as String?,
       href: json['href'] as String?,
       html: json['html'] as String?,
@@ -18,7 +17,7 @@ _$_ShazamShare _$$_ShazamShareFromJson(Map<String, dynamic> json) =>
       twitter: json['twitter'] as String?,
     );
 
-Map<String, dynamic> _$$_ShazamShareToJson(_$_ShazamShare instance) =>
+Map<String, dynamic> _$ShazamShareToJson(ShazamShare instance) =>
     <String, dynamic>{
       'avatar': instance.avatar,
       'href': instance.href,

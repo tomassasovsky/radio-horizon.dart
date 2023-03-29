@@ -6,7 +6,7 @@
 
 import 'dart:io';
 import 'package:nyxx/nyxx.dart';
-import 'package:radio_garden/radio_garden.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 import 'package:usage/usage_io.dart';
 
 /// Get a [String] from an environment variable,
@@ -50,7 +50,7 @@ final List<Snowflake> adminIds =
 final String defaultGithubResponse = getEnv(
   'RG_DEFAULT_GITHUB_RESPONSE',
   '''
-Radio Garden Bot is an open source project hosted on GitHub.
+Radio Horizon Bot is an open source project hosted on GitHub.
 ''',
 );
 
@@ -102,11 +102,11 @@ final usage = googleAnalyticsTrackingId == null
     ? null
     : AnalyticsIO(
         googleAnalyticsTrackingId!,
-        'radio-garden.dart',
+        'radio-horizon.dart',
         packageVersion,
       );
 
-/// The basic intents needed to run Radio Garden without privileged intents.
+/// The basic intents needed to run Radio Horizon without privileged intents.
 const int intents = GatewayIntents.directMessages |
     GatewayIntents.guilds |
     GatewayIntents.guildVoiceState;

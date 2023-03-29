@@ -1,23 +1,32 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:radio_garden/radio_garden.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 
-part 'section.freezed.dart';
 part 'section.g.dart';
 
-@freezed
-class ShazamSection with _$ShazamSection {
-  factory ShazamSection({
-    List<ShazamMetadatum>? metadata,
-    List<ShazamMetapage>? metapages,
-    String? tabname,
-    String? type,
-    ShazamBeacondata? beacondata,
-    String? footer,
-    List<String>? text,
-    String? url,
-    String? youtubeurl,
-  }) = _ShazamSection;
+@JsonSerializable()
+class ShazamSection {
+  const ShazamSection({
+    this.metadata,
+    this.metapages,
+    this.tabname,
+    this.type,
+    this.beacondata,
+    this.footer,
+    this.text,
+    this.url,
+    this.youtubeurl,
+  });
 
   factory ShazamSection.fromJson(Map<String, dynamic> json) =>
       _$ShazamSectionFromJson(json);
+
+  final List<ShazamMetadatum>? metadata;
+  final List<ShazamMetapage>? metapages;
+  final String? tabname;
+  final String? type;
+  final ShazamBeacondata? beacondata;
+  final String? footer;
+  final List<String>? text;
+  final String? url;
+  final String? youtubeurl;
 }

@@ -69,7 +69,7 @@ jobs:
         run: ${{inputs.setup}}
 
       - name: ✨ Check Formatting
-        run: dart format --set-exit-if-changed .
+        run: dart format --set-exit-if-changed lib/src lib/radio_horizon.dart tool bin
 
       - name: 🕵️ Analyze
         run: dart analyze --fatal-infos --fatal-warnings ${{inputs.analyze_directories}}

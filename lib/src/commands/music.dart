@@ -9,12 +9,22 @@ import 'dart:async';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
-import 'package:radio_garden/radio_garden.dart';
-import 'package:radio_garden/src/checks.dart';
+import 'package:radio_horizon/radio_horizon.dart';
+import 'package:radio_horizon/src/checks.dart';
+
+final _enMusicCommand = AppLocale.en.translations.commands.music;
+final _enPlayCommand = _enMusicCommand.children.play;
+final _enSkipCommand = _enMusicCommand.children.skip;
+final _enStopCommand = _enMusicCommand.children.stop;
+final _enJoinCommand = _enMusicCommand.children.join;
+final _enLeaveCommand = _enMusicCommand.children.leave;
+final _enPauseCommand = _enMusicCommand.children.pause;
+final _enResumeCommand = _enMusicCommand.children.resume;
+final _enVolumeCommand = _enMusicCommand.children.volume;
 
 ChatGroup music = ChatGroup(
-  'music',
-  'Music related commands',
+  _enMusicCommand.command,
+  _enMusicCommand.description,
   checks: [
     GuildCheck.all(),
     userConnectedToVoiceChannelCheck,
@@ -22,14 +32,18 @@ ChatGroup music = ChatGroup(
   ],
   children: [
     ChatCommand(
-      'play',
-      'Plays music based on the given query',
+      _enPlayCommand.command,
+      _enPlayCommand.description,
       id('music-play', (
         IChatContext context,
         @Description('The name/url of the song/playlist to play')
-        @Autocomplete(_autocompleteCallback)
+        @Autocomplete(autocompleteMusicQuery)
             String query,
       ) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).music.children.play;
+
         await usage?.sendEvent(
           'ChatCommand:music-play',
           'call',
@@ -49,8 +63,11 @@ ChatGroup music = ChatGroup(
         final result = await node.autoSearch(query);
 
         if (result.tracks.isEmpty) {
-          await context
-              .respond(MessageBuilder.content('No results were found'));
+          await context.respond(
+            MessageBuilder.content(
+              commandTranslations.noResults(query: query),
+            ),
+          );
           return;
         }
 
@@ -68,7 +85,10 @@ ChatGroup music = ChatGroup(
 
           await context.respond(
             MessageBuilder.content(
-              'Playlist `${result.playlistInfo.name}`($query) enqueued',
+              commandTranslations.playlistEnqueued(
+                name: result.playlistInfo.name ?? '(Unknown)',
+                query: query,
+              ),
             ),
           );
         } else {
@@ -82,20 +102,32 @@ ChatGroup music = ChatGroup(
               .queue();
           await context.respond(
             MessageBuilder.content(
-              'Track `${result.tracks[0].info?.title}` enqueued',
+              commandTranslations.songEnqueued(
+                title: result.tracks[0].info?.title ?? '(Unknown)',
+                query: query,
+              ),
             ),
           );
         }
 
-        SongRecognitionService.instance
-            .deleteRadioFromList(context.guild!.id.toString());
+        SongRecognitionService.instance.deleteRadioFromList(context.guild!.id);
       }),
+      localizedDescriptions: localizedValues(
+        (translations) => translations.commands.music.children.play.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.music.children.play.command,
+      ),
     ),
     ChatCommand(
-      'skip',
-      'Skips the currently playing track',
+      _enSkipCommand.command,
+      _enSkipCommand.description,
       checks: [connectedToAVoiceChannelCheck],
       id('music-skip', (IChatContext context) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).music.children.skip;
+
         await usage?.sendEvent(
           'ChatCommand:music-skip',
           'call',
@@ -113,19 +145,33 @@ ChatGroup music = ChatGroup(
         final player = node.players[context.guild!.id]!;
 
         if (player.queue.isEmpty) {
-          await context.respond(MessageBuilder.content('The queue is clear!'));
+          await context.respond(
+            MessageBuilder.content(commandTranslations.nothingPlaying),
+          );
           return;
         }
 
         node.skip(context.guild!.id);
-        await context.respond(MessageBuilder.content('Skipped current track'));
+        await context.respond(
+          MessageBuilder.content(commandTranslations.skipped),
+        );
       }),
+      localizedDescriptions: localizedValues(
+        (translations) => translations.commands.music.children.skip.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.music.children.skip.command,
+      ),
     ),
     ChatCommand(
-      'stop',
-      'Stops the current player and clears its track queue',
+      _enStopCommand.command,
+      _enStopCommand.description,
       checks: [connectedToAVoiceChannelCheck],
       id('music-stop', (IChatContext context) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).music.children.stop;
+
         await usage?.sendEvent(
           'ChatCommand:music-stop',
           'call',
@@ -141,14 +187,25 @@ ChatGroup music = ChatGroup(
         MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id)
             .stop(context.guild!.id);
-        await context.respond(MessageBuilder.content('Player stopped!'));
+        await context
+            .respond(MessageBuilder.content(commandTranslations.stopped));
       }),
+      localizedDescriptions: localizedValues(
+        (translations) => translations.commands.music.children.stop.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.music.children.stop.command,
+      ),
     ),
     ChatCommand(
-      'leave',
-      'Leaves the current voice channel',
+      _enLeaveCommand.command,
+      _enLeaveCommand.description,
       checks: [connectedToAVoiceChannelCheck],
       id('music-leave', (IChatContext context) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).music.children.leave;
+
         await usage?.sendEvent(
           'ChatCommand:music-leave',
           'call',
@@ -165,14 +222,25 @@ ChatGroup music = ChatGroup(
             .getOrCreatePlayerNode(context.guild!.id)
             .destroy(context.guild!.id);
         context.guild!.shard.changeVoiceState(context.guild!.id, null);
-        await context.respond(MessageBuilder.content('Channel left'));
+        await context.respond(MessageBuilder.content(commandTranslations.left));
       }),
+      localizedDescriptions: localizedValues(
+        (translations) =>
+            translations.commands.music.children.leave.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.music.children.leave.command,
+      ),
     ),
     ChatCommand(
-      'join',
-      'Joins the voice channel you are in',
+      _enJoinCommand.command,
+      _enJoinCommand.description,
       checks: [notConnectedToAVoiceChannelCheck],
       id('music-join', (IChatContext context) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).music.children.join;
+
         await usage?.sendEvent(
           'ChatCommand:music-join',
           'call',
@@ -188,12 +256,18 @@ ChatGroup music = ChatGroup(
         MusicService.instance.cluster.getOrCreatePlayerNode(context.guild!.id);
         await connectIfNeeded(context);
         await context
-            .respond(MessageBuilder.content('Joined your voice channel'));
+            .respond(MessageBuilder.content(commandTranslations.joined));
       }),
+      localizedDescriptions: localizedValues(
+        (translations) => translations.commands.music.children.join.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.music.children.join.command,
+      ),
     ),
     ChatCommand(
-      'volume',
-      'Sets the volume for the player',
+      _enVolumeCommand.command,
+      _enVolumeCommand.description,
       checks: [connectedToAVoiceChannelCheck],
       id('music-volume', (
         IChatContext context,
@@ -203,6 +277,10 @@ ChatGroup music = ChatGroup(
         @UseConverter(IntConverter(min: 0, max: 1000))
             int volume,
       ) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).music.children.volume;
+
         await usage?.sendEvent(
           'ChatCommand:music-volume',
           'call',
@@ -223,14 +301,28 @@ ChatGroup music = ChatGroup(
               volume,
             );
 
-        await context
-            .respond(MessageBuilder.content('Volume changed to $volume'));
+        await context.respond(
+          MessageBuilder.content(
+            commandTranslations.volumeSet(volume: volume),
+          ),
+        );
       }),
+      localizedDescriptions: localizedValues(
+        (translations) =>
+            translations.commands.music.children.volume.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.music.children.volume.command,
+      ),
     ),
     ChatCommand(
-      'pause',
-      'Pauses the player',
+      _enPauseCommand.command,
+      _enPauseCommand.description,
       id('music-pause', (IChatContext context) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).music.children.pause;
+
         await usage?.sendEvent(
           'ChatCommand:music-pause',
           'call',
@@ -246,13 +338,25 @@ ChatGroup music = ChatGroup(
         MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id)
             .pause(context.guild!.id);
-        await context.respond(MessageBuilder.content('Player paused'));
+        await context
+            .respond(MessageBuilder.content(commandTranslations.paused));
       }),
+      localizedDescriptions: localizedValues(
+        (translations) =>
+            translations.commands.music.children.pause.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.music.children.pause.command,
+      ),
     ),
     ChatCommand(
-      'resume',
-      'Resumes the currently playing track',
+      _enResumeCommand.command,
+      _enResumeCommand.description,
       id('music-resume', (IChatContext context) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).music.children.resume;
+
         await usage?.sendEvent(
           'ChatCommand:music-resume',
           'call',
@@ -268,13 +372,27 @@ ChatGroup music = ChatGroup(
         MusicService.instance.cluster
             .getOrCreatePlayerNode(context.guild!.id)
             .resume(context.guild!.id);
-        await context.respond(MessageBuilder.content('Player resumed'));
+        await context
+            .respond(MessageBuilder.content(commandTranslations.resumed));
       }),
+      localizedDescriptions: localizedValues(
+        (translations) =>
+            translations.commands.music.children.resume.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.music.children.resume.command,
+      ),
     ),
   ],
+  localizedDescriptions: localizedValues(
+    (translations) => translations.commands.music.description,
+  ),
+  localizedNames: localizedValues(
+    (translations) => translations.commands.music.command,
+  ),
 );
 
-FutureOr<Iterable<ArgChoiceBuilder>?> _autocompleteCallback(
+FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteMusicQuery(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;

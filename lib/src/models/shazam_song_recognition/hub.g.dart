@@ -6,7 +6,7 @@ part of 'hub.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ShazamHub _$$_ShazamHubFromJson(Map<String, dynamic> json) => _$_ShazamHub(
+ShazamHub _$ShazamHubFromJson(Map<String, dynamic> json) => ShazamHub(
       actions: (json['actions'] as List<dynamic>?)
           ?.map((e) => ShazamAction.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -22,8 +22,7 @@ _$_ShazamHub _$$_ShazamHubFromJson(Map<String, dynamic> json) => _$_ShazamHub(
       type: json['type'] as String?,
     );
 
-Map<String, dynamic> _$$_ShazamHubToJson(_$_ShazamHub instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ShazamHubToJson(ShazamHub instance) => <String, dynamic>{
       'actions': instance.actions,
       'displayname': instance.displayname,
       'explicit': instance.explicit,

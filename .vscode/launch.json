@@ -5,24 +5,24 @@
       "name": "Launch development",
       "request": "launch",
       "type": "dart",
-      "program": "bin/radio_garden_development.dart",
+      "program": "bin/radio_horizon_development.dart",
       "args": [
         "--flavor",
         "development",
         "--target",
-        "bin/radio_garden_development.dart",
+        "bin/radio_horizon_development.dart",
       ],
     },
     {
       "name": "Launch production",
       "request": "launch",
       "type": "dart",
-      "program": "bin/radio_garden_production.dart",
+      "program": "bin/radio_horizon_production.dart",
       "args": [
         "--flavor",
         "production",
         "--target",
-        "bin/radio_garden_production.dart",
+        "bin/radio_horizon_production.dart",
       ],
     },
   ]

@@ -1,0 +1,142 @@
+{
+  "commands": {
+    "info": {
+      "command": "info",
+      "description": "Muestra información sobre el bot",
+      "addToServer": "Añadir Radio Horizon a mi servidor",
+      "shardOf": "Fragmento $index de $count",
+      "cachedGuilds": "Servidores en caché",
+      "cachedUsers": "Usuarios en caché",
+      "cachedChannels": "Canales en caché",
+      "cachedVoiceStates": "Estados de voz en caché",
+      "shardCount": "Fragmentos",
+      "cachedMessages": "Mensajes en caché",
+      "memoryUsage": "Uso de memoria (current/RSS)",
+      "uptime": "Tiempo de actividad",
+      "currentPlayers": "Reproductores actuales",
+      "gatewayLatency": "Latencia de la puerta de enlace"
+    },
+    "music": {
+      "command": "musica",
+      "description": "Comandos relacionados con la funcionalidad de música",
+      "children": {
+        "play": {
+          "command": "reproducir",
+          "description": "Reproduce música basada en una URL o una búsqueda",
+          "queryDescription": "El nombre de una canción o una URL",
+          "noResults": "No se encontraron resultados para $query",
+          "playlistEnqueued": "Lista de reproducción $name (${query}) añadida a la cola",
+          "songEnqueued": "Canción $title (${query}) añadida a la cola"
+        },
+        "skip": {
+          "command": "saltar",
+          "description": "Salta a la siguiente canción en la cola",
+          "skipped": "La canción actual ha sido saltada",
+          "nothingPlaying": "La cola está vacía"
+        },
+        "stop": {
+          "command": "parar",
+          "description": "Para la reproducción de música",
+          "stopped": "La reproducción de música ha sido detenida"
+        },
+        "leave": {
+          "command": "dejar",
+          "description": "Abandona el canal de voz",
+          "left": "El canal de voz ha sido abandonado",
+          "leftDueToInactivity": "El canal de voz ha sido abandonado debido a la inactividad"
+        },
+        "join": {
+          "command": "unirse",
+          "description": "Se une al canal de voz en el que estás",
+          "joined": "Se ha unido al canal de voz"
+        },
+        "volume": {
+          "command": "volumen",
+          "description": "Establece el volumen de la música",
+          "volumeDescription": "El volumen para establecer, debe ser un valor entre 0 y 1000",
+          "volumeSet": "Volumen puesto en $volume"
+        },
+        "pause": {
+          "command": "pausar",
+          "description": "Pausa la reproducción de música",
+          "paused": "La reproducción de música ha sido pausada"
+        },
+        "resume": {
+          "command": "reanudar",
+          "description": "Reanuda la reproducción de música",
+          "resumed": "La reproducción de música ha sido reanudada"
+        }
+      }
+    },
+    "radio": {
+      "command": "radio",
+      "description": "Comandos relacionados con la funcionalidad de radio",
+      "children": {
+        "play": {
+          "command": "reproducir",
+          "description": "Reproduce una radio basada en una búsqueda",
+          "queryDescription": "El nombre de una estación de radio",
+          "searching": "Buscando radio $query...",
+          "noResults": "No se encontraron resultados para $query",
+          "startedPlaying": "Se ha comenzado a reproducir",
+          "startedPlayingDescription": "La radio $radio ha comenzado a reproducirse.\n\nPedido por $mention",
+          "stationEnqueued": "La radio $name (${query}) ha sido añadida a la cola"
+        },
+        "recognize": {
+          "command": "reconocer",
+          "description": "Reconoce la cancion que se está reproduciendo en la radio",
+          "requestedBy": "Pedido por $mention",
+          "radioStationField": "Estación",
+          "genreField": "Género",
+          "computationalTimeField": "Tiempo de cálculo",
+          "errors": {
+            "title": "Ha ocurrido un error al reconocer la canción",
+            "noRadioPlaying": "No se está reproduciendo ninguna radio",
+            "radioCantCommunicate": "La radio no puede comunicarse con el servidor de reconocimiento de canciones. Inténtalo de nuevo más tarde",
+            "noResults": "No se han encontrado resultados para la canción que se está reproduciendo :("
+          }
+        }
+      }
+    }
+  },
+  "services": {
+    "music": {
+      "trackStuck": {
+        "title": "La canción se ha quedado atascada",
+        "description": "La pista [$track]($uri}) se ha quedado atascada.\n\nPedida por <@$requester>"
+      },
+      "trackStarted": {
+        "title": "Se ha comenzado a reproducir",
+        "description": "La pista [$track]($uri}) se ha comenzado a reproducir.\n\nPedido por <@$requester>"
+      },
+      "trackException": {
+        "title": "Ha ocurrido un error al reproducir la canción",
+        "description": "La pista [$track]($uri}) devolvió un error.\n\nPedido por <@$requester>"
+      }
+    }
+  },
+  "errorHandler": {
+    "title": "Ha ocurrido un error",
+    "fallbackDescription": "Tu comando no se ha podido ejecutar debido a un error desconocido. Por favor contacte a un desarrollador para más información.",
+    "musicConnectedToVC": "Debo estar conectado a un canal de voz para ejecutar este comando",
+    "musicNotConnectedToVC": "Ya estoy conectado a un canal de voz",
+    "musicSameVC": "Debes estar en el mismo canal de voz que yo para ejecutar este comando",
+    "musicUserConnectedToVC": "Debes estar conectado a un canal de voz para ejecutar este comando",
+    "cooldown": {
+      "title": "Commando en cooldown",
+      "description": "No puedes usar este comando ahora mismo porque está en cooldown. Por favor espera ${inSeconds}s e inténtalo de nuevo."
+    },
+    "unauthorizedCommand": {
+      "title": "No puedes usar este comando!",
+      "description": "Este comando solo puede ser usado por determinados usuarios en determinados contextos. Verifica que tienes los permisos para ejecutar este comando, o contacte a un desarrollador para más información."
+    },
+    "missingArguments": {
+      "title": "Faltan argumentos",
+      "description": "No has proveido los argumentos necesarios para ejecutar esta función. Por favor inténtalo de nuevo y usa el Menú de Slash Command para ayuda, o contacta a un desarrollador para más información."
+    },
+    "inputParsingFailure": {
+      "title": "Ha ocurrido un error al procesar tu entrada",
+      "description": "No se ha podido ejecutar el comando ya que no hemos podido interpretar tus argumentos. Por favor inténtalo de nuevo y usa el Menú de Slash Command para ayuda, o contacta a un desarrollador para más información."
+    }
+  }
+}

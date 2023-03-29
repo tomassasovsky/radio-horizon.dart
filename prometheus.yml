@@ -9,4 +9,4 @@ scrape_configs:
   - job_name: 'rg'
     scrape_interval: 5s
     static_configs:
-      - targets: ['radio_garden:8080']
+      - targets: ['radio_horizon:8080']

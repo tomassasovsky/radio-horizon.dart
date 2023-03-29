@@ -6,8 +6,7 @@ part of 'shazam_result.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ShazamResult _$$_ShazamResultFromJson(Map<String, dynamic> json) =>
-    _$_ShazamResult(
+ShazamResult _$ShazamResultFromJson(Map<String, dynamic> json) => ShazamResult(
       albumadamid: json['albumadamid'] as String?,
       artists: (json['artists'] as List<dynamic>?)
           ?.map((e) => ShazamArtist.fromJson(e as Map<String, dynamic>))
@@ -46,7 +45,7 @@ _$_ShazamResult _$$_ShazamResultFromJson(Map<String, dynamic> json) =>
           (json['lyrics'] as List<dynamic>?)?.map((e) => e as String).toList(),
     );
 
-Map<String, dynamic> _$$_ShazamResultToJson(_$_ShazamResult instance) =>
+Map<String, dynamic> _$ShazamResultToJson(ShazamResult instance) =>
     <String, dynamic>{
       'albumadamid': instance.albumadamid,
       'artists': instance.artists,

@@ -1,23 +1,32 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:radio_garden/radio_garden.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:radio_horizon/radio_horizon.dart';
 
-part 'option.freezed.dart';
 part 'option.g.dart';
 
-@freezed
-class ShazamOption with _$ShazamOption {
-  factory ShazamOption({
-    List<ShazamAction>? actions,
-    ShazamBeacondata? beacondata,
-    String? caption,
-    bool? colouroverflowimage,
-    String? image,
-    String? listcaption,
-    String? overflowimage,
-    String? providername,
-    String? type,
-  }) = _ShazamOption;
+@JsonSerializable()
+class ShazamOption {
+  const ShazamOption({
+    this.actions,
+    this.beacondata,
+    this.caption,
+    this.colouroverflowimage,
+    this.image,
+    this.listcaption,
+    this.overflowimage,
+    this.providername,
+    this.type,
+  });
 
   factory ShazamOption.fromJson(Map<String, dynamic> json) =>
       _$ShazamOptionFromJson(json);
+
+  final List<ShazamAction>? actions;
+  final ShazamBeacondata? beacondata;
+  final String? caption;
+  final bool? colouroverflowimage;
+  final String? image;
+  final String? listcaption;
+  final String? overflowimage;
+  final String? providername;
+  final String? type;
 }

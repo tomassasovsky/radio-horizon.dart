@@ -6,8 +6,8 @@ part of 'section.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ShazamSection _$$_ShazamSectionFromJson(Map<String, dynamic> json) =>
-    _$_ShazamSection(
+ShazamSection _$ShazamSectionFromJson(Map<String, dynamic> json) =>
+    ShazamSection(
       metadata: (json['metadata'] as List<dynamic>?)
           ?.map((e) => ShazamMetadatum.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -26,7 +26,7 @@ _$_ShazamSection _$$_ShazamSectionFromJson(Map<String, dynamic> json) =>
       youtubeurl: json['youtubeurl'] as String?,
     );
 
-Map<String, dynamic> _$$_ShazamSectionToJson(_$_ShazamSection instance) =>
+Map<String, dynamic> _$ShazamSectionToJson(ShazamSection instance) =>
     <String, dynamic>{
       'metadata': instance.metadata,
       'metapages': instance.metapages,

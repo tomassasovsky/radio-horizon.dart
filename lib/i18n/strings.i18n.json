@@ -86,7 +86,7 @@
           "command": "recognize",
           "description": "Recognizes the current song playing",
           "requestedBy": "Requested by $mention",
-          "artistField": "Artist",
+          "radioStationField": "Radio Station",
           "genreField": "Genre",
           "computationalTimeField": "Computational time",
           "errors": {

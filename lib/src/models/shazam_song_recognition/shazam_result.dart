@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:nyxx/nyxx.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 
 part 'shazam_result.g.dart';
@@ -49,41 +48,5 @@ class ShazamResult {
   final Urlparams? urlparams;
   final List<String>? lyrics;
 
-  List<List<String>>? paragraphedLyrics(int paragraphsPerPage) {
-    if (lyrics == null || lyrics!.isEmpty) return null;
-    final llyrics = lyrics ?? [];
-    final paragraphs = llyrics.join('\n').split('\n\n');
-
-    final m = (paragraphs.length / paragraphsPerPage).round();
-    final lists = List.generate(
-      3,
-      (i) => paragraphs.sublist(
-        m * i,
-        (i + 1) * m <= paragraphs.length ? (i + 1) * m : null,
-      ),
-    );
-
-    return lists;
-  }
-
-  List<EmbedBuilder>? lyricsPages({
-    required DiscordColor color,
-  }) {
-    final lyricsPages = <EmbedBuilder>[];
-    final llyrics = paragraphedLyrics(3);
-
-    if (llyrics == null) return null;
-
-    // add 3 paragraphs per page
-    for (var i = 0; i < llyrics.length; i++) {
-      final embed = EmbedBuilder()
-        ..color = color
-        ..title = title
-        ..description = llyrics[i].join('\n\n');
-
-      lyricsPages.add(embed);
-    }
-
-    return lyricsPages;
-  }
+  String get headline => '$title - $subtitle';
 }

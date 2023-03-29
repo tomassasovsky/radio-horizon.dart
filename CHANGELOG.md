@@ -1,3 +1,7 @@
+## 1.0.0+1
+__Miscellaneous__:
+- feat: add song info with the radio URL's response by @tomassasovsky
+
 ## 0.1.1
 __Miscellaneous__:
 - chore: update dependencies by @tomassasovsky in #58:

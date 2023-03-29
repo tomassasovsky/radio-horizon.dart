@@ -13,6 +13,7 @@ import 'package:nyxx_pagination/nyxx_pagination.dart';
 import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/checks.dart';
+import 'package:radio_horizon/src/models/song_recognition/current_station_info.dart';
 import 'package:retry/retry.dart';
 
 final _enRadioCommand = AppLocale.en.translations.commands.radio;
@@ -144,52 +145,86 @@ ChatGroup radio = ChatGroup(
         context as InteractionChatContext;
         final translations = getCommandTranslations(context);
         final commandTranslations = translations.radio.children.recognize;
+        CurrentStationInfo? stationInfo;
+        MusicLinksResponse? linksResponse;
 
         try {
           final recognitionService = SongRecognitionService.instance;
           final guildId = context.guild!.id;
 
           final stopwatch = Stopwatch()..start();
-
-          late ShazamResult result;
           var recognitionSampleDuration = 10;
 
           final guildRadio = recognitionService.currentRadio(guildId);
-          await retry(
-            () async {
-              result = await recognitionService.identify(
-                guildRadio.station.urlResolved ?? guildRadio.station.url,
-                recognitionSampleDuration,
-              );
-            },
-            maxDelay: const Duration(minutes: 2),
-            retryIf: (e) => true,
-            onRetry: (e) {
-              recognitionSampleDuration +=
-                  (recognitionSampleDuration * 0.25).toInt();
-            },
-          ).timeout(const Duration(minutes: 2));
 
-          final links = await SongRecognitionService.instance
-              .getMusicLinks('${result.title} ${result.subtitle}')
-              .onError((error, stackTrace) => MusicLinksResponse.empty());
+          try {
+            final info =
+                await recognitionService.getCurrentStationInfo(guildRadio);
+            if (!info.hasTitle) {
+              throw Exception('No title');
+            }
+            final node = MusicService.instance.cluster
+                .getOrCreatePlayerNode(context.guild!.id);
+            final tracks = await node.autoSearch(info.title!);
+            stationInfo = info.copyWith(
+              image:
+                  'https://img.youtube.com/vi/${tracks.tracks.first.info?.identifier}/hqdefault.jpg',
+            );
+          } catch (e) {
+            ShazamResult? result;
+            await retry(
+              () async {
+                result = await recognitionService.identify(
+                  guildRadio.station.urlResolved ?? guildRadio.station.url,
+                  recognitionSampleDuration,
+                );
+              },
+              maxDelay: const Duration(minutes: 2),
+              retryIf: (e) => true,
+              onRetry: (e) {
+                recognitionSampleDuration +=
+                    (recognitionSampleDuration * 0.25).toInt();
+              },
+            ).timeout(const Duration(minutes: 1));
+
+            if (result == null) {
+              await context.respond(
+                MessageBuilder.embed(
+                  EmbedBuilder()
+                    ..color = DiscordColor.red
+                    ..title = commandTranslations.errors.noResults,
+                ),
+              );
+              return null;
+            }
+
+            stationInfo =
+                CurrentStationInfo.fromShazamResult(result!, guildRadio);
+          }
+
+          try {
+            linksResponse = await SongRecognitionService.instance
+                .getMusicLinks(stationInfo.title!);
+          } catch (e) {
+            await usage?.sendEvent('ChatCommand:radio-recognize', 'links');
+          }
 
           final color = getRandomColor();
           stopwatch.stop();
 
           final embed = EmbedBuilder()
             ..color = color
-            ..title = result.title
+            ..title = stationInfo.title
             ..description = commandTranslations.requestedBy(
               mention: context.member?.mention ?? '(Unknown)',
             )
             ..addField(
-              name: commandTranslations.artistField,
-              content: result.subtitle,
+              name: commandTranslations.radioStationField,
+              content: stationInfo.name,
             )
-            ..imageUrl = result.share?.image;
+            ..thumbnailUrl = stationInfo.image;
 
-          final genre = result.genres?.primary;
+          final genre = stationInfo.genre;
           if (genre != null) {
             embed.addField(
               name: commandTranslations.genreField,
@@ -202,10 +237,10 @@ ChatGroup radio = ChatGroup(
             content: '${stopwatch.elapsedMilliseconds}ms',
           );
 
-          final lyricsPages = result.lyricsPages(color: color);
+          final lyricsPages = stationInfo.lyricsPages(color: color);
           if (lyricsPages == null || lyricsPages.isEmpty) {
             final builder = ComponentMessageBuilder()..embeds = [embed];
-            links.componentRows.forEach(builder.addComponentRow);
+            linksResponse?.componentRows.forEach(builder.addComponentRow);
             return await context.respond(builder);
           }
 
@@ -216,7 +251,7 @@ ChatGroup radio = ChatGroup(
           );
 
           final messageBuilder = paginator.initMessageBuilder();
-          links.componentRows.forEach(messageBuilder.addComponentRow);
+          linksResponse?.componentRows.forEach(messageBuilder.addComponentRow);
 
           await context.respond(messageBuilder);
         } catch (e, stacktrace) {

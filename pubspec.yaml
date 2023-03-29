@@ -17,11 +17,11 @@ dependencies:
   json_annotation: ^4.8.0
   logging: ^1.1.1
   mongo_dart: ^0.9.0
-  nyxx: ^4.5.0
-  nyxx_commands: ^4.4.1
-  nyxx_interactions: ^4.5.0
-  nyxx_lavalink: ^3.1.0
-  nyxx_pagination: ^2.3.0
+  nyxx: ^5.0.1
+  nyxx_commands: ^5.0.0
+  nyxx_interactions: ^4.6.0
+  nyxx_lavalink: ^3.2.0
+  nyxx_pagination: ^2.4.0
   prometheus_client: ^1.0.0+1
   prometheus_client_shelf: ^1.0.0+1
   radio_browser_api: ^0.1.0+4

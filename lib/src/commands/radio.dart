@@ -210,7 +210,7 @@ ChatGroup radio = ChatGroup(
           }
 
           final paginator = EmbedComponentPagination(
-            context.commands.interactions,
+            context.commands.interactions!,
             [embed, ...lyricsPages],
             user: context.user,
           );

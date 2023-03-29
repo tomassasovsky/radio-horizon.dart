@@ -61,7 +61,7 @@ ChatCommand info = ChatCommand(
       ..addAuthor((author) {
         author
           ..name = client.self.tag
-          ..iconUrl = client.self.avatarURL()
+          ..iconUrl = client.self.avatarUrl()
           ..url = 'https://github.com/tomassasovsky/radio-horizon.dart';
       })
       ..addFooter((footer) {

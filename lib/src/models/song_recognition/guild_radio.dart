@@ -9,18 +9,31 @@ import 'package:radio_browser_api/radio_browser_api.dart';
 
 class GuildRadio {
   const GuildRadio(
-    this.id, {
+    this.guildId, {
     required this.station,
+    required this.voiceChannelId,
+    required this.textChannelId,
   });
 
   factory GuildRadio.fromJson(Map<dynamic, dynamic> json) {
     json = json.cast<String, dynamic>();
     return GuildRadio(
-      Snowflake(json['guildId'] as String),
-      station: Station.fromJson(json.cast()),
+      Snowflake(json['guildId'].toString()),
+      station: Station.fromJson((json['station'] as Map).cast()),
+      voiceChannelId: Snowflake(json['voiceChannelId'].toString()),
+      textChannelId: Snowflake(json['textChannelId'].toString()),
     );
   }
 
-  final Snowflake id;
+  Map<String, dynamic> toJson() => {
+        'guildId': guildId.toString(),
+        'station': station.toJson(),
+        'voiceChannelId': voiceChannelId.toString(),
+        'textChannelId': textChannelId.toString(),
+      };
+
+  final Snowflake guildId;
+  final Snowflake voiceChannelId;
+  final Snowflake textChannelId;
   final Station station;
 }

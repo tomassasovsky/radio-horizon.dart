@@ -44,6 +44,35 @@ Future<void> connectIfNeeded(
   }
 }
 
+Future<void> connectToChannel(
+  IGuild guild,
+  Snowflake channelId, {
+  bool replace = false,
+}) async {
+  if (replace) {
+    MusicService.instance.cluster
+        .getOrCreatePlayerNode(guild.id)
+        .destroy(guild.id);
+    guild.shard.changeVoiceState(
+      guild.id,
+      null,
+      selfDeafen: true,
+    );
+  }
+
+  await Future<void>.delayed(const Duration(milliseconds: 500));
+
+  final selfMember = await guild.selfMember.getOrDownload();
+
+  if (selfMember.voiceState == null || selfMember.voiceState?.channel == null) {
+    guild.shard.changeVoiceState(
+      guild.id,
+      channelId,
+      selfDeafen: true,
+    );
+  }
+}
+
 StringsCommandsEn getCommandTranslations(InteractionChatContext context) {
   final userLocale = context.interaction.locale ??
       context.guild?.preferredLocale ??

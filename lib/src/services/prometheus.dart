@@ -20,8 +20,11 @@ import 'package:shelf_router/shelf_router.dart';
 
 class PrometheusService {
   PrometheusService._(this.client, this.commands) {
-    registerMetrics();
-    startHttpServer();
+    client.eventsWs.onReady.listen((event) {
+      _logger.info('Registering metrics');
+      registerMetrics();
+      startHttpServer();
+    });
   }
   static PrometheusService get instance =>
       _instance ??

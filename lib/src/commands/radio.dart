@@ -6,6 +6,8 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'dart:math' as math;
+
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
@@ -116,8 +118,12 @@ ChatGroup radio = ChatGroup(
             channelId: context.channel.id,
           ).startPlaying();
 
-        SongRecognitionService.instance
-            .setCurrentRadio(context.guild!.id, bestMatch);
+        await SongRecognitionService.instance.setCurrentRadio(
+          context.guild!.id,
+          context.member!.voiceState!.channel!.id,
+          context.channel.id,
+          bestMatch,
+        );
 
         final embed = EmbedBuilder()
           ..color = getRandomColor()
@@ -155,7 +161,7 @@ ChatGroup radio = ChatGroup(
           final stopwatch = Stopwatch()..start();
           var recognitionSampleDuration = 10;
 
-          final guildRadio = recognitionService.currentRadio(guildId);
+          final guildRadio = await recognitionService.currentRadio(guildId);
 
           try {
             final info =
@@ -307,10 +313,23 @@ FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
   }
 
   return hits.map(
-    (e) => ArgChoiceBuilder(
-      e.name,
-      '${e.name} (${e.stationUUID})',
-    ),
+    (e) {
+      final croppedName =
+          e.name.substring(0, math.min(e.name.length, 58)).trim();
+
+      return ArgChoiceBuilder(
+        e.name.substring(0, math.min(e.name.length, 100)),
+        // limit the name's length to 59 characters, because Discord has a limit
+        // of 100 characters for the choice's and value.
+        // 59 is due to the fact that the station's UUID is also added to the
+        // value, and it's 39 characters long (32 digits + hyphens + parenthesis
+        // around the UUID + pre-text space).
+        //
+        // The value is used to identify the station when the user selects it.
+        '${e.name.length >= 58 ? '$croppedName...' : croppedName} '
+        '(${e.stationUUID})',
+      );
+    },
   );
 }
 

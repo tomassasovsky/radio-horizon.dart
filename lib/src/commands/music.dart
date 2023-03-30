@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT.
 
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
@@ -110,7 +111,8 @@ ChatGroup music = ChatGroup(
           );
         }
 
-        SongRecognitionService.instance.deleteRadioFromList(context.guild!.id);
+        await SongRecognitionService.instance
+            .deleteRadioFromList(context.guild!.id);
       }),
       localizedDescriptions: localizedValues(
         (translations) => translations.commands.music.children.play.description,
@@ -417,8 +419,8 @@ FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteMusicQuery(
 
   return response.tracks.map(
     (e) => ArgChoiceBuilder(
-      e.info!.title,
-      e.info!.uri,
+      e.info!.title.substring(0, math.min(e.info!.title.length, 100)),
+      e.info!.uri.substring(0, math.min(e.info!.uri.length, 100)),
     ),
   );
 }

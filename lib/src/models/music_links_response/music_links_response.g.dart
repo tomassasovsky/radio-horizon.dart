@@ -8,20 +8,21 @@ part of 'music_links_response.dart';
 
 MusicLinksResponse _$MusicLinksResponseFromJson(Map<String, dynamic> json) =>
     MusicLinksResponse(
+      id: json['id'] as String?,
+      title: json['title'] as String?,
       image: json['image'] as String?,
-      name: json['name'] as String?,
-      platforms: (json['platforms'] as List<dynamic>?)
-          ?.map((e) => MusicLinksPlatform.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      social: (json['social'] as List<dynamic>?)
-          ?.map((e) => MusicLinksSocial.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      links: json['links'] == null
+          ? []
+          : MusicLinksPlatform.listFromJson(
+              json['links'] as Map<String, dynamic>),
+      times: json['times'] as num?,
     );
 
 Map<String, dynamic> _$MusicLinksResponseToJson(MusicLinksResponse instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'image': instance.image,
-      'name': instance.name,
-      'platforms': instance.platforms,
-      'social': instance.social,
+      'title': instance.title,
+      'links': instance.links,
+      'times': instance.times,
     };

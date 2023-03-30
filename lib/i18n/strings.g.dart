@@ -3,7 +3,7 @@
 /// Locales: 2
 /// Strings: 172 (86 per locale)
 ///
-/// Built on 2023-03-29 at 19:43 UTC
+/// Built on 2023-03-30 at 14:26 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -55,8 +55,8 @@ class LocaleSettings extends BaseLocaleSettings<AppLocale, StringsEn> {
 	// static aliases (checkout base methods for documentation)
 	static AppLocale get currentLocale => instance.currentLocale;
 	static Stream<AppLocale> getLocaleStream() => instance.getLocaleStream();
-	static AppLocale setLocale(AppLocale locale) => instance.setLocale(locale);
-	static AppLocale setLocaleRaw(String rawLocale) => instance.setLocaleRaw(rawLocale);
+	static AppLocale setLocale(AppLocale locale, {bool? listenToDeviceLocale = false}) => instance.setLocale(locale, listenToDeviceLocale: listenToDeviceLocale);
+	static AppLocale setLocaleRaw(String rawLocale, {bool? listenToDeviceLocale = false}) => instance.setLocaleRaw(rawLocale, listenToDeviceLocale: listenToDeviceLocale);
 	@Deprecated('Use [AppLocaleUtils.supportedLocalesRaw]') static List<String> get supportedLocalesRaw => instance.supportedLocalesRaw;
 	static void setPluralResolver({String? language, AppLocale? locale, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver}) => instance.setPluralResolver(
 		language: language,

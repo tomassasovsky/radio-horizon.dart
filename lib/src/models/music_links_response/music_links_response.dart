@@ -5,7 +5,6 @@ import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 
 export 'platform.dart';
-export 'social.dart';
 
 part 'music_links_response.g.dart';
 
@@ -15,28 +14,34 @@ MusicLinksResponse musicLinksResponseFromJson(String str) =>
 @JsonSerializable()
 class MusicLinksResponse {
   const MusicLinksResponse({
+    this.id,
+    this.title,
     this.image,
-    this.name,
-    this.platforms,
-    this.social,
+    this.links,
+    this.times,
   });
 
   factory MusicLinksResponse.fromJson(Map<dynamic, dynamic> json) =>
-      _$MusicLinksResponseFromJson(json.cast());
+      _$MusicLinksResponseFromJson((json['obj'] as Map).cast());
 
   factory MusicLinksResponse.empty() => const MusicLinksResponse();
 
+  final String? id;
   final String? image;
-  final String? name;
-  final List<MusicLinksPlatform>? platforms;
-  final List<MusicLinksSocial>? social;
+  final String? title;
+  @JsonKey(
+    defaultValue: <MusicLinksPlatform>[],
+    fromJson: MusicLinksPlatform.listFromJson,
+  )
+  final List<MusicLinksPlatform>? links;
+  final num? times;
 
   Set<MusicLinksPlatform> get uniquePlatforms {
-    if (platforms == null) return {};
+    if (links == null) return {};
 
     // check all platforms have unique names
     final localPlatforms = <MusicLinksPlatform>{};
-    for (final platform in platforms!) {
+    for (final platform in links!) {
       if (localPlatforms.any((element) => element.name == platform.name)) {
         continue;
       }

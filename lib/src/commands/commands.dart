@@ -12,6 +12,7 @@ import 'package:radio_horizon/radio_horizon.dart';
 export 'info.dart';
 export 'music.dart';
 export 'radio.dart';
+export 'sound.dart';
 
 Future<void> connectIfNeeded(
   IChatContext context, {
@@ -59,8 +60,6 @@ Future<void> connectToChannel(
       selfDeafen: true,
     );
   }
-
-  await Future<void>.delayed(const Duration(milliseconds: 500));
 
   final selfMember = await guild.selfMember.getOrDownload();
 

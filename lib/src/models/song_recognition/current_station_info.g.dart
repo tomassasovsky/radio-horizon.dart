@@ -8,6 +8,7 @@ part of 'current_station_info.dart';
 
 CurrentStationInfo _$CurrentStationInfoFromJson(Map<String, dynamic> json) =>
     CurrentStationInfo(
+      contentType: json['content-type'] as String?,
       description: json['description'] as String?,
       genre: json['genre'] as String?,
       name: json['name'] as String?,
@@ -19,9 +20,10 @@ CurrentStationInfo _$CurrentStationInfoFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$CurrentStationInfoToJson(CurrentStationInfo instance) =>
     <String, dynamic>{
       'description': instance.description,
+      'content-type': instance.contentType,
       'genre': instance.genre,
       'name': instance.name,
       'title': instance.title,
-      'image': instance.image,
       'url': instance.url,
+      'image': instance.image,
     };

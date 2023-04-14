@@ -86,85 +86,21 @@ class SongRecognitionService {
   Future<CurrentStationInfo> getCurrentStationInfo(
     GuildRadio radio,
   ) async {
-    final url = radio.station.urlResolved ?? radio.station.url;
-    final headers = <String, String>{};
+    final radioUrl = radio.station.urlResolved ?? radio.station.url;
 
-    final reqCompleter = Completer<void>();
+    final uri = Uri(
+      scheme: 'https',
+      host: 'service.radiolise.com',
+      queryParameters: {
+        'url': radioUrl,
+      },
+    );
 
-    String? result;
-    var icyMetaint = -1;
-    const needleTitle = 'StreamTitle=';
-    final req = await HttpClient().getUrl(Uri.parse(url))
-      ..headers.add('Icy-MetaData', '1');
-    final stream = await req.close();
-    stream.headers.forEach((name, values) {
-      headers[name.toLowerCase()] = values.join(',');
-    });
-    icyMetaint = int.tryParse(headers['icy-metaint'] ?? '') ?? -1;
+    final response = await httpClient.get(uri);
 
-    if (icyMetaint != -1) {
-      var offset = icyMetaint;
-      stream.listen((buffer) async {
-        if (result == null) {
-          final bufferString = utf8.decode(buffer, allowMalformed: true);
-          if (bufferString.contains(needleTitle)) {
-            final title =
-                bufferString.split(needleTitle)[1].trim().substring(1);
-            result = title.substring(0, title.indexOf("';"));
-            if (!bufferString.contains('adw_ad')) {
-              await req.close();
-            }
-            reqCompleter.complete();
-          } else if (offset == icyMetaint) {
-            await req.close();
-          }
-          offset += icyMetaint;
-        }
-      });
-    }
-
-    await reqCompleter.future;
-
-    const needleText = '- text="';
-    if (result == null) {
-      final req2 = await HttpClient()
-          .getUrl(Uri.parse('$url/7'))
-          .timeout(const Duration(seconds: 10));
-      final stream2 = await req2.close();
-      final data = await stream2
-          .transform(const Utf8Decoder(allowMalformed: true))
-          .join();
-      final title = data.split(',')[6].substring(0, data.indexOf('<'));
-      result = title;
-      if (result?.contains(needleText) ?? false) {
-        final ihsplit = result?.split(needleText);
-        final artist = ihsplit?[0].trim();
-        final song = ihsplit?[1].substring(0, ihsplit[1].indexOf('" ')).trim();
-        result = '$artist - $song';
-      }
-      return CurrentStationInfo(
-        description: headers['icy-description'],
-        genre: headers['icy-genre'],
-        name: headers['icy-name'],
-        title: result,
-        url: headers['icy-url'],
-      );
-    } else {
-      if (result?.contains(needleText) ?? false) {
-        final ihsplit = result?.split(needleText);
-        final artist = ihsplit?[0].trim();
-        final song = ihsplit?[1].substring(0, ihsplit[1].indexOf('" ')).trim();
-        result = '$artist - $song';
-      }
-
-      return CurrentStationInfo(
-        title: result,
-        description: headers['icy-description'],
-        genre: headers['icy-genre'],
-        name: headers['icy-name'],
-        url: headers['icy-url'],
-      );
-    }
+    return CurrentStationInfo.fromJson(
+      (jsonDecode(response.body) as Map).cast(),
+    );
   }
 
   /// Identifies the current song playing in the radio.
@@ -285,9 +221,9 @@ class SongRecognitionService {
     final uri = Uri(
       scheme: 'https',
       host: 'musiclinkssapi.p.rapidapi.com',
-      path: 'api',
+      path: 'search/query',
       queryParameters: {
-        'query': songName,
+        'q': songName,
         'type': 'track',
       },
     );
@@ -301,6 +237,12 @@ class SongRecognitionService {
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
+
+    final decodedResponse = jsonDecode(response.body);
+    if (decodedResponse is! Map || decodedResponse.isEmpty) {
+      return MusicLinksResponse.empty();
+    }
+
     final result = MusicLinksResponse.fromJson(
       (jsonDecode(response.body) as Map).cast(),
     );

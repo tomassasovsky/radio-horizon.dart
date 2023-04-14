@@ -285,9 +285,10 @@ class SongRecognitionService {
     final uri = Uri(
       scheme: 'https',
       host: 'musiclinkssapi.p.rapidapi.com',
-      path: 'apiSearch/track',
+      path: 'api',
       queryParameters: {
         'query': songName,
+        'type': 'track',
       },
     );
 

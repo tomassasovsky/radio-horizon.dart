@@ -16,6 +16,44 @@
       "currentPlayers": "Reproductores actuales",
       "gatewayLatency": "Latencia de la puerta de enlace"
     },
+    "skip": {
+      "command": "saltar",
+      "description": "Salta a la siguiente canción en la cola",
+      "skipped": "La canción actual ha sido saltada",
+      "nothingPlaying": "La cola está vacía"
+    },
+    "stop": {
+      "command": "parar",
+      "description": "Para la reproducción de música",
+      "stopped": "La reproducción de música ha sido detenida"
+    },
+    "leave": {
+      "command": "dejar",
+      "description": "Abandona el canal de voz",
+      "left": "El canal de voz ha sido abandonado",
+      "leftDueToInactivity": "El canal de voz ha sido abandonado debido a la inactividad"
+    },
+    "join": {
+      "command": "unirse",
+      "description": "Se une al canal de voz en el que estás",
+      "joined": "Se ha unido al canal de voz"
+    },
+    "volume": {
+      "command": "volumen",
+      "description": "Establece el volumen de la música",
+      "volumeDescription": "El volumen para establecer, debe ser un valor entre 0 y 1000",
+      "volumeSet": "Volumen puesto en $volume"
+    },
+    "pause": {
+      "command": "pausar",
+      "description": "Pausa la reproducción de música",
+      "paused": "La reproducción de música ha sido pausada"
+    },
+    "resume": {
+      "command": "reanudar",
+      "description": "Reanuda la reproducción de música",
+      "resumed": "La reproducción de música ha sido reanudada"
+    },
     "music": {
       "command": "musica",
       "description": "Comandos relacionados con la funcionalidad de música",
@@ -27,44 +65,6 @@
           "noResults": "No se encontraron resultados para $query",
           "playlistEnqueued": "Lista de reproducción $name (${query}) añadida a la cola",
           "songEnqueued": "Canción $title (${query}) añadida a la cola"
-        },
-        "skip": {
-          "command": "saltar",
-          "description": "Salta a la siguiente canción en la cola",
-          "skipped": "La canción actual ha sido saltada",
-          "nothingPlaying": "La cola está vacía"
-        },
-        "stop": {
-          "command": "parar",
-          "description": "Para la reproducción de música",
-          "stopped": "La reproducción de música ha sido detenida"
-        },
-        "leave": {
-          "command": "dejar",
-          "description": "Abandona el canal de voz",
-          "left": "El canal de voz ha sido abandonado",
-          "leftDueToInactivity": "El canal de voz ha sido abandonado debido a la inactividad"
-        },
-        "join": {
-          "command": "unirse",
-          "description": "Se une al canal de voz en el que estás",
-          "joined": "Se ha unido al canal de voz"
-        },
-        "volume": {
-          "command": "volumen",
-          "description": "Establece el volumen de la música",
-          "volumeDescription": "El volumen para establecer, debe ser un valor entre 0 y 1000",
-          "volumeSet": "Volumen puesto en $volume"
-        },
-        "pause": {
-          "command": "pausar",
-          "description": "Pausa la reproducción de música",
-          "paused": "La reproducción de música ha sido pausada"
-        },
-        "resume": {
-          "command": "reanudar",
-          "description": "Reanuda la reproducción de música",
-          "resumed": "La reproducción de música ha sido reanudada"
         }
       }
     },

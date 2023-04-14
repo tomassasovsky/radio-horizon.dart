@@ -11,7 +11,7 @@ part 'music_links_response.g.dart';
 MusicLinksResponse musicLinksResponseFromJson(String str) =>
     MusicLinksResponse.fromJson(json.decode(str) as Map);
 
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 class MusicLinksResponse {
   const MusicLinksResponse({
     this.id,

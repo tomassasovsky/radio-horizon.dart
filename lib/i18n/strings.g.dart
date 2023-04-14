@@ -3,7 +3,7 @@
 /// Locales: 2
 /// Strings: 172 (86 per locale)
 ///
-/// Built on 2023-03-30 at 14:26 UTC
+/// Built on 2023-04-14 at 13:01 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -118,6 +118,13 @@ class StringsCommandsEn {
 
 	// Translations
 	late final StringsCommandsInfoEn info = StringsCommandsInfoEn._(_root);
+	late final StringsCommandsSkipEn skip = StringsCommandsSkipEn._(_root);
+	late final StringsCommandsStopEn stop = StringsCommandsStopEn._(_root);
+	late final StringsCommandsLeaveEn leave = StringsCommandsLeaveEn._(_root);
+	late final StringsCommandsJoinEn join = StringsCommandsJoinEn._(_root);
+	late final StringsCommandsVolumeEn volume = StringsCommandsVolumeEn._(_root);
+	late final StringsCommandsPauseEn pause = StringsCommandsPauseEn._(_root);
+	late final StringsCommandsResumeEn resume = StringsCommandsResumeEn._(_root);
 	late final StringsCommandsMusicEn music = StringsCommandsMusicEn._(_root);
 	late final StringsCommandsRadioEn radio = StringsCommandsRadioEn._(_root);
 }
@@ -172,6 +179,93 @@ class StringsCommandsInfoEn {
 	String get uptime => 'Uptime';
 	String get currentPlayers => 'Current players';
 	String get gatewayLatency => 'Gateway latency';
+}
+
+// Path: commands.skip
+class StringsCommandsSkipEn {
+	StringsCommandsSkipEn._(this._root);
+
+	final StringsEn _root; // ignore: unused_field
+
+	// Translations
+	String get command => 'skip';
+	String get description => 'Skips the current song';
+	String get skipped => 'Skipped current track';
+	String get nothingPlaying => 'The queue is clear!';
+}
+
+// Path: commands.stop
+class StringsCommandsStopEn {
+	StringsCommandsStopEn._(this._root);
+
+	final StringsEn _root; // ignore: unused_field
+
+	// Translations
+	String get command => 'stop';
+	String get description => 'Stops the current player and clears its track queue';
+	String get stopped => 'Player stopped';
+}
+
+// Path: commands.leave
+class StringsCommandsLeaveEn {
+	StringsCommandsLeaveEn._(this._root);
+
+	final StringsEn _root; // ignore: unused_field
+
+	// Translations
+	String get command => 'leave';
+	String get description => 'Leaves the current voice channel';
+	String get left => 'Left voice channel';
+	String get leftDueToInactivity => 'Left voice channel due to inactivity';
+}
+
+// Path: commands.join
+class StringsCommandsJoinEn {
+	StringsCommandsJoinEn._(this._root);
+
+	final StringsEn _root; // ignore: unused_field
+
+	// Translations
+	String get command => 'join';
+	String get description => 'Joins the voice channel you are in';
+	String get joined => 'Joined voice channel';
+}
+
+// Path: commands.volume
+class StringsCommandsVolumeEn {
+	StringsCommandsVolumeEn._(this._root);
+
+	final StringsEn _root; // ignore: unused_field
+
+	// Translations
+	String get command => 'volume';
+	String get description => 'Sets the volume of the current player';
+	String get volumeDescription => 'The volume to set, this value must be contained between 0 and 1000';
+	String volumeSet({required Object volume}) => 'Volume set to ${volume}';
+}
+
+// Path: commands.pause
+class StringsCommandsPauseEn {
+	StringsCommandsPauseEn._(this._root);
+
+	final StringsEn _root; // ignore: unused_field
+
+	// Translations
+	String get command => 'pause';
+	String get description => 'Pauses the current player';
+	String get paused => 'Player paused';
+}
+
+// Path: commands.resume
+class StringsCommandsResumeEn {
+	StringsCommandsResumeEn._(this._root);
+
+	final StringsEn _root; // ignore: unused_field
+
+	// Translations
+	String get command => 'resume';
+	String get description => 'Resumes the current player';
+	String get resumed => 'Player resumed';
 }
 
 // Path: commands.music
@@ -262,13 +356,6 @@ class StringsCommandsMusicChildrenEn {
 
 	// Translations
 	late final StringsCommandsMusicChildrenPlayEn play = StringsCommandsMusicChildrenPlayEn._(_root);
-	late final StringsCommandsMusicChildrenSkipEn skip = StringsCommandsMusicChildrenSkipEn._(_root);
-	late final StringsCommandsMusicChildrenStopEn stop = StringsCommandsMusicChildrenStopEn._(_root);
-	late final StringsCommandsMusicChildrenLeaveEn leave = StringsCommandsMusicChildrenLeaveEn._(_root);
-	late final StringsCommandsMusicChildrenJoinEn join = StringsCommandsMusicChildrenJoinEn._(_root);
-	late final StringsCommandsMusicChildrenVolumeEn volume = StringsCommandsMusicChildrenVolumeEn._(_root);
-	late final StringsCommandsMusicChildrenPauseEn pause = StringsCommandsMusicChildrenPauseEn._(_root);
-	late final StringsCommandsMusicChildrenResumeEn resume = StringsCommandsMusicChildrenResumeEn._(_root);
 }
 
 // Path: commands.radio.children
@@ -328,93 +415,6 @@ class StringsCommandsMusicChildrenPlayEn {
 	String noResults({required Object query}) => 'No results found for ${query}';
 	String playlistEnqueued({required Object name, required Object query}) => 'Playlist ${name} (${query}) enqueued';
 	String songEnqueued({required Object title, required Object query}) => 'Song ${title} (${query}) enqueued';
-}
-
-// Path: commands.music.children.skip
-class StringsCommandsMusicChildrenSkipEn {
-	StringsCommandsMusicChildrenSkipEn._(this._root);
-
-	final StringsEn _root; // ignore: unused_field
-
-	// Translations
-	String get command => 'skip';
-	String get description => 'Skips the current song';
-	String get skipped => 'Skipped current track';
-	String get nothingPlaying => 'The queue is clear!';
-}
-
-// Path: commands.music.children.stop
-class StringsCommandsMusicChildrenStopEn {
-	StringsCommandsMusicChildrenStopEn._(this._root);
-
-	final StringsEn _root; // ignore: unused_field
-
-	// Translations
-	String get command => 'stop';
-	String get description => 'Stops the current player and clears its track queue';
-	String get stopped => 'Player stopped';
-}
-
-// Path: commands.music.children.leave
-class StringsCommandsMusicChildrenLeaveEn {
-	StringsCommandsMusicChildrenLeaveEn._(this._root);
-
-	final StringsEn _root; // ignore: unused_field
-
-	// Translations
-	String get command => 'leave';
-	String get description => 'Leaves the current voice channel';
-	String get left => 'Left voice channel';
-	String get leftDueToInactivity => 'Left voice channel due to inactivity';
-}
-
-// Path: commands.music.children.join
-class StringsCommandsMusicChildrenJoinEn {
-	StringsCommandsMusicChildrenJoinEn._(this._root);
-
-	final StringsEn _root; // ignore: unused_field
-
-	// Translations
-	String get command => 'join';
-	String get description => 'Joins the voice channel you are in';
-	String get joined => 'Joined voice channel';
-}
-
-// Path: commands.music.children.volume
-class StringsCommandsMusicChildrenVolumeEn {
-	StringsCommandsMusicChildrenVolumeEn._(this._root);
-
-	final StringsEn _root; // ignore: unused_field
-
-	// Translations
-	String get command => 'volume';
-	String get description => 'Sets the volume of the current player';
-	String get volumeDescription => 'The volume to set, this value must be contained between 0 and 1000';
-	String volumeSet({required Object volume}) => 'Volume set to ${volume}';
-}
-
-// Path: commands.music.children.pause
-class StringsCommandsMusicChildrenPauseEn {
-	StringsCommandsMusicChildrenPauseEn._(this._root);
-
-	final StringsEn _root; // ignore: unused_field
-
-	// Translations
-	String get command => 'pause';
-	String get description => 'Pauses the current player';
-	String get paused => 'Player paused';
-}
-
-// Path: commands.music.children.resume
-class StringsCommandsMusicChildrenResumeEn {
-	StringsCommandsMusicChildrenResumeEn._(this._root);
-
-	final StringsEn _root; // ignore: unused_field
-
-	// Translations
-	String get command => 'resume';
-	String get description => 'Resumes the current player';
-	String get resumed => 'Player resumed';
 }
 
 // Path: commands.radio.children.play
@@ -502,6 +502,13 @@ class StringsCommandsEs extends StringsCommandsEn {
 
 	// Translations
 	@override late final StringsCommandsInfoEs info = StringsCommandsInfoEs._(_root);
+	@override late final StringsCommandsSkipEs skip = StringsCommandsSkipEs._(_root);
+	@override late final StringsCommandsStopEs stop = StringsCommandsStopEs._(_root);
+	@override late final StringsCommandsLeaveEs leave = StringsCommandsLeaveEs._(_root);
+	@override late final StringsCommandsJoinEs join = StringsCommandsJoinEs._(_root);
+	@override late final StringsCommandsVolumeEs volume = StringsCommandsVolumeEs._(_root);
+	@override late final StringsCommandsPauseEs pause = StringsCommandsPauseEs._(_root);
+	@override late final StringsCommandsResumeEs resume = StringsCommandsResumeEs._(_root);
 	@override late final StringsCommandsMusicEs music = StringsCommandsMusicEs._(_root);
 	@override late final StringsCommandsRadioEs radio = StringsCommandsRadioEs._(_root);
 }
@@ -556,6 +563,93 @@ class StringsCommandsInfoEs extends StringsCommandsInfoEn {
 	@override String get uptime => 'Tiempo de actividad';
 	@override String get currentPlayers => 'Reproductores actuales';
 	@override String get gatewayLatency => 'Latencia de la puerta de enlace';
+}
+
+// Path: commands.skip
+class StringsCommandsSkipEs extends StringsCommandsSkipEn {
+	StringsCommandsSkipEs._(StringsEs root) : this._root = root, super._(root);
+
+	@override final StringsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get command => 'saltar';
+	@override String get description => 'Salta a la siguiente canción en la cola';
+	@override String get skipped => 'La canción actual ha sido saltada';
+	@override String get nothingPlaying => 'La cola está vacía';
+}
+
+// Path: commands.stop
+class StringsCommandsStopEs extends StringsCommandsStopEn {
+	StringsCommandsStopEs._(StringsEs root) : this._root = root, super._(root);
+
+	@override final StringsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get command => 'parar';
+	@override String get description => 'Para la reproducción de música';
+	@override String get stopped => 'La reproducción de música ha sido detenida';
+}
+
+// Path: commands.leave
+class StringsCommandsLeaveEs extends StringsCommandsLeaveEn {
+	StringsCommandsLeaveEs._(StringsEs root) : this._root = root, super._(root);
+
+	@override final StringsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get command => 'dejar';
+	@override String get description => 'Abandona el canal de voz';
+	@override String get left => 'El canal de voz ha sido abandonado';
+	@override String get leftDueToInactivity => 'El canal de voz ha sido abandonado debido a la inactividad';
+}
+
+// Path: commands.join
+class StringsCommandsJoinEs extends StringsCommandsJoinEn {
+	StringsCommandsJoinEs._(StringsEs root) : this._root = root, super._(root);
+
+	@override final StringsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get command => 'unirse';
+	@override String get description => 'Se une al canal de voz en el que estás';
+	@override String get joined => 'Se ha unido al canal de voz';
+}
+
+// Path: commands.volume
+class StringsCommandsVolumeEs extends StringsCommandsVolumeEn {
+	StringsCommandsVolumeEs._(StringsEs root) : this._root = root, super._(root);
+
+	@override final StringsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get command => 'volumen';
+	@override String get description => 'Establece el volumen de la música';
+	@override String get volumeDescription => 'El volumen para establecer, debe ser un valor entre 0 y 1000';
+	@override String volumeSet({required Object volume}) => 'Volumen puesto en ${volume}';
+}
+
+// Path: commands.pause
+class StringsCommandsPauseEs extends StringsCommandsPauseEn {
+	StringsCommandsPauseEs._(StringsEs root) : this._root = root, super._(root);
+
+	@override final StringsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get command => 'pausar';
+	@override String get description => 'Pausa la reproducción de música';
+	@override String get paused => 'La reproducción de música ha sido pausada';
+}
+
+// Path: commands.resume
+class StringsCommandsResumeEs extends StringsCommandsResumeEn {
+	StringsCommandsResumeEs._(StringsEs root) : this._root = root, super._(root);
+
+	@override final StringsEs _root; // ignore: unused_field
+
+	// Translations
+	@override String get command => 'reanudar';
+	@override String get description => 'Reanuda la reproducción de música';
+	@override String get resumed => 'La reproducción de música ha sido reanudada';
 }
 
 // Path: commands.music
@@ -646,13 +740,6 @@ class StringsCommandsMusicChildrenEs extends StringsCommandsMusicChildrenEn {
 
 	// Translations
 	@override late final StringsCommandsMusicChildrenPlayEs play = StringsCommandsMusicChildrenPlayEs._(_root);
-	@override late final StringsCommandsMusicChildrenSkipEs skip = StringsCommandsMusicChildrenSkipEs._(_root);
-	@override late final StringsCommandsMusicChildrenStopEs stop = StringsCommandsMusicChildrenStopEs._(_root);
-	@override late final StringsCommandsMusicChildrenLeaveEs leave = StringsCommandsMusicChildrenLeaveEs._(_root);
-	@override late final StringsCommandsMusicChildrenJoinEs join = StringsCommandsMusicChildrenJoinEs._(_root);
-	@override late final StringsCommandsMusicChildrenVolumeEs volume = StringsCommandsMusicChildrenVolumeEs._(_root);
-	@override late final StringsCommandsMusicChildrenPauseEs pause = StringsCommandsMusicChildrenPauseEs._(_root);
-	@override late final StringsCommandsMusicChildrenResumeEs resume = StringsCommandsMusicChildrenResumeEs._(_root);
 }
 
 // Path: commands.radio.children
@@ -712,93 +799,6 @@ class StringsCommandsMusicChildrenPlayEs extends StringsCommandsMusicChildrenPla
 	@override String noResults({required Object query}) => 'No se encontraron resultados para ${query}';
 	@override String playlistEnqueued({required Object name, required Object query}) => 'Lista de reproducción ${name} (${query}) añadida a la cola';
 	@override String songEnqueued({required Object title, required Object query}) => 'Canción ${title} (${query}) añadida a la cola';
-}
-
-// Path: commands.music.children.skip
-class StringsCommandsMusicChildrenSkipEs extends StringsCommandsMusicChildrenSkipEn {
-	StringsCommandsMusicChildrenSkipEs._(StringsEs root) : this._root = root, super._(root);
-
-	@override final StringsEs _root; // ignore: unused_field
-
-	// Translations
-	@override String get command => 'saltar';
-	@override String get description => 'Salta a la siguiente canción en la cola';
-	@override String get skipped => 'La canción actual ha sido saltada';
-	@override String get nothingPlaying => 'La cola está vacía';
-}
-
-// Path: commands.music.children.stop
-class StringsCommandsMusicChildrenStopEs extends StringsCommandsMusicChildrenStopEn {
-	StringsCommandsMusicChildrenStopEs._(StringsEs root) : this._root = root, super._(root);
-
-	@override final StringsEs _root; // ignore: unused_field
-
-	// Translations
-	@override String get command => 'parar';
-	@override String get description => 'Para la reproducción de música';
-	@override String get stopped => 'La reproducción de música ha sido detenida';
-}
-
-// Path: commands.music.children.leave
-class StringsCommandsMusicChildrenLeaveEs extends StringsCommandsMusicChildrenLeaveEn {
-	StringsCommandsMusicChildrenLeaveEs._(StringsEs root) : this._root = root, super._(root);
-
-	@override final StringsEs _root; // ignore: unused_field
-
-	// Translations
-	@override String get command => 'dejar';
-	@override String get description => 'Abandona el canal de voz';
-	@override String get left => 'El canal de voz ha sido abandonado';
-	@override String get leftDueToInactivity => 'El canal de voz ha sido abandonado debido a la inactividad';
-}
-
-// Path: commands.music.children.join
-class StringsCommandsMusicChildrenJoinEs extends StringsCommandsMusicChildrenJoinEn {
-	StringsCommandsMusicChildrenJoinEs._(StringsEs root) : this._root = root, super._(root);
-
-	@override final StringsEs _root; // ignore: unused_field
-
-	// Translations
-	@override String get command => 'unirse';
-	@override String get description => 'Se une al canal de voz en el que estás';
-	@override String get joined => 'Se ha unido al canal de voz';
-}
-
-// Path: commands.music.children.volume
-class StringsCommandsMusicChildrenVolumeEs extends StringsCommandsMusicChildrenVolumeEn {
-	StringsCommandsMusicChildrenVolumeEs._(StringsEs root) : this._root = root, super._(root);
-
-	@override final StringsEs _root; // ignore: unused_field
-
-	// Translations
-	@override String get command => 'volumen';
-	@override String get description => 'Establece el volumen de la música';
-	@override String get volumeDescription => 'El volumen para establecer, debe ser un valor entre 0 y 1000';
-	@override String volumeSet({required Object volume}) => 'Volumen puesto en ${volume}';
-}
-
-// Path: commands.music.children.pause
-class StringsCommandsMusicChildrenPauseEs extends StringsCommandsMusicChildrenPauseEn {
-	StringsCommandsMusicChildrenPauseEs._(StringsEs root) : this._root = root, super._(root);
-
-	@override final StringsEs _root; // ignore: unused_field
-
-	// Translations
-	@override String get command => 'pausar';
-	@override String get description => 'Pausa la reproducción de música';
-	@override String get paused => 'La reproducción de música ha sido pausada';
-}
-
-// Path: commands.music.children.resume
-class StringsCommandsMusicChildrenResumeEs extends StringsCommandsMusicChildrenResumeEn {
-	StringsCommandsMusicChildrenResumeEs._(StringsEs root) : this._root = root, super._(root);
-
-	@override final StringsEs _root; // ignore: unused_field
-
-	// Translations
-	@override String get command => 'reanudar';
-	@override String get description => 'Reanuda la reproducción de música';
-	@override String get resumed => 'La reproducción de música ha sido reanudada';
 }
 
 // Path: commands.radio.children.play
@@ -867,6 +867,30 @@ extension on StringsEn {
 			case 'commands.info.uptime': return 'Uptime';
 			case 'commands.info.currentPlayers': return 'Current players';
 			case 'commands.info.gatewayLatency': return 'Gateway latency';
+			case 'commands.skip.command': return 'skip';
+			case 'commands.skip.description': return 'Skips the current song';
+			case 'commands.skip.skipped': return 'Skipped current track';
+			case 'commands.skip.nothingPlaying': return 'The queue is clear!';
+			case 'commands.stop.command': return 'stop';
+			case 'commands.stop.description': return 'Stops the current player and clears its track queue';
+			case 'commands.stop.stopped': return 'Player stopped';
+			case 'commands.leave.command': return 'leave';
+			case 'commands.leave.description': return 'Leaves the current voice channel';
+			case 'commands.leave.left': return 'Left voice channel';
+			case 'commands.leave.leftDueToInactivity': return 'Left voice channel due to inactivity';
+			case 'commands.join.command': return 'join';
+			case 'commands.join.description': return 'Joins the voice channel you are in';
+			case 'commands.join.joined': return 'Joined voice channel';
+			case 'commands.volume.command': return 'volume';
+			case 'commands.volume.description': return 'Sets the volume of the current player';
+			case 'commands.volume.volumeDescription': return 'The volume to set, this value must be contained between 0 and 1000';
+			case 'commands.volume.volumeSet': return ({required Object volume}) => 'Volume set to ${volume}';
+			case 'commands.pause.command': return 'pause';
+			case 'commands.pause.description': return 'Pauses the current player';
+			case 'commands.pause.paused': return 'Player paused';
+			case 'commands.resume.command': return 'resume';
+			case 'commands.resume.description': return 'Resumes the current player';
+			case 'commands.resume.resumed': return 'Player resumed';
 			case 'commands.music.command': return 'music';
 			case 'commands.music.description': return 'Music related commands';
 			case 'commands.music.children.play.command': return 'play';
@@ -875,30 +899,6 @@ extension on StringsEn {
 			case 'commands.music.children.play.noResults': return ({required Object query}) => 'No results found for ${query}';
 			case 'commands.music.children.play.playlistEnqueued': return ({required Object name, required Object query}) => 'Playlist ${name} (${query}) enqueued';
 			case 'commands.music.children.play.songEnqueued': return ({required Object title, required Object query}) => 'Song ${title} (${query}) enqueued';
-			case 'commands.music.children.skip.command': return 'skip';
-			case 'commands.music.children.skip.description': return 'Skips the current song';
-			case 'commands.music.children.skip.skipped': return 'Skipped current track';
-			case 'commands.music.children.skip.nothingPlaying': return 'The queue is clear!';
-			case 'commands.music.children.stop.command': return 'stop';
-			case 'commands.music.children.stop.description': return 'Stops the current player and clears its track queue';
-			case 'commands.music.children.stop.stopped': return 'Player stopped';
-			case 'commands.music.children.leave.command': return 'leave';
-			case 'commands.music.children.leave.description': return 'Leaves the current voice channel';
-			case 'commands.music.children.leave.left': return 'Left voice channel';
-			case 'commands.music.children.leave.leftDueToInactivity': return 'Left voice channel due to inactivity';
-			case 'commands.music.children.join.command': return 'join';
-			case 'commands.music.children.join.description': return 'Joins the voice channel you are in';
-			case 'commands.music.children.join.joined': return 'Joined voice channel';
-			case 'commands.music.children.volume.command': return 'volume';
-			case 'commands.music.children.volume.description': return 'Sets the volume of the current player';
-			case 'commands.music.children.volume.volumeDescription': return 'The volume to set, this value must be contained between 0 and 1000';
-			case 'commands.music.children.volume.volumeSet': return ({required Object volume}) => 'Volume set to ${volume}';
-			case 'commands.music.children.pause.command': return 'pause';
-			case 'commands.music.children.pause.description': return 'Pauses the current player';
-			case 'commands.music.children.pause.paused': return 'Player paused';
-			case 'commands.music.children.resume.command': return 'resume';
-			case 'commands.music.children.resume.description': return 'Resumes the current player';
-			case 'commands.music.children.resume.resumed': return 'Player resumed';
 			case 'commands.radio.command': return 'radio';
 			case 'commands.radio.description': return 'Radio related commands';
 			case 'commands.radio.children.play.command': return 'play';
@@ -961,6 +961,30 @@ extension on StringsEs {
 			case 'commands.info.uptime': return 'Tiempo de actividad';
 			case 'commands.info.currentPlayers': return 'Reproductores actuales';
 			case 'commands.info.gatewayLatency': return 'Latencia de la puerta de enlace';
+			case 'commands.skip.command': return 'saltar';
+			case 'commands.skip.description': return 'Salta a la siguiente canción en la cola';
+			case 'commands.skip.skipped': return 'La canción actual ha sido saltada';
+			case 'commands.skip.nothingPlaying': return 'La cola está vacía';
+			case 'commands.stop.command': return 'parar';
+			case 'commands.stop.description': return 'Para la reproducción de música';
+			case 'commands.stop.stopped': return 'La reproducción de música ha sido detenida';
+			case 'commands.leave.command': return 'dejar';
+			case 'commands.leave.description': return 'Abandona el canal de voz';
+			case 'commands.leave.left': return 'El canal de voz ha sido abandonado';
+			case 'commands.leave.leftDueToInactivity': return 'El canal de voz ha sido abandonado debido a la inactividad';
+			case 'commands.join.command': return 'unirse';
+			case 'commands.join.description': return 'Se une al canal de voz en el que estás';
+			case 'commands.join.joined': return 'Se ha unido al canal de voz';
+			case 'commands.volume.command': return 'volumen';
+			case 'commands.volume.description': return 'Establece el volumen de la música';
+			case 'commands.volume.volumeDescription': return 'El volumen para establecer, debe ser un valor entre 0 y 1000';
+			case 'commands.volume.volumeSet': return ({required Object volume}) => 'Volumen puesto en ${volume}';
+			case 'commands.pause.command': return 'pausar';
+			case 'commands.pause.description': return 'Pausa la reproducción de música';
+			case 'commands.pause.paused': return 'La reproducción de música ha sido pausada';
+			case 'commands.resume.command': return 'reanudar';
+			case 'commands.resume.description': return 'Reanuda la reproducción de música';
+			case 'commands.resume.resumed': return 'La reproducción de música ha sido reanudada';
 			case 'commands.music.command': return 'musica';
 			case 'commands.music.description': return 'Comandos relacionados con la funcionalidad de música';
 			case 'commands.music.children.play.command': return 'reproducir';
@@ -969,30 +993,6 @@ extension on StringsEs {
 			case 'commands.music.children.play.noResults': return ({required Object query}) => 'No se encontraron resultados para ${query}';
 			case 'commands.music.children.play.playlistEnqueued': return ({required Object name, required Object query}) => 'Lista de reproducción ${name} (${query}) añadida a la cola';
 			case 'commands.music.children.play.songEnqueued': return ({required Object title, required Object query}) => 'Canción ${title} (${query}) añadida a la cola';
-			case 'commands.music.children.skip.command': return 'saltar';
-			case 'commands.music.children.skip.description': return 'Salta a la siguiente canción en la cola';
-			case 'commands.music.children.skip.skipped': return 'La canción actual ha sido saltada';
-			case 'commands.music.children.skip.nothingPlaying': return 'La cola está vacía';
-			case 'commands.music.children.stop.command': return 'parar';
-			case 'commands.music.children.stop.description': return 'Para la reproducción de música';
-			case 'commands.music.children.stop.stopped': return 'La reproducción de música ha sido detenida';
-			case 'commands.music.children.leave.command': return 'dejar';
-			case 'commands.music.children.leave.description': return 'Abandona el canal de voz';
-			case 'commands.music.children.leave.left': return 'El canal de voz ha sido abandonado';
-			case 'commands.music.children.leave.leftDueToInactivity': return 'El canal de voz ha sido abandonado debido a la inactividad';
-			case 'commands.music.children.join.command': return 'unirse';
-			case 'commands.music.children.join.description': return 'Se une al canal de voz en el que estás';
-			case 'commands.music.children.join.joined': return 'Se ha unido al canal de voz';
-			case 'commands.music.children.volume.command': return 'volumen';
-			case 'commands.music.children.volume.description': return 'Establece el volumen de la música';
-			case 'commands.music.children.volume.volumeDescription': return 'El volumen para establecer, debe ser un valor entre 0 y 1000';
-			case 'commands.music.children.volume.volumeSet': return ({required Object volume}) => 'Volumen puesto en ${volume}';
-			case 'commands.music.children.pause.command': return 'pausar';
-			case 'commands.music.children.pause.description': return 'Pausa la reproducción de música';
-			case 'commands.music.children.pause.paused': return 'La reproducción de música ha sido pausada';
-			case 'commands.music.children.resume.command': return 'reanudar';
-			case 'commands.music.children.resume.description': return 'Reanuda la reproducción de música';
-			case 'commands.music.children.resume.resumed': return 'La reproducción de música ha sido reanudada';
 			case 'commands.radio.command': return 'radio';
 			case 'commands.radio.description': return 'Comandos relacionados con la funcionalidad de radio';
 			case 'commands.radio.children.play.command': return 'reproducir';

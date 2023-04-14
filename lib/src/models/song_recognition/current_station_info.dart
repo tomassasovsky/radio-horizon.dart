@@ -17,7 +17,6 @@ class CurrentStationInfo {
   }) : _lyrics = null;
 
   const CurrentStationInfo._lyrics({
-    this.contentType,
     this.description,
     this.genre,
     this.name,
@@ -25,7 +24,8 @@ class CurrentStationInfo {
     this.image,
     this.url,
     List<String>? lyrics,
-  }) : _lyrics = lyrics;
+  })  : _lyrics = lyrics,
+        contentType = null;
 
   factory CurrentStationInfo.fromJson(Map<String, dynamic> json) =>
       _$CurrentStationInfoFromJson(json);

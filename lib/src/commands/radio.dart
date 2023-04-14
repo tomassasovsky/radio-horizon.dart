@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:math' as math;
 
+import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
@@ -164,8 +165,9 @@ ChatGroup radio = ChatGroup(
           final guildRadio = await recognitionService.currentRadio(guildId);
 
           try {
-            final info =
-                await recognitionService.getCurrentStationInfo(guildRadio);
+            final info = await retry(
+              () => recognitionService.getCurrentStationInfo(guildRadio),
+            );
             if (!info.hasTitle) {
               throw Exception('No title');
             }
@@ -176,7 +178,13 @@ ChatGroup radio = ChatGroup(
               image:
                   'https://img.youtube.com/vi/${tracks.tracks.first.info?.identifier}/hqdefault.jpg',
             );
-          } catch (e) {
+          } catch (exception, stacktrace) {
+            Logger('RadioCommand').warning(
+              'Failed to get current station info',
+              exception,
+              stacktrace,
+            );
+
             ShazamResult? result;
             await retry(
               () async {
@@ -211,7 +219,12 @@ ChatGroup radio = ChatGroup(
           try {
             linksResponse = await SongRecognitionService.instance
                 .getMusicLinks(stationInfo.title!);
-          } catch (e) {
+          } catch (exception, stacktrace) {
+            Logger('RadioCommand').warning(
+              'Failed to get music links for ${stationInfo.title}',
+              exception,
+              stacktrace,
+            );
             await usage?.sendEvent('ChatCommand:radio-recognize', 'links');
           }
 
@@ -261,6 +274,12 @@ ChatGroup radio = ChatGroup(
 
           await context.respond(messageBuilder);
         } catch (e, stacktrace) {
+          Logger('RadioCommand').warning(
+            'Failed to recognize radio',
+            e,
+            stacktrace,
+          );
+
           await context.respond(
             MessageBuilder.embed(
               EmbedBuilder()

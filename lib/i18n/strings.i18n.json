@@ -16,6 +16,44 @@
       "currentPlayers": "Current players",
       "gatewayLatency": "Gateway latency"
     },
+    "skip": {
+      "command": "skip",
+      "description": "Skips the current song",
+      "skipped": "Skipped current track",
+      "nothingPlaying": "The queue is clear!"
+    },
+    "stop": {
+      "command": "stop",
+      "description": "Stops the current player and clears its track queue",
+      "stopped": "Player stopped"
+    },
+    "leave": {
+      "command": "leave",
+      "description": "Leaves the current voice channel",
+      "left": "Left voice channel",
+      "leftDueToInactivity": "Left voice channel due to inactivity"
+    },
+    "join": {
+      "command": "join",
+      "description": "Joins the voice channel you are in",
+      "joined": "Joined voice channel"
+    },
+    "volume": {
+      "command": "volume",
+      "description": "Sets the volume of the current player",
+      "volumeDescription": "The volume to set, this value must be contained between 0 and 1000",
+      "volumeSet": "Volume set to $volume"
+    },
+    "pause": {
+      "command": "pause",
+      "description": "Pauses the current player",
+      "paused": "Player paused"
+    },
+    "resume": {
+      "command": "resume",
+      "description": "Resumes the current player",
+      "resumed": "Player resumed"
+    },
     "music": {
       "command": "music",
       "description": "Music related commands",
@@ -27,44 +65,6 @@
           "noResults": "No results found for $query",
           "playlistEnqueued": "Playlist $name (${query}) enqueued",
           "songEnqueued": "Song $title (${query}) enqueued"
-        },
-        "skip": {
-          "command": "skip",
-          "description": "Skips the current song",
-          "skipped": "Skipped current track",
-          "nothingPlaying": "The queue is clear!"
-        },
-        "stop": {
-          "command": "stop",
-          "description": "Stops the current player and clears its track queue",
-          "stopped": "Player stopped"
-        },
-        "leave": {
-          "command": "leave",
-          "description": "Leaves the current voice channel",
-          "left": "Left voice channel",
-          "leftDueToInactivity": "Left voice channel due to inactivity"
-        },
-        "join": {
-          "command": "join",
-          "description": "Joins the voice channel you are in",
-          "joined": "Joined voice channel"
-        },
-        "volume": {
-          "command": "volume",
-          "description": "Sets the volume of the current player",
-          "volumeDescription": "The volume to set, this value must be contained between 0 and 1000",
-          "volumeSet": "Volume set to $volume"
-        },
-        "pause": {
-          "command": "pause",
-          "description": "Pauses the current player",
-          "paused": "Player paused"
-        },
-        "resume": {
-          "command": "resume",
-          "description": "Resumes the current player",
-          "resumed": "Player resumed"
         }
       }
     },

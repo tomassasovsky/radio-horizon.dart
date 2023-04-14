@@ -17,12 +17,3 @@ MusicLinksResponse _$MusicLinksResponseFromJson(Map<String, dynamic> json) =>
               json['links'] as Map<String, dynamic>),
       times: json['times'] as num?,
     );
-
-Map<String, dynamic> _$MusicLinksResponseToJson(MusicLinksResponse instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'image': instance.image,
-      'title': instance.title,
-      'links': instance.links,
-      'times': instance.times,
-    };

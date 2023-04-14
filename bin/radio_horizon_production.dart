@@ -30,6 +30,13 @@ Future<void> main() async {
     ),
   )
     ..addCommand(info)
+    ..addCommand(skip)
+    ..addCommand(stop)
+    ..addCommand(join)
+    ..addCommand(leave)
+    ..addCommand(pause)
+    ..addCommand(resume)
+    ..addCommand(volume)
     ..addCommand(music)
     ..addCommand(radio)
     ..onCommandError.listen(commandErrorHandler);

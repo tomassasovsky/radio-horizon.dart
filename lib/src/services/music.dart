@@ -306,12 +306,11 @@ class MusicService {
     /// Returns a list of members connected to the same voice channel as the
     /// [event] member. Excludes the bot, if present.
     bool hasConnectedMembers(IGuild iGuild) {
-      // the bot represents one of these voice states, so we subtract 1 and see
-      // if there are any other members connected
       final voiceStatesInChannel = iGuild.voiceStates.entries.where((element) {
-        return element.value.channel?.id == currentChannelId;
+        return element.value.channel?.id == currentChannelId &&
+            element.key != botMember.id;
       });
-      return (voiceStatesInChannel.length - 1) > 0;
+      return voiceStatesInChannel.isNotEmpty;
     }
 
     if (!hasConnectedMembers(guild)) {

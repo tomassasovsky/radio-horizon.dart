@@ -58,9 +58,9 @@ Future<void> main() async {
   MusicService.init(client);
   await DatabaseService.init(client);
   SongRecognitionService.init(client, DatabaseService.instance);
-  BootUpService.init(client, DatabaseService.instance);
 
   client.onReady.listen((_) async {
+    BootUpService.init(client, DatabaseService.instance);
     await usage?.sendEvent('main:setup', 'complete');
   });
 

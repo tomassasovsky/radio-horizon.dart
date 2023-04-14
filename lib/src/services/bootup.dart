@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:radio_horizon/radio_horizon.dart';
@@ -5,7 +8,11 @@ import 'package:retry/retry.dart';
 
 class BootUpService {
   BootUpService._(this._client, this.databaseService) {
-    _client.eventsWs.onReady.listen(_initialize);
+    try {
+      unawaited(_initialize());
+    } catch (e, s) {
+      Logger('BootUpService').severe('Error during bootup', e, s);
+    }
   }
 
   static void init(INyxxWebsocket client, DatabaseService databaseService) {
@@ -28,7 +35,7 @@ class BootUpService {
 
   /// Grabs the previously playing radio and sets it as the current one
   /// for the guild
-  Future<void> _initialize(_) async {
+  Future<void> _initialize() async {
     final cluster = await retry<ICluster?>(
       () async {
         final mCluster = MusicService.instance.cluster;

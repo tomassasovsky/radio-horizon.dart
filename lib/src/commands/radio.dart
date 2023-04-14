@@ -166,7 +166,7 @@ ChatGroup radio = ChatGroup(
 
           try {
             final info = await retry(
-              () => recognitionService.getCurrentStationInfo(guildRadio),
+              () async => recognitionService.getCurrentStationInfo(guildRadio),
             );
             if (!info.hasTitle) {
               throw Exception('No title');

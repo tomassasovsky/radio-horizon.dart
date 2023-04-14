@@ -7,6 +7,7 @@ part 'current_station_info.g.dart';
 @JsonSerializable()
 class CurrentStationInfo {
   const CurrentStationInfo({
+    this.contentType,
     this.description,
     this.genre,
     this.name,
@@ -16,6 +17,7 @@ class CurrentStationInfo {
   }) : _lyrics = null;
 
   const CurrentStationInfo._lyrics({
+    this.contentType,
     this.description,
     this.genre,
     this.name,
@@ -61,12 +63,26 @@ class CurrentStationInfo {
         url: url ?? this.url,
       );
 
+  /// Station description
   final String? description;
+
+  /// MIME type
+  @JsonKey(name: 'content-type')
+  final String? contentType;
+
+  /// Genre of the radio
   final String? genre;
+
+  /// Station name
   final String? name;
+
+  /// Now playing information
   final String? title;
-  final String? image;
+
+  /// Url to the radio
   final String? url;
+
+  final String? image;
   final List<String>? _lyrics;
 
   bool get hasName => name != null && name!.isNotEmpty;

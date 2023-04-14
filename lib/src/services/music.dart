@@ -345,8 +345,7 @@ class MusicService {
           final embed = EmbedBuilder()
             ..color = getRandomColor()
             ..title = commandTranslations.leave.left
-            ..description =
-                commandTranslations.leave.leftDueToInactivity;
+            ..description = commandTranslations.leave.leftDueToInactivity;
 
           await channel.sendMessage(MessageBuilder.embed(embed));
         } catch (e) {

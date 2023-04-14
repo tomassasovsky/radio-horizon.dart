@@ -17,8 +17,7 @@ final skip = ChatCommand(
   checks: [connectedToAVoiceChannelCheck],
   id('skip', (IChatContext context) async {
     context as InteractionChatContext;
-    final commandTranslations =
-        getCommandTranslations(context).skip;
+    final commandTranslations = getCommandTranslations(context).skip;
 
     await usage?.sendEvent(
       'ChatCommand:skip',
@@ -62,8 +61,7 @@ final leave = ChatCommand(
   checks: [connectedToAVoiceChannelCheck],
   id('leave', (IChatContext context) async {
     context as InteractionChatContext;
-    final commandTranslations =
-        getCommandTranslations(context).leave;
+    final commandTranslations = getCommandTranslations(context).leave;
 
     await usage?.sendEvent(
       'ChatCommand:leave',
@@ -96,8 +94,7 @@ final join = ChatCommand(
   checks: [notConnectedToAVoiceChannelCheck],
   id('join', (IChatContext context) async {
     context as InteractionChatContext;
-    final commandTranslations =
-        getCommandTranslations(context).join;
+    final commandTranslations = getCommandTranslations(context).join;
 
     await usage?.sendEvent(
       'ChatCommand:join',
@@ -136,8 +133,7 @@ final volume = ChatCommand(
         int volume,
   ) async {
     context as InteractionChatContext;
-    final commandTranslations =
-        getCommandTranslations(context).volume;
+    final commandTranslations = getCommandTranslations(context).volume;
 
     await usage?.sendEvent(
       'ChatCommand:volume',
@@ -178,8 +174,7 @@ final pause = ChatCommand(
   _enPauseCommand.description,
   id('pause', (IChatContext context) async {
     context as InteractionChatContext;
-    final commandTranslations =
-        getCommandTranslations(context).pause;
+    final commandTranslations = getCommandTranslations(context).pause;
 
     await usage?.sendEvent(
       'ChatCommand:pause',
@@ -211,8 +206,7 @@ final resume = ChatCommand(
   _enResumeCommand.description,
   id('resume', (IChatContext context) async {
     context as InteractionChatContext;
-    final commandTranslations =
-        getCommandTranslations(context).resume;
+    final commandTranslations = getCommandTranslations(context).resume;
 
     await usage?.sendEvent(
       'ChatCommand:resume',
@@ -245,8 +239,7 @@ final stop = ChatCommand(
   checks: [connectedToAVoiceChannelCheck],
   id('stop', (IChatContext context) async {
     context as InteractionChatContext;
-    final commandTranslations =
-        getCommandTranslations(context).stop;
+    final commandTranslations = getCommandTranslations(context).stop;
 
     await usage?.sendEvent(
       'ChatCommand:stop',

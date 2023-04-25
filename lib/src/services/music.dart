@@ -74,7 +74,7 @@ class MusicService {
         cluster.eventDispatcher.onTrackStuck.listen(_trackStuck);
         cluster.eventDispatcher.onTrackEnd.listen(_trackEnded);
         cluster.eventDispatcher.onTrackException.listen(_trackException);
-        _client.eventsWs.onVoiceStateUpdate.listen(_voiceStateUpdate);
+        // _client.eventsWs.onVoiceStateUpdate.listen(_voiceStateUpdate);
       }
     });
   }
@@ -265,7 +265,7 @@ class MusicService {
     _instance = MusicService._(client);
   }
 
-  Future<void> _voiceStateUpdate(IVoiceStateUpdateEvent event) async {
+  Future<void> voiceStateUpdate(IVoiceStateUpdateEvent event) async {
     if (event.state.user.id == _client.appId) return;
     if (event.oldState == null) return;
 

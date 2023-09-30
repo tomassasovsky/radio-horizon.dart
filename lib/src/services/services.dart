@@ -7,5 +7,4 @@
 export 'bootup.dart';
 export 'db.dart';
 export 'music.dart';
-export 'prometheus.dart';
 export 'song_recognition.dart';

@@ -3,7 +3,6 @@ echo off
 docker compose stop lavalink
 docker compose stop radio_horizon
 
-docker image rm fredboat/lavalink:master -f
 docker image rm ghcr.io/tomassasovsky/radio-horizon.dart:latest -f
 
 docker rm lavalink -f

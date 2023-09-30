@@ -1,4 +1,4 @@
-FROM dart:2.19.0 AS build
+FROM dart:stable AS build
 
 ARG dart_entryfile
 
@@ -7,7 +7,7 @@ COPY pubspec.* /app/
 RUN dart pub get
 
 COPY . /app
-RUN dart pub get --offline
+RUN dart pub get
 
 RUN dart run nyxx_commands:compile bin/$dart_entryfile -o bot.dart
 EXPOSE 8080

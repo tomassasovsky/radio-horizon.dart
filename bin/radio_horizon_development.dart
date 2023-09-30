@@ -54,7 +54,6 @@ Future<void> main() async {
     ..registerPlugin(commands);
 
   // Initialise our services
-  PrometheusService.init(client, commands);
   MusicService.init(client);
   await DatabaseService.init(client);
   SongRecognitionService.init(client, DatabaseService.instance);

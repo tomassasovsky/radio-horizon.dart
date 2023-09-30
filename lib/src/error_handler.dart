@@ -31,28 +31,24 @@ Future<void> commandErrorHandler(CommandsException error) async {
                 translations.errorHandler.musicConnectedToVC,
               ),
             );
-            break;
           case 'musicNotConnectedToVC':
             await context.respond(
               MessageBuilder.content(
                 translations.errorHandler.musicNotConnectedToVC,
               ),
             );
-            break;
           case 'musicSameVC':
             await context.respond(
               MessageBuilder.content(
                 translations.errorHandler.musicSameVC,
               ),
             );
-            break;
           case 'musicUserConnectedToVC':
             await context.respond(
               MessageBuilder.content(
                 translations.errorHandler.musicUserConnectedToVC,
               ),
             );
-            break;
           default:
             break;
         }

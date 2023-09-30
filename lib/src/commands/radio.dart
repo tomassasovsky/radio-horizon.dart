@@ -46,7 +46,7 @@ ChatGroup radio = ChatGroup(
         IChatContext context,
         @Description('The name of the Radio Station to play')
         @Autocomplete(autocompleteRadioQuery)
-            String query,
+        String query,
       ) async {
         context as InteractionChatContext;
         final commandTranslations =

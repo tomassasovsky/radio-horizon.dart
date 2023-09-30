@@ -32,7 +32,7 @@ ChatGroup music = ChatGroup(
         IChatContext context,
         @Description('The name/url of the song/playlist to play')
         @Autocomplete(autocompleteMusicQuery)
-            String query,
+        String query,
       ) async {
         context as InteractionChatContext;
         final commandTranslations =

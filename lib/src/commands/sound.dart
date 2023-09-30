@@ -130,7 +130,7 @@ final volume = ChatCommand(
       'The new volume, this value must be contained between 0 and 1000',
     )
     @UseConverter(IntConverter(min: 0, max: 1000))
-        int volume,
+    int volume,
   ) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).volume;

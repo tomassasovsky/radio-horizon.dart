@@ -14,6 +14,9 @@ import 'package:sentry_logging/sentry_logging.dart';
 
 Future<void> main() async {
   await runZonedGuarded(() async {
+    dotEnvFlavour = DotEnvFlavour.production;
+    dotEnvFlavour.initialize();
+
     await Sentry.init(
       (options) {
         options
@@ -22,9 +25,6 @@ Future<void> main() async {
           ..addIntegration(LoggingIntegration());
       },
     );
-
-    dotEnvFlavour = DotEnvFlavour.production;
-    dotEnvFlavour.initialize();
 
     // Create nyxx client and nyxx_commands plugin
     final client = NyxxFactory.createNyxxWebsocket(token, intents);

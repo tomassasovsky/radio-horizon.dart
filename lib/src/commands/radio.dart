@@ -30,6 +30,8 @@ final uuidRegExp = RegExp(
 const _radioBrowserClient =
     RadioBrowserApi.fromHost('de1.api.radio-browser.info');
 
+final _logger = Logger('command/radio');
+
 ChatGroup radio = ChatGroup(
   _enRadioCommand.command,
   _enRadioCommand.description,
@@ -58,17 +60,16 @@ ChatGroup radio = ChatGroup(
           ),
         );
 
-        await usage?.sendEvent(
-          'ChatCommand:radio-play',
-          'call',
-          parameters: {
-            'query': query,
-            'guild': context.guild?.id.toString() ?? 'null',
-            'guild_name': context.guild?.name ?? 'null',
-            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-            'channel': context.channel.id.toString(),
-            'user': context.member?.id.toString() ?? 'null',
-          },
+        _logger.info(
+          '''
+ChatCommand:radio-play: {
+  'query': $query,
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
         );
 
         await connectIfNeeded(context, replace: true);
@@ -179,7 +180,7 @@ ChatGroup radio = ChatGroup(
                   'https://img.youtube.com/vi/${tracks.tracks.first.info?.identifier}/hqdefault.jpg',
             );
           } catch (exception, stacktrace) {
-            Logger('RadioCommand').warning(
+            _logger.severe(
               'Failed to get current station info',
               exception,
               stacktrace,
@@ -220,12 +221,11 @@ ChatGroup radio = ChatGroup(
             linksResponse = await SongRecognitionService.instance
                 .getMusicLinks(stationInfo.title!);
           } catch (exception, stacktrace) {
-            Logger('RadioCommand').warning(
+            _logger.severe(
               'Failed to get music links for ${stationInfo.title}',
               exception,
               stacktrace,
             );
-            await usage?.sendEvent('ChatCommand:radio-recognize', 'links');
           }
 
           final color = getRandomColor();
@@ -274,7 +274,7 @@ ChatGroup radio = ChatGroup(
 
           await context.respond(messageBuilder);
         } catch (e, stacktrace) {
-          Logger('RadioCommand').warning(
+          _logger.severe(
             'Failed to recognize radio',
             e,
             stacktrace,

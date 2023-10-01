@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
@@ -15,6 +16,8 @@ import 'package:radio_horizon/src/checks.dart';
 
 final _enMusicCommand = AppLocale.en.translations.commands.music;
 final _enPlayCommand = _enMusicCommand.children.play;
+
+final _logger = Logger('command/music');
 
 ChatGroup music = ChatGroup(
   _enMusicCommand.command,
@@ -38,17 +41,16 @@ ChatGroup music = ChatGroup(
         final commandTranslations =
             getCommandTranslations(context).music.children.play;
 
-        await usage?.sendEvent(
-          'ChatCommand:music-play',
-          'call',
-          parameters: {
-            'query': query,
-            'guild': context.guild?.id.toString() ?? 'null',
-            'guild_name': context.guild?.name ?? 'null',
-            'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-            'channel': context.channel.id.toString(),
-            'user': context.member?.id.toString() ?? 'null',
-          },
+        _logger.info(
+          '''
+ChatCommand:music-play: {
+  'query': $query,
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
         );
 
         final node = MusicService.instance.cluster
@@ -128,17 +130,16 @@ FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteMusicQuery(
 ) async {
   final query = context.currentValue;
 
-  await usage?.sendEvent(
-    'ChatCommand:music-play',
-    'autocompletion',
-    parameters: {
-      'query': query,
-      'guild': context.guild?.id.toString() ?? 'null',
-      'guild_name': context.guild?.name ?? 'null',
-      'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-      'channel': context.channel.id.toString(),
-      'user': context.member?.id.toString() ?? 'null',
-    },
+  _logger.info(
+    '''
+ChatCommand:music-play: autocompletion: {
+  'query': $query,
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
   );
 
   final node =

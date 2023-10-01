@@ -42,7 +42,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check for secrets in the code
-SECRETS_OUTPUT=$(git ls-files -z | xargs -0 detect-secrets-hook)
+SECRETS_OUTPUT=$(git ls-files -z | xargs -0 detect-secrets-hook --exclude-files .env.vault)
 
 if [ $? -ne 0 ]; then
   echo -e "\e[1;31m[FATAL]:\e[0m Aborting commit."

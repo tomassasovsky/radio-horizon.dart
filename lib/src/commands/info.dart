@@ -6,6 +6,7 @@
 
 import 'dart:io';
 
+import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
@@ -19,6 +20,7 @@ String getCurrentMemoryString() {
 }
 
 final _enInfoCommand = AppLocale.en.translations.commands.info;
+final _logger = Logger('command/info');
 
 ChatCommand info = ChatCommand(
   _enInfoCommand.command,
@@ -34,16 +36,15 @@ ChatCommand info = ChatCommand(
     final client = context.client as INyxxWebsocket;
     final color = getRandomColor();
 
-    await usage?.sendEvent(
-      'ChatCommand:info',
-      'call',
-      parameters: {
-        'guild': context.guild?.id.toString() ?? 'null',
-        'guild_name': context.guild?.name ?? 'null',
-        'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-        'channel': context.channel.id.toString(),
-        'user': context.member?.id.toString() ?? 'null',
-      },
+    _logger.info(
+      '''
+ChatCommand:info:call: {
+  'guild': ${context.guild?.id ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
     );
 
     final button = LinkButtonBuilder(

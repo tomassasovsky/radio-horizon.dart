@@ -23,9 +23,7 @@ class MusicService {
         final ssl = useSSL;
         final shards = _client.shardManager.totalNumShards;
 
-        await usage?.sendEvent('MusicService:constructor', 'start');
-
-        Logger('MusicService').info(
+        logger.info(
           'Connecting to Lavalink server at $host:$port (SSL: $ssl, '
           'Shards: $shards)',
         );
@@ -52,20 +50,15 @@ class MusicService {
         }
 
         if (cluster.connectedNodes.isEmpty) {
-          Logger('MusicService').severe(
+          logger.severe(
             'Failed to connect to Lavalink server at $host:$port (SSL: $ssl, '
             'Shards: $shards)',
-          );
-
-          await usage?.sendEvent(
-            'MusicService:constructor',
-            'lavalink-connection-failure',
           );
 
           return;
         }
 
-        await usage?.sendEvent(
+        logger.info(
           'MusicService:constructor',
           'lavalink-connection-successful',
         );
@@ -74,10 +67,10 @@ class MusicService {
         cluster.eventDispatcher.onTrackStuck.listen(_trackStuck);
         cluster.eventDispatcher.onTrackEnd.listen(_trackEnded);
         cluster.eventDispatcher.onTrackException.listen(_trackException);
-        // _client.eventsWs.onVoiceStateUpdate.listen(_voiceStateUpdate);
       }
     });
   }
+  final logger = Logger('MusicService');
   static MusicService get instance =>
       _instance ??
       (throw Exception(
@@ -99,39 +92,34 @@ class MusicService {
     final player = event.node.players[event.guildId];
 
     if (player == null) {
-      Logger('MusicService').warning(
-        'Received track start event for guild ${event.guildId} but no player '
-        'was found',
-      );
-
-      await usage?.sendEvent(
-        'MusicService:_trackStarted',
-        'no-player-found',
-        label: event.guildId.toString(),
+      logger.severe(
+        'Received track start event for guild ${event.guildId} but '
+        'no player was found',
       );
 
       return;
     }
 
-    Logger('MusicService').info(
+    logger.info(
       'Track started: ${player.nowPlaying?.track.info?.title} '
       '(${player.nowPlaying?.track.info?.uri})',
     );
 
     if (player.nowPlaying != null) {
       final track = player.nowPlaying;
-      await usage?.sendEvent(
-        'MusicService:_trackStarted',
-        'track-started',
-        label: track?.track.info?.title,
-        parameters: queuedTrackToAnalyticsParameters(track!),
-      );
+
+      final log = StringBuffer()
+        ..writeln('Track started: ${track?.track.info?.title}')
+        ..writeln('Track URL: ${track?.track.info?.uri}')
+        ..writeln('Parameters: ${queuedTrackToAnalyticsParameters(track!)}');
+
+      logger.info(log.toString());
 
       final embed = EmbedBuilder()
         ..color = getRandomColor()
         ..title = _enMusicService.trackStarted.title
         ..description = _enMusicService.trackStarted.description(
-          track: track!.track.info!.title,
+          track: track.track.info!.title,
           uri: track.track.info!.uri,
           requester: track.requester!,
         )
@@ -170,7 +158,7 @@ class MusicService {
       // delete the current radio station from the list, if it exists
       await SongRecognitionService.instance.deleteRadioFromList(guild.id);
 
-      Logger('MusicService').info(
+      logger.info(
         'Disconnected from voice channel in guild ${guild.id} '
         '(${guild.name})',
       );
@@ -181,39 +169,19 @@ class MusicService {
     final player = event.node.players[event.guildId];
 
     if (player == null) {
-      Logger('MusicService').warning(
+      logger.severe(
         'Received track stuck event for guild ${event.guildId} but no player '
         'was found',
-      );
-
-      await usage?.sendEvent(
-        'MusicService:_trackStuck',
-        'no-player-found',
-        label: event.guildId.toString(),
       );
 
       return;
     }
 
-    Logger('MusicService').warning(
-      'Track stuck: ${player.nowPlaying?.track.info?.title} '
-      '(${player.nowPlaying?.track.info?.uri})',
-    );
-
-    await usage?.sendEvent(
-      'MusicService:_trackStuck',
-      'reason-unknown',
-      label: event.guildId.toString(),
-    );
-
     if (player.queue.isNotEmpty) {
       final track = player.queue[0];
 
-      await usage?.sendEvent(
-        'MusicService:_trackStuck',
-        'track-stuck',
-        label: track.track.info?.title,
-        parameters: queuedTrackToAnalyticsParameters(track),
+      logger.severe(
+        'MusicService:_trackStuck: ${queuedTrackToAnalyticsParameters(track)}',
       );
 
       final embed = EmbedBuilder()
@@ -229,6 +197,11 @@ class MusicService {
 
       await _client.httpEndpoints
           .sendMessage(track.channelId!, MessageBuilder.embed(embed));
+    } else {
+      logger.severe(
+        'Track stuck: ${player.nowPlaying?.track.info?.title} '
+        '(${player.nowPlaying?.track.info?.uri})',
+      );
     }
   }
 
@@ -238,11 +211,9 @@ class MusicService {
     if (player != null && player.queue.isNotEmpty) {
       final track = player.queue[0];
 
-      await usage?.sendEvent(
-        'MusicService:_trackException',
-        'track-exception',
-        label: track.track.info?.title,
-        parameters: queuedTrackToAnalyticsParameters(track),
+      logger.severe(
+        'MusicService:_trackException - '
+        '${queuedTrackToAnalyticsParameters(track)}',
       );
 
       final embed = EmbedBuilder()
@@ -273,7 +244,7 @@ class MusicService {
         event.state.channel?.id ?? event.oldState?.channel?.id;
     final cachedGuild = event.state.guild;
     if (cachedGuild == null || eventChannelId == null) {
-      Logger('VoiceStateUpdate').warning(
+      logger.severe(
         'VoiceStateUpdate event with null guild or channel: '
         '$cachedGuild, $eventChannelId',
       );
@@ -287,7 +258,7 @@ class MusicService {
     final currentChannelId = botMember.voiceState?.channel?.id;
 
     if (currentChannelId == null) {
-      Logger('VoiceStateUpdate').warning(
+      logger.severe(
         'VoiceStateUpdate event with null bot channel: '
         '$currentChannelId',
       );
@@ -296,7 +267,7 @@ class MusicService {
 
     if (eventChannelId != currentChannelId) {
       // the event is not for the bot's current channel
-      Logger('VoiceStateUpdate').info(
+      logger.severe(
         'VoiceStateUpdate event for channel $eventChannelId '
         'does not match bot channel $currentChannelId',
       );
@@ -332,7 +303,7 @@ class MusicService {
 
           final channel = await guild.publicUpdatesChannel?.getOrDownload();
           if (channel == null) {
-            Logger('MusicService').warning(
+            logger.warning(
               'Destroyed player for guild ${guild.id} but the guild '
               'public updates channel is null',
             );
@@ -349,7 +320,7 @@ class MusicService {
           await channel.sendMessage(MessageBuilder.embed(embed));
         } catch (e) {
           if (e.toString().contains('LateInitializationError')) return;
-          Logger('MusicService').warning(
+          logger.severe(
             'Failed to destroy player for guild ${guild.id}: $e',
           );
         }

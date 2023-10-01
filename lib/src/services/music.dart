@@ -59,8 +59,7 @@ class MusicService {
         }
 
         logger.info(
-          'MusicService:constructor',
-          'lavalink-connection-successful',
+          'MusicService:constructor: lavalink-connection-successful',
         );
 
         cluster.eventDispatcher.onTrackStart.listen(_trackStarted);

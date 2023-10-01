@@ -88,6 +88,9 @@ bool useSSL = getEnvBool('LAVALINK_USE_SSL', def: false);
 String rapidapiShazamSongRecognizerKey =
     getEnv('RAPIDAPI_SHAZAM_SONG_RECOGNIZER_KEY');
 
+/// The Sentry DSN to use for this instance.
+String sentryDsn = getEnv('SENTRY_DSN');
+
 /// The basic intents needed to run Radio Horizon without privileged intents.
 const int intents = GatewayIntents.directMessages |
     GatewayIntents.guilds |

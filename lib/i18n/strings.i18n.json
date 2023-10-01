@@ -95,6 +95,16 @@
             "radioCantCommunicate": "There was an error communicating with the server, please try again.",
             "noResults": "Couldn't identify the current song playing :("
           }
+        },
+        "upvote": {
+          "command": "upvote",
+          "description": "Upvotes the current radio playing",
+          "requestedBy": "Requested by $mention",
+          "success": "Voted successfully",
+          "successDescription": "You have successfully voted for the radio $radio! Thank you for your support :D",
+          "errors": {
+            "noRadioPlaying": "Couldn't find a radio playing!"
+          }
         }
       }
     }

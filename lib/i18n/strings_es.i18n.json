@@ -95,6 +95,16 @@
             "radioCantCommunicate": "La radio no puede comunicarse con el servidor de reconocimiento de canciones. Inténtalo de nuevo más tarde",
             "noResults": "No se han encontrado resultados para la canción que se está reproduciendo :("
           }
+        },
+        "upvote": {
+          "command": "votar",
+          "description": "Vota positivamente por la radio que se está reproduciendo",
+          "requestedBy": "Pedido por $mention",
+          "success": "Voto positivo añadido",
+          "successDescription": "Has votado positivamente por la radio $radio! Gracias por tu apoyo :D",
+          "errors": {
+            "noRadioPlaying": "No se está reproduciendo ninguna radio"
+          }
         }
       }
     }

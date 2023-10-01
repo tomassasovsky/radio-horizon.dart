@@ -7,7 +7,6 @@
 import 'dart:io';
 import 'package:nyxx/nyxx.dart';
 import 'package:radio_horizon/radio_horizon.dart';
-import 'package:usage/usage_io.dart';
 
 /// Get a [String] from an environment variable,
 /// throwing an exception if it is not set.
@@ -88,23 +87,6 @@ bool useSSL = getEnvBool('LAVALINK_USE_SSL', def: false);
 /// Find yours in https://rapidapi.com/mirzahadjaevaguzal/api/shazam-song-recognizer
 String rapidapiShazamSongRecognizerKey =
     getEnv('RAPIDAPI_SHAZAM_SONG_RECOGNIZER_KEY');
-
-/// Your Google Analytics Tracking ID.
-///
-/// Find yours in https://analytics.google.com/analytics/web/, by creating
-/// a Universal Analytics property.
-String? googleAnalyticsTrackingId = maybeGetEnv('ANALYTICS_TRACKING_ID');
-
-/// The Google Analytics client.
-///
-/// This is used to send usage statistics to Google Analytics.
-final usage = googleAnalyticsTrackingId == null
-    ? null
-    : AnalyticsIO(
-        googleAnalyticsTrackingId!,
-        'radio-horizon.dart',
-        packageVersion,
-      );
 
 /// The basic intents needed to run Radio Horizon without privileged intents.
 const int intents = GatewayIntents.directMessages |

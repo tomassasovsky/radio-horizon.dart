@@ -4,22 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_horizon/radio_horizon.dart';
-import 'package:usage/usage.dart';
 
 Future<void> main() async {
   dotEnvFlavour = DotEnvFlavour.development;
   dotEnvFlavour.initialize();
-
-  Logger.root.level = Level.FINE;
-
-  usage?.analyticsOpt = AnalyticsOpt.optIn;
-  usage?.enabled = true;
-
-  await usage?.sendEvent('main:setup', 'start');
 
   // Create nyxx client and nyxx_commands plugin
   final client = NyxxFactory.createNyxxWebsocket(token, intents);
@@ -60,7 +51,6 @@ Future<void> main() async {
 
   client.onReady.listen((_) async {
     BootUpService.init(client, DatabaseService.instance);
-    await usage?.sendEvent('main:setup', 'complete');
   });
 
   // Connect

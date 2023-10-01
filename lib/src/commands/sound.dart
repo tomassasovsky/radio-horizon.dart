@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_horizon/radio_horizon.dart';
@@ -11,6 +12,8 @@ final _enPauseCommand = AppLocale.en.translations.commands.pause;
 final _enResumeCommand = AppLocale.en.translations.commands.resume;
 final _enVolumeCommand = AppLocale.en.translations.commands.volume;
 
+final _skipLogger = Logger('command/skip');
+
 final skip = ChatCommand(
   _enSkipCommand.command,
   _enSkipCommand.description,
@@ -19,16 +22,15 @@ final skip = ChatCommand(
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).skip;
 
-    await usage?.sendEvent(
-      'ChatCommand:skip',
-      'call',
-      parameters: {
-        'guild': context.guild?.id.toString() ?? 'null',
-        'guild_name': context.guild?.name ?? 'null',
-        'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-        'channel': context.channel.id.toString(),
-        'user': context.member?.id.toString() ?? 'null',
-      },
+    _skipLogger.info(
+      '''
+ChatCommand:skip: {
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
     );
 
     final node =
@@ -55,6 +57,8 @@ final skip = ChatCommand(
   ),
 );
 
+final _leaveLogger = Logger('command/leave');
+
 final leave = ChatCommand(
   _enLeaveCommand.command,
   _enLeaveCommand.description,
@@ -63,16 +67,15 @@ final leave = ChatCommand(
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).leave;
 
-    await usage?.sendEvent(
-      'ChatCommand:leave',
-      'call',
-      parameters: {
-        'guild': context.guild?.id.toString() ?? 'null',
-        'guild_name': context.guild?.name ?? 'null',
-        'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-        'channel': context.channel.id.toString(),
-        'user': context.member?.id.toString() ?? 'null',
-      },
+    _leaveLogger.info(
+      '''
+ChatCommand:leave: {
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
     );
 
     MusicService.instance.cluster
@@ -88,6 +91,9 @@ final leave = ChatCommand(
     (translations) => translations.commands.leave.command,
   ),
 );
+
+final _joinLogger = Logger('command/join');
+
 final join = ChatCommand(
   _enJoinCommand.command,
   _enJoinCommand.description,
@@ -96,16 +102,15 @@ final join = ChatCommand(
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).join;
 
-    await usage?.sendEvent(
-      'ChatCommand:join',
-      'call',
-      parameters: {
-        'guild': context.guild?.id.toString() ?? 'null',
-        'guild_name': context.guild?.name ?? 'null',
-        'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-        'channel': context.channel.id.toString(),
-        'user': context.member?.id.toString() ?? 'null',
-      },
+    _joinLogger.info(
+      '''
+ChatCommand:join: {
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
     );
 
     MusicService.instance.cluster.getOrCreatePlayerNode(context.guild!.id);
@@ -119,6 +124,8 @@ final join = ChatCommand(
     (translations) => translations.commands.join.command,
   ),
 );
+
+final _volumeLogger = Logger('command/volume');
 
 final volume = ChatCommand(
   _enVolumeCommand.command,
@@ -135,17 +142,16 @@ final volume = ChatCommand(
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).volume;
 
-    await usage?.sendEvent(
-      'ChatCommand:volume',
-      'call',
-      parameters: {
-        'volume': '$volume',
-        'guild': context.guild?.id.toString() ?? 'null',
-        'guild_name': context.guild?.name ?? 'null',
-        'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-        'channel': context.channel.id.toString(),
-        'user': context.member?.id.toString() ?? 'null',
-      },
+    _volumeLogger.info(
+      '''
+ChatCommand:volume: {
+  'volume': $volume,
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
     );
 
     MusicService.instance.cluster
@@ -169,6 +175,8 @@ final volume = ChatCommand(
   ),
 );
 
+final _pauseLogger = Logger('command/pause');
+
 final pause = ChatCommand(
   _enPauseCommand.command,
   _enPauseCommand.description,
@@ -176,16 +184,15 @@ final pause = ChatCommand(
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).pause;
 
-    await usage?.sendEvent(
-      'ChatCommand:pause',
-      'call',
-      parameters: {
-        'guild': context.guild?.id.toString() ?? 'null',
-        'guild_name': context.guild?.name ?? 'null',
-        'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-        'channel': context.channel.id.toString(),
-        'user': context.member?.id.toString() ?? 'null',
-      },
+    _pauseLogger.info(
+      '''
+ChatCommand:pause: {
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
     );
 
     MusicService.instance.cluster
@@ -201,6 +208,8 @@ final pause = ChatCommand(
   ),
 );
 
+final _resumeLogger = Logger('command/resume');
+
 final resume = ChatCommand(
   _enResumeCommand.command,
   _enResumeCommand.description,
@@ -208,16 +217,15 @@ final resume = ChatCommand(
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).resume;
 
-    await usage?.sendEvent(
-      'ChatCommand:resume',
-      'call',
-      parameters: {
-        'guild': context.guild?.id.toString() ?? 'null',
-        'guild_name': context.guild?.name ?? 'null',
-        'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-        'channel': context.channel.id.toString(),
-        'user': context.member?.id.toString() ?? 'null',
-      },
+    _resumeLogger.info(
+      '''
+ChatCommand:resume: {
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
     );
 
     MusicService.instance.cluster
@@ -241,16 +249,15 @@ final stop = ChatCommand(
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).stop;
 
-    await usage?.sendEvent(
-      'ChatCommand:stop',
-      'call',
-      parameters: {
-        'guild': context.guild?.id.toString() ?? 'null',
-        'guild_name': context.guild?.name ?? 'null',
-        'guild_preferred_locale': context.guild?.preferredLocale ?? 'null',
-        'channel': context.channel.id.toString(),
-        'user': context.member?.id.toString() ?? 'null',
-      },
+    _resumeLogger.info(
+      '''
+ChatCommand:stop: {
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
     );
 
     MusicService.instance.cluster

@@ -22,6 +22,7 @@ import 'package:retry/retry.dart';
 final _enRadioCommand = AppLocale.en.translations.commands.radio;
 final _enPlayCommand = _enRadioCommand.children.play;
 final _enRecognizeCommand = _enRadioCommand.children.recognize;
+final _enUpvoteCommand = _enRadioCommand.children.upvote;
 
 final uuidRegExp = RegExp(
   '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
@@ -97,6 +98,9 @@ ChatCommand:radio-play: {
         }
 
         final bestMatch = stations.items.first;
+        await _radioBrowserClient.clickStation(
+          uuid: bestMatch.stationUUID,
+        );
 
         final result =
             await node.searchTracks(bestMatch.urlResolved ?? bestMatch.url);
@@ -299,6 +303,45 @@ ChatCommand:radio-play: {
         (translations) =>
             translations.commands.radio.children.recognize.command,
       ),
+    ),
+    ChatCommand(
+      _enUpvoteCommand.command,
+      _enUpvoteCommand.description,
+      id('radio-upvote', (
+        IChatContext context,
+      ) async {
+        context as InteractionChatContext;
+        final translations = getCommandTranslations(context);
+        final commandTranslations = translations.radio.children.upvote;
+
+        late GuildRadio? guildRadio;
+        try {
+          guildRadio = await SongRecognitionService.instance
+              .currentRadio(context.guild!.id);
+        } on RadioNotPlayingException {
+          await context.respond(
+            MessageBuilder.embed(
+              EmbedBuilder()
+                ..color = DiscordColor.red
+                ..title = commandTranslations.errors.noRadioPlaying,
+            ),
+          );
+          return;
+        }
+
+        await _radioBrowserClient.voteForStation(
+          stationUUID: guildRadio.station.stationUUID,
+        );
+
+        final embed = EmbedBuilder()
+          ..color = getRandomColor()
+          ..title = commandTranslations.success
+          ..description = commandTranslations.successDescription(
+            radio: guildRadio.station.name,
+          );
+
+        await context.respond(MessageBuilder.embed(embed));
+      }),
     ),
   ],
   localizedDescriptions: localizedValues(

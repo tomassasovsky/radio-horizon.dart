@@ -6,6 +6,7 @@
 
 import 'dart:async';
 
+import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_horizon/radio_horizon.dart';
@@ -20,7 +21,13 @@ Future<void> main() async {
     await Sentry.init(
       (options) {
         options
-          ..dsn = dotEnvFlavour.dotenv['SENTRY_DSN']
+          ..dsn = sentryDsn
+          ..environment = dotEnvFlavour.name
+          ..release = packageVersion
+          ..debug = dotEnvFlavour == DotEnvFlavour.development
+          ..attachStacktrace = true
+          ..sampleRate = 1.0
+          ..sendDefaultPii = true
           ..tracesSampleRate = 1.0
           ..addIntegration(LoggingIntegration());
       },
@@ -61,6 +68,11 @@ Future<void> main() async {
     // Connect
     await client.connect();
   }, (exception, stackTrace) async {
+    Logger('main').severe(
+      'Uncaught exception when initialising the bot',
+      exception,
+      stackTrace,
+    );
     await Sentry.captureException(exception, stackTrace: stackTrace);
   });
 }

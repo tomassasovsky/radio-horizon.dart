@@ -105,6 +105,16 @@
           "errors": {
             "noRadioPlaying": "Couldn't find a radio playing!"
           }
+        },
+        "playRandom": {
+          "command": "play-random",
+          "description": "Plays a random radio station",
+          "searching": "Searching for a random radio station...",
+          "startedPlaying": "Started playing",
+          "startedPlayingDescription": "Radio $radio started playing.\n\nRequested by $mention",
+          "errors": {
+            "noResults": "Couldn't find a random radio station :( Try again later!"
+          }
         }
       }
     }

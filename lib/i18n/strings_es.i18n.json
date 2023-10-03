@@ -105,6 +105,16 @@
           "errors": {
             "noRadioPlaying": "No se está reproduciendo ninguna radio"
           }
+        },
+        "playRandom": {
+          "command": "play-random",
+          "description": "Reproduce una radio aleatoria",
+          "searching": "Buscando una radio aleatoria...",
+          "startedPlaying": "Se ha comenzado a reproducir",
+          "startedPlayingDescription": "La radio $radio ha comenzado a reproducirse.\n\nPedido por $mention",
+          "errors": {
+            "noResults": "No se ha podido encontrar una radio aleatoria :( Inténtalo de nuevo más tarde!"
+          }
         }
       }
     }

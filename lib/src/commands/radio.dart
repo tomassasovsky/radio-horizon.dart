@@ -12,12 +12,12 @@ import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
-import 'package:nyxx_pagination/nyxx_pagination.dart';
 import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/checks.dart';
 import 'package:radio_horizon/src/models/song_recognition/current_station_info.dart';
 import 'package:retry/retry.dart';
+import 'package:shazam_client/shazam_client.dart';
 
 final _enRadioCommand = AppLocale.en.translations.commands.radio;
 final _enPlayCommand = _enRadioCommand.children.play;
@@ -124,7 +124,8 @@ ChatCommand:radio-play: {
             channelId: context.channel.id,
           ).startPlaying();
 
-        await SongRecognitionService.instance.setCurrentRadio(
+        final databaseService = DatabaseService.instance;
+        await databaseService.setCurrentRadio(
           context.guild!.id,
           context.member!.voiceState!.channel!.id,
           context.channel.id,
@@ -158,39 +159,18 @@ ChatCommand:radio-play: {
         final translations = getCommandTranslations(context);
         final commandTranslations = translations.radio.children.recognize;
         CurrentStationInfo? stationInfo;
-        MusicLinksResponse? linksResponse;
 
         try {
           final recognitionService = SongRecognitionService.instance;
+          final databaseService = DatabaseService.instance;
           final guildId = context.guild!.id;
 
-          final stopwatch = Stopwatch()..start();
           var recognitionSampleDuration = 10;
 
-          final guildRadio = await recognitionService.currentRadio(guildId);
+          final guildRadio = await databaseService.currentRadio(guildId);
 
           try {
-            final info = await retry(
-              () async => recognitionService.getCurrentStationInfo(guildRadio),
-            );
-            if (!info.hasTitle) {
-              throw Exception('No title');
-            }
-            final node = MusicService.instance.cluster
-                .getOrCreatePlayerNode(context.guild!.id);
-            final tracks = await node.autoSearch(info.title!);
-            stationInfo = info.copyWith(
-              image:
-                  'https://img.youtube.com/vi/${tracks.tracks.first.info?.identifier}/hqdefault.jpg',
-            );
-          } catch (exception, stacktrace) {
-            _logger.severe(
-              'Failed to get current station info',
-              exception,
-              stacktrace,
-            );
-
-            ShazamResult? result;
+            SongModel? result;
             await retry(
               () async {
                 result = await recognitionService.identify(
@@ -219,21 +199,18 @@ ChatCommand:radio-play: {
 
             stationInfo =
                 CurrentStationInfo.fromShazamResult(result!, guildRadio);
-          }
-
-          try {
-            linksResponse = await SongRecognitionService.instance
-                .getMusicLinks(stationInfo.title!);
-          } catch (exception, stacktrace) {
-            _logger.severe(
-              'Failed to get music links for ${stationInfo.title}',
-              exception,
-              stacktrace,
+          } catch (e) {
+            await context.respond(
+              MessageBuilder.embed(
+                EmbedBuilder()
+                  ..color = DiscordColor.red
+                  ..title = commandTranslations.errors.noResults,
+              ),
             );
+            return null;
           }
 
           final color = getRandomColor();
-          stopwatch.stop();
 
           final embed = EmbedBuilder()
             ..color = color
@@ -245,7 +222,8 @@ ChatCommand:radio-play: {
               name: commandTranslations.radioStationField,
               content: stationInfo.name,
             )
-            ..thumbnailUrl = stationInfo.image;
+            ..thumbnailUrl = stationInfo.image
+            ..url = stationInfo.url;
 
           final genre = stationInfo.genre;
           if (genre != null) {
@@ -255,28 +233,7 @@ ChatCommand:radio-play: {
             );
           }
 
-          embed.addField(
-            name: commandTranslations.computationalTimeField,
-            content: '${stopwatch.elapsedMilliseconds}ms',
-          );
-
-          final lyricsPages = stationInfo.lyricsPages(color: color);
-          if (lyricsPages == null || lyricsPages.isEmpty) {
-            final builder = ComponentMessageBuilder()..embeds = [embed];
-            linksResponse?.componentRows.forEach(builder.addComponentRow);
-            return await context.respond(builder);
-          }
-
-          final paginator = EmbedComponentPagination(
-            context.commands.interactions!,
-            [embed, ...lyricsPages],
-            user: context.user,
-          );
-
-          final messageBuilder = paginator.initMessageBuilder();
-          linksResponse?.componentRows.forEach(messageBuilder.addComponentRow);
-
-          await context.respond(messageBuilder);
+          await context.respond(MessageBuilder.embed(embed));
         } catch (e, stacktrace) {
           _logger.severe(
             'Failed to recognize radio',
@@ -316,8 +273,8 @@ ChatCommand:radio-play: {
 
         late GuildRadio? guildRadio;
         try {
-          guildRadio = await SongRecognitionService.instance
-              .currentRadio(context.guild!.id);
+          guildRadio =
+              await DatabaseService.instance.currentRadio(context.guild!.id);
         } on RadioNotPlayingException {
           await context.respond(
             MessageBuilder.embed(

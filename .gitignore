@@ -18,3 +18,10 @@ coverage/
 !.env.project
 !.env.vault
 .history
+
+/shazam_api/lib/
+/shazam_api/include/
+/shazam_api/__pycache__
+/shazam_api/pyvenv.cfg
+/shazam_api/pyvenv.cfg
+.DS_Store

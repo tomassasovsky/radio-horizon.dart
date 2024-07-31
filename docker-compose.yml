@@ -12,8 +12,10 @@ services:
      - .env/.env.development
     links:
       - lavalink
+      - shazam_api
     depends_on:
       - lavalink
+      - shazam_api
 
   lavalink:
     image: ghcr.io/lavalink-devs/lavalink:3
@@ -23,3 +25,13 @@ services:
       - 2333
     volumes:
      - ./lavalink.yml:/opt/Lavalink/application.yml
+
+  shazam_api:
+    build:
+      context: ./shazam_api
+    expose:
+      - 5000
+    volumes:
+      - ./shazam_api:/app
+    environment:
+      FLASK_ENV: development

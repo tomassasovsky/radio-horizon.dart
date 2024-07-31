@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:nyxx/nyxx.dart';
+import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 
 class DatabaseService {
@@ -61,6 +62,42 @@ class DatabaseService {
     } catch (e, stackTrace) {
       Logger('DB').warning('Error while setting playing to db', e, stackTrace);
     }
+  }
+
+  /// Gets the current radio playing by Guild.
+  ///
+  /// Throws [RadioNotPlayingException] if the Guild is not listening
+  /// to the radio
+  Future<GuildRadio> currentRadio(Snowflake guildId) async {
+    final currentlyPlaying = await getPlaying(guildId);
+    if (currentlyPlaying == null) {
+      throw const RadioNotPlayingException();
+    }
+
+    return currentlyPlaying;
+  }
+
+  /// Adds or not the current radio that the guild is playing
+  Future<void> setCurrentRadio(
+    Snowflake guildId,
+    Snowflake voiceChannelId,
+    Snowflake textChannelId,
+    Station station,
+  ) async {
+    final newRadio = GuildRadio(
+      guildId,
+      voiceChannelId: voiceChannelId,
+      station: station,
+      textChannelId: textChannelId,
+    );
+
+    await setPlaying(newRadio);
+  }
+
+  /// Deletes the radio from the [SongRecognitionService] radio. This is to let
+  /// the service know that the guild is no longer listening to the radio.
+  Future<void> deleteRadioFromList(Snowflake guildId) async {
+    await setNotPlaying(guildId);
   }
 
   Future<GuildRadio?> getPlaying(Snowflake guildId) async {

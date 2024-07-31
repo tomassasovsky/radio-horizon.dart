@@ -9,79 +9,28 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:nyxx/nyxx.dart';
-import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/models/song_recognition/current_station_info.dart';
+import 'package:shazam_client/shazam_client.dart';
 import 'package:uuid/uuid.dart';
 
 class SongRecognitionService {
-  SongRecognitionService._(
-    this.client,
-    this.databaseService,
-  ) : _httpClient = http.Client();
+  SongRecognitionService._privateConstructor()
+      : _shazamClient = ShazamClient.dockerized();
 
-  static void init(INyxxWebsocket client, DatabaseService databaseService) {
-    _instance = SongRecognitionService._(
-      client,
-      databaseService,
-    );
-  }
+  static SongRecognitionService get instance => _instance;
 
-  final DatabaseService databaseService;
-  final INyxxWebsocket client;
-
-  static SongRecognitionService get instance =>
-      _instance ??
-      (throw Exception('Song Recognition service must be initialised'));
-  static SongRecognitionService? _instance;
+  static final SongRecognitionService _instance =
+      SongRecognitionService._privateConstructor();
 
   Uuid get uuid => const Uuid();
 
-  http.Client get httpClient =>
-      _httpClient ??
-      (throw RadioCantCommunicateWithServer(
-        Exception('Http Client must be initialized'),
-      ));
+  ShazamClient get shazamClient => _shazamClient;
 
-  // HttpClient used to get the sample
-  final http.Client? _httpClient;
+  // ShazamClient used to get the sample
+  final ShazamClient _shazamClient;
 
-  /// Gets the current radio playing by Guild.
-  ///
-  /// Throws [RadioNotPlayingException] if the Guild is not listening
-  /// to the radio
-  Future<GuildRadio> currentRadio(Snowflake guildId) async {
-    final currentlyPlaying = await databaseService.getPlaying(guildId);
-    if (currentlyPlaying == null) {
-      throw const RadioNotPlayingException();
-    }
-
-    return currentlyPlaying;
-  }
-
-  /// Adds or not the current radio that the guild is playing
-  Future<void> setCurrentRadio(
-    Snowflake guildId,
-    Snowflake voiceChannelId,
-    Snowflake textChannelId,
-    Station station,
-  ) async {
-    final newRadio = GuildRadio(
-      guildId,
-      voiceChannelId: voiceChannelId,
-      station: station,
-      textChannelId: textChannelId,
-    );
-
-    await databaseService.setPlaying(newRadio);
-  }
-
-  /// Deletes the radio from the [SongRecognitionService] radio. This is to let
-  /// the service know that the guild is no longer listening to the radio.
-  Future<void> deleteRadioFromList(Snowflake guildId) async {
-    await databaseService.setNotPlaying(guildId);
-  }
+  final http.Client httpClient = http.Client();
 
   Future<CurrentStationInfo> getCurrentStationInfo(
     GuildRadio radio,
@@ -107,7 +56,7 @@ class SongRecognitionService {
   ///
   /// Receives a [url] to identify the radio and a [durationInSeconds] to
   /// grab that amount of time of the sample from the radio.
-  Future<ShazamResult> identify(
+  Future<SongModel> identify(
     String url,
     int? durationInSeconds,
   ) async {
@@ -116,41 +65,14 @@ class SongRecognitionService {
       durationInSeconds: durationInSeconds ?? 10,
     );
 
-    final sample = await songFile.readAsBytes();
-
     try {
-      final uri = Uri(
-        scheme: 'https',
-        host: 'shazam-song-recognizer.p.rapidapi.com',
-        path: 'recognize',
-      );
-
-      final request = http.MultipartRequest('POST', uri);
-
-      request.headers.addAll({
-        'X-RapidAPI-Key': rapidapiShazamSongRecognizerKey,
-        'X-RapidAPI-Host': 'shazam-song-recognizer.p.rapidapi.com',
-      });
-
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'upload_file',
-          sample,
-        ),
-      );
-
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      final result = ShazamSongRecognition.fromJson(
-        (jsonDecode(response.body) as Map).cast(),
-      );
-
-      final track = result.result;
+      final response = await shazamClient.recognizeSong(songFile);
+      final track = response;
 
       // Deletes the file after the recognition is done
       songFile.deleteSync();
 
-      return track ?? (throw const RadioCantIdentifySongException());
+      return track;
     } on RadioCantIdentifySongException {
       rethrow;
     } catch (e) {

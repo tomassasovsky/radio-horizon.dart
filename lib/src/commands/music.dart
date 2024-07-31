@@ -106,7 +106,7 @@ ChatCommand:music-play: {
           );
         }
 
-        await SongRecognitionService.instance
+        await DatabaseService.instance
             .deleteRadioFromList(context.guild!.id);
       }),
       localizedDescriptions: localizedValues(

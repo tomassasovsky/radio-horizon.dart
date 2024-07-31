@@ -9,32 +9,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:nyxx/nyxx.dart';
-import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/models/song_recognition/current_station_info.dart';
 import 'package:uuid/uuid.dart';
 
 class SongRecognitionService {
-  SongRecognitionService._(
-    this.client,
-    this.databaseService,
-  ) : _httpClient = http.Client();
+  SongRecognitionService._privateConstructor() : _httpClient = http.Client();
 
-  static void init(INyxxWebsocket client, DatabaseService databaseService) {
-    _instance = SongRecognitionService._(
-      client,
-      databaseService,
-    );
-  }
+  static SongRecognitionService get instance => _instance;
 
-  final DatabaseService databaseService;
-  final INyxxWebsocket client;
-
-  static SongRecognitionService get instance =>
-      _instance ??
-      (throw Exception('Song Recognition service must be initialised'));
-  static SongRecognitionService? _instance;
+  static final SongRecognitionService _instance =
+      SongRecognitionService._privateConstructor();
 
   Uuid get uuid => const Uuid();
 
@@ -46,42 +31,6 @@ class SongRecognitionService {
 
   // HttpClient used to get the sample
   final http.Client? _httpClient;
-
-  /// Gets the current radio playing by Guild.
-  ///
-  /// Throws [RadioNotPlayingException] if the Guild is not listening
-  /// to the radio
-  Future<GuildRadio> currentRadio(Snowflake guildId) async {
-    final currentlyPlaying = await databaseService.getPlaying(guildId);
-    if (currentlyPlaying == null) {
-      throw const RadioNotPlayingException();
-    }
-
-    return currentlyPlaying;
-  }
-
-  /// Adds or not the current radio that the guild is playing
-  Future<void> setCurrentRadio(
-    Snowflake guildId,
-    Snowflake voiceChannelId,
-    Snowflake textChannelId,
-    Station station,
-  ) async {
-    final newRadio = GuildRadio(
-      guildId,
-      voiceChannelId: voiceChannelId,
-      station: station,
-      textChannelId: textChannelId,
-    );
-
-    await databaseService.setPlaying(newRadio);
-  }
-
-  /// Deletes the radio from the [SongRecognitionService] radio. This is to let
-  /// the service know that the guild is no longer listening to the radio.
-  Future<void> deleteRadioFromList(Snowflake guildId) async {
-    await databaseService.setNotPlaying(guildId);
-  }
 
   Future<CurrentStationInfo> getCurrentStationInfo(
     GuildRadio radio,
@@ -117,6 +66,11 @@ class SongRecognitionService {
     );
 
     final sample = await songFile.readAsBytes();
+
+    // save the file in the current directory for debugging purposes
+    final file = File('sample.mp3');
+    // ignore: cascade_invocations
+    file.writeAsBytesSync(sample);
 
     try {
       final uri = Uri(

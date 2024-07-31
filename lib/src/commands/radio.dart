@@ -124,7 +124,8 @@ ChatCommand:radio-play: {
             channelId: context.channel.id,
           ).startPlaying();
 
-        await SongRecognitionService.instance.setCurrentRadio(
+        final databaseService = DatabaseService.instance;
+        await databaseService.setCurrentRadio(
           context.guild!.id,
           context.member!.voiceState!.channel!.id,
           context.channel.id,
@@ -162,12 +163,13 @@ ChatCommand:radio-play: {
 
         try {
           final recognitionService = SongRecognitionService.instance;
+          final databaseService = DatabaseService.instance;
           final guildId = context.guild!.id;
 
           final stopwatch = Stopwatch()..start();
           var recognitionSampleDuration = 10;
 
-          final guildRadio = await recognitionService.currentRadio(guildId);
+          final guildRadio = await databaseService.currentRadio(guildId);
 
           try {
             final info = await retry(
@@ -316,8 +318,8 @@ ChatCommand:radio-play: {
 
         late GuildRadio? guildRadio;
         try {
-          guildRadio = await SongRecognitionService.instance
-              .currentRadio(context.guild!.id);
+          guildRadio =
+              await DatabaseService.instance.currentRadio(context.guild!.id);
         } on RadioNotPlayingException {
           await context.respond(
             MessageBuilder.embed(

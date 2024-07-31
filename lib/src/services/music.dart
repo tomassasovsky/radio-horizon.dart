@@ -155,7 +155,7 @@ class MusicService {
       guild.shard.changeVoiceState(guild.id, null);
 
       // delete the current radio station from the list, if it exists
-      await SongRecognitionService.instance.deleteRadioFromList(guild.id);
+      await DatabaseService.instance.deleteRadioFromList(guild.id);
 
       logger.info(
         'Disconnected from voice channel in guild ${guild.id} '

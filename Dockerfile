@@ -4,8 +4,10 @@ ARG dart_entryfile
 
 WORKDIR /app
 COPY pubspec.* /app/
+COPY shazam_client /app/
 RUN dart pub get
 
+COPY . /app
 COPY . /app
 RUN dart pub get
 

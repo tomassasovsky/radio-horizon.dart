@@ -65,17 +65,8 @@ class SongRecognitionService {
       durationInSeconds: durationInSeconds ?? 10,
     );
 
-    final uuid = const Uuid().v4();
-    final fileName = 'sample-$uuid.mp3';
-
-    final sample = await songFile.readAsBytes();
-
-    // save the file in the current directory for debugging purposes
-    final file = File(fileName);
-    await file.writeAsBytes(sample);
-
     try {
-      final response = await shazamClient.recognizeSong(file);
+      final response = await shazamClient.recognizeSong(songFile);
       final track = response;
 
       // Deletes the file after the recognition is done

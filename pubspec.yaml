@@ -22,7 +22,7 @@ dependencies:
   nyxx_interactions: ^4.6.0
   nyxx_lavalink: ^3.2.0
   nyxx_pagination: ^2.4.0
-  radio_browser_api: ^1.0.0
+  radio_browser_api: ^2.0.0+1
   retry: ^3.1.2
   sentry: ^7.10.1
   sentry_logging: ^7.10.1

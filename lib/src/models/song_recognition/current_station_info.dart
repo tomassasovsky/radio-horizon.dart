@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:nyxx/nyxx.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:shazam_client/shazam_client.dart';
 
@@ -15,32 +14,26 @@ class CurrentStationInfo {
     this.title,
     this.image,
     this.url,
-  }) : _lyrics = null;
-
-  const CurrentStationInfo._lyrics({
-    this.description,
-    this.genre,
-    this.name,
-    this.title,
-    this.image,
-    this.url,
-    List<String>? lyrics,
-  })  : _lyrics = lyrics,
-        contentType = null;
+  });
 
   factory CurrentStationInfo.fromJson(Map<String, dynamic> json) =>
       _$CurrentStationInfoFromJson(json);
 
   factory CurrentStationInfo.fromShazamResult(
-    SongModel result,
-    GuildRadio radio,
-  ) =>
-      CurrentStationInfo._lyrics(
-        title: radio.station.name,
+    SongModel result, [
+    GuildRadio? guildRadio,
+  ]) =>
+      CurrentStationInfo(
+        title: '${result.title} - ${result.subtitle}',
         description: result.subtitle,
-        url: radio.station.urlResolved ?? radio.station.url,
-        image: result.share?.image ?? radio.station.favicon,
+        url: Uri.https(
+          'youtube.com',
+          '/results',
+          {'search_query': result.title},
+        ).toString(),
+        image: result.images?.coverart,
         genre: result.genres?.primary,
+        name: guildRadio?.station.name,
       );
 
   CurrentStationInfo copyWith({
@@ -52,8 +45,7 @@ class CurrentStationInfo {
     String? url,
     List<String>? lyrics,
   }) =>
-      CurrentStationInfo._lyrics(
-        lyrics: lyrics ?? _lyrics,
+      CurrentStationInfo(
         description: description ?? this.description,
         genre: genre ?? this.genre,
         name: name ?? this.name,
@@ -82,46 +74,7 @@ class CurrentStationInfo {
   final String? url;
 
   final String? image;
-  final List<String>? _lyrics;
 
   bool get hasName => name != null && name!.isNotEmpty;
   bool get hasTitle => title != null && title!.isNotEmpty;
-
-  List<List<String>>? paragraphedLyrics(int paragraphsPerPage) {
-    if (_lyrics == null || _lyrics!.isEmpty) return null;
-    final lyrics = _lyrics ?? [];
-    final paragraphs = lyrics.join('\n').split('\n\n');
-
-    final m = (paragraphs.length / paragraphsPerPage).round();
-    final lists = List.generate(
-      3,
-      (i) => paragraphs.sublist(
-        m * i,
-        (i + 1) * m <= paragraphs.length ? (i + 1) * m : null,
-      ),
-    );
-
-    return lists;
-  }
-
-  List<EmbedBuilder>? lyricsPages({
-    required DiscordColor color,
-  }) {
-    final lyricsPages = <EmbedBuilder>[];
-    final llyrics = paragraphedLyrics(3);
-
-    if (llyrics == null) return null;
-
-    // add 3 paragraphs per page
-    for (var i = 0; i < llyrics.length; i++) {
-      final embed = EmbedBuilder()
-        ..color = color
-        ..title = title
-        ..description = llyrics[i].join('\n\n');
-
-      lyricsPages.add(embed);
-    }
-
-    return lyricsPages;
-  }
 }

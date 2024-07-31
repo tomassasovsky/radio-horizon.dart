@@ -34,12 +34,11 @@ class ShazamClient extends ShazamApiClientBase {
   /// Recognizes a song from a given [song].
   Future<SongModel> recognizeSong(File song) async {
     final uri = Uri(
+      scheme: 'http',
       host: authority,
       port: port,
       path: '/recognize',
     );
-
-    await post<JSON>(uri);
 
     try {
       final request = http.MultipartRequest('GET', uri)
@@ -66,7 +65,7 @@ class ShazamClient extends ShazamApiClientBase {
       rethrow;
     } on TimeoutException {
       rethrow;
-    } catch (_) {
+    } catch (e) {
       throw HttpException();
     }
   }

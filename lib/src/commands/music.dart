@@ -106,8 +106,7 @@ ChatCommand:music-play: {
           );
         }
 
-        await DatabaseService.instance
-            .deleteRadioFromList(context.guild!.id);
+        await DatabaseService.instance.deleteRadioFromList(context.guild!.id);
       }),
       localizedDescriptions: localizedValues(
         (translations) => translations.commands.music.children.play.description,

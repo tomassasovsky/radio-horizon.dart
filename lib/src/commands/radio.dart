@@ -215,7 +215,7 @@ ChatCommand:radio-play-random: {
             channelId: context.channel.id,
           ).startPlaying();
 
-        await SongRecognitionService.instance.setCurrentRadio(
+        await DatabaseService.instance.setCurrentRadio(
           context.guild!.id,
           context.member!.voiceState!.channel!.id,
           context.channel.id,

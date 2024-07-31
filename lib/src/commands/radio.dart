@@ -18,6 +18,7 @@ import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/checks.dart';
 import 'package:radio_horizon/src/models/song_recognition/current_station_info.dart';
 import 'package:retry/retry.dart';
+import 'package:shazam_client/shazam_client.dart';
 
 final _enRadioCommand = AppLocale.en.translations.commands.radio;
 final _enPlayCommand = _enRadioCommand.children.play;
@@ -192,7 +193,7 @@ ChatCommand:radio-play: {
               stacktrace,
             );
 
-            ShazamResult? result;
+            SongModel? result;
             await retry(
               () async {
                 result = await recognitionService.identify(

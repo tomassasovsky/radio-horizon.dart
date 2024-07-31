@@ -2,6 +2,7 @@ import 'package:radio_horizon/radio_horizon.dart';
 import 'package:retry/retry.dart';
 import 'package:sentry/sentry.dart';
 import 'package:sentry_logging/sentry_logging.dart';
+import 'package:shazam_client/shazam_client.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -30,7 +31,7 @@ void main() {
   test(
     'test description',
     () async {
-      ShazamResult? result;
+      SongModel? result;
       await retry(
         () async {
           result = await SongRecognitionService.instance.identify(

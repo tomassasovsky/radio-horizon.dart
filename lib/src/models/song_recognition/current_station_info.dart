@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:radio_horizon/radio_horizon.dart';
+import 'package:shazam_client/shazam_client.dart';
 
 part 'current_station_info.g.dart';
 
@@ -31,17 +32,15 @@ class CurrentStationInfo {
       _$CurrentStationInfoFromJson(json);
 
   factory CurrentStationInfo.fromShazamResult(
-    ShazamResult result,
+    SongModel result,
     GuildRadio radio,
   ) =>
       CurrentStationInfo._lyrics(
-        name: result.headline,
         title: radio.station.name,
         description: result.subtitle,
         url: radio.station.urlResolved ?? radio.station.url,
         image: result.share?.image ?? radio.station.favicon,
         genre: result.genres?.primary,
-        lyrics: result.lyrics,
       );
 
   CurrentStationInfo copyWith({

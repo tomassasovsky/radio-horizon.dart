@@ -11,10 +11,12 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/models/song_recognition/current_station_info.dart';
+import 'package:shazam_client/shazam_client.dart';
 import 'package:uuid/uuid.dart';
 
 class SongRecognitionService {
-  SongRecognitionService._privateConstructor() : _httpClient = http.Client();
+  SongRecognitionService._privateConstructor()
+      : _shazamClient = ShazamClient.dockerized();
 
   static SongRecognitionService get instance => _instance;
 
@@ -23,14 +25,12 @@ class SongRecognitionService {
 
   Uuid get uuid => const Uuid();
 
-  http.Client get httpClient =>
-      _httpClient ??
-      (throw RadioCantCommunicateWithServer(
-        Exception('Http Client must be initialized'),
-      ));
+  ShazamClient get shazamClient => _shazamClient;
 
-  // HttpClient used to get the sample
-  final http.Client? _httpClient;
+  // ShazamClient used to get the sample
+  final ShazamClient _shazamClient;
+
+  final http.Client httpClient = http.Client();
 
   Future<CurrentStationInfo> getCurrentStationInfo(
     GuildRadio radio,
@@ -56,7 +56,7 @@ class SongRecognitionService {
   ///
   /// Receives a [url] to identify the radio and a [durationInSeconds] to
   /// grab that amount of time of the sample from the radio.
-  Future<ShazamResult> identify(
+  Future<SongModel> identify(
     String url,
     int? durationInSeconds,
   ) async {
@@ -65,46 +65,23 @@ class SongRecognitionService {
       durationInSeconds: durationInSeconds ?? 10,
     );
 
+    final uuid = const Uuid().v4();
+    final fileName = 'sample-$uuid.mp3';
+
     final sample = await songFile.readAsBytes();
 
     // save the file in the current directory for debugging purposes
-    final file = File('sample.mp3');
-    // ignore: cascade_invocations
-    file.writeAsBytesSync(sample);
+    final file = File(fileName);
+    await file.writeAsBytes(sample);
 
     try {
-      final uri = Uri(
-        scheme: 'https',
-        host: 'shazam-song-recognizer.p.rapidapi.com',
-        path: 'recognize',
-      );
-
-      final request = http.MultipartRequest('POST', uri);
-
-      request.headers.addAll({
-        'X-RapidAPI-Key': rapidapiShazamSongRecognizerKey,
-        'X-RapidAPI-Host': 'shazam-song-recognizer.p.rapidapi.com',
-      });
-
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'upload_file',
-          sample,
-        ),
-      );
-
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      final result = ShazamSongRecognition.fromJson(
-        (jsonDecode(response.body) as Map).cast(),
-      );
-
-      final track = result.result;
+      final response = await shazamClient.recognizeSong(file);
+      final track = response;
 
       // Deletes the file after the recognition is done
       songFile.deleteSync();
 
-      return track ?? (throw const RadioCantIdentifySongException());
+      return track;
     } on RadioCantIdentifySongException {
       rethrow;
     } catch (e) {

@@ -19,7 +19,6 @@ coverage/
 !.env.vault
 .history
 
-/shazam_api/bin/
 /shazam_api/lib/
 /shazam_api/include/
 /shazam_api/pyvenv.cfg

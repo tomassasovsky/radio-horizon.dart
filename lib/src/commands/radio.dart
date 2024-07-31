@@ -15,6 +15,7 @@ import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/checks.dart';
+import 'package:radio_horizon/src/helpers/random_string.dart';
 import 'package:radio_horizon/src/models/song_recognition/current_station_info.dart';
 import 'package:retry/retry.dart';
 import 'package:shazam_client/shazam_client.dart';
@@ -137,6 +138,95 @@ ChatCommand:radio-play: {
           ..title = commandTranslations.startedPlaying
           ..description = commandTranslations.startedPlayingDescription(
             radio: bestMatch.name,
+            mention: context.member?.mention ?? '(Unknown)',
+          );
+
+        await context.respond(MessageBuilder.embed(embed));
+      }),
+      localizedDescriptions: localizedValues(
+        (translations) => translations.commands.radio.children.play.description,
+      ),
+      localizedNames: localizedValues(
+        (translations) => translations.commands.radio.children.play.command,
+      ),
+    ),
+    ChatCommand(
+      _enPlayCommand.command,
+      _enPlayCommand.description,
+      id('radio-play-random', (
+        IChatContext context,
+      ) async {
+        context as InteractionChatContext;
+        final commandTranslations =
+            getCommandTranslations(context).radio.children.playRandom;
+
+        await context.respond(
+          MessageBuilder.content(
+            commandTranslations.searching,
+          ),
+        );
+
+        final radios = await _radioBrowserClient.getStationsByName(
+          name: getRandomString(1),
+          parameters: const InputParameters(limit: 10),
+        );
+
+        final randomIndex = math.Random().nextInt(radios.items.length);
+        final radio = radios.items[randomIndex];
+
+        _logger.info(
+          '''
+ChatCommand:radio-play-random: {
+  'guild': ${context.guild?.id.toString() ?? 'null'},
+  'guild_name': ${context.guild?.name ?? 'null'},
+  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
+  'channel': ${context.channel.id},
+  'user': ${context.member?.id.toString() ?? 'null'},
+}''',
+        );
+
+        await connectIfNeeded(context, replace: true);
+
+        final node = MusicService.instance.cluster
+            .getOrCreatePlayerNode(context.guild!.id);
+
+        await _radioBrowserClient.clickStation(
+          uuid: radio.stationUUID,
+        );
+
+        final result = await node.searchTracks(radio.urlResolved ?? radio.url);
+        if (result.tracks.isEmpty) {
+          await context.respond(
+            MessageBuilder.content(
+              commandTranslations.errors.noResults,
+            ),
+          );
+          return;
+        }
+
+        final track = result.tracks.first;
+        node
+          ..players[context.guild!.id]!.queue.clear()
+          ..play(
+            context.guild!.id,
+            track,
+            replace: true,
+            requester: context.member!.id,
+            channelId: context.channel.id,
+          ).startPlaying();
+
+        await SongRecognitionService.instance.setCurrentRadio(
+          context.guild!.id,
+          context.member!.voiceState!.channel!.id,
+          context.channel.id,
+          radio,
+        );
+
+        final embed = EmbedBuilder()
+          ..color = getRandomColor()
+          ..title = commandTranslations.startedPlaying
+          ..description = commandTranslations.startedPlayingDescription(
+            radio: radio.name,
             mention: context.member?.mention ?? '(Unknown)',
           );
 

@@ -4,9 +4,9 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 2
-/// Strings: 184 (92 per locale)
+/// Strings: 196 (98 per locale)
 ///
-/// Built on 2023-10-01 at 22:09 UTC
+/// Built on 2023-10-01 at 23:21 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -427,6 +427,8 @@ class StringsCommandsRadioChildrenEn {
       StringsCommandsRadioChildrenRecognizeEn._(_root);
   late final StringsCommandsRadioChildrenUpvoteEn upvote =
       StringsCommandsRadioChildrenUpvoteEn._(_root);
+  late final StringsCommandsRadioChildrenPlayRandomEn playRandom =
+      StringsCommandsRadioChildrenPlayRandomEn._(_root);
 }
 
 // Path: services.music.trackStuck
@@ -546,6 +548,24 @@ class StringsCommandsRadioChildrenUpvoteEn {
       StringsCommandsRadioChildrenUpvoteErrorsEn._(_root);
 }
 
+// Path: commands.radio.children.playRandom
+class StringsCommandsRadioChildrenPlayRandomEn {
+  StringsCommandsRadioChildrenPlayRandomEn._(this._root);
+
+  final StringsEn _root; // ignore: unused_field
+
+  // Translations
+  String get command => 'play-random';
+  String get description => 'Plays a random radio station';
+  String get searching => 'Searching for a random radio station...';
+  String get startedPlaying => 'Started playing';
+  String startedPlayingDescription(
+          {required Object radio, required Object mention}) =>
+      'Radio ${radio} started playing.\n\nRequested by ${mention}';
+  late final StringsCommandsRadioChildrenPlayRandomErrorsEn errors =
+      StringsCommandsRadioChildrenPlayRandomErrorsEn._(_root);
+}
+
 // Path: commands.radio.children.recognize.errors
 class StringsCommandsRadioChildrenRecognizeErrorsEn {
   StringsCommandsRadioChildrenRecognizeErrorsEn._(this._root);
@@ -568,6 +588,17 @@ class StringsCommandsRadioChildrenUpvoteErrorsEn {
 
   // Translations
   String get noRadioPlaying => 'Couldn\'t find a radio playing!';
+}
+
+// Path: commands.radio.children.playRandom.errors
+class StringsCommandsRadioChildrenPlayRandomErrorsEn {
+  StringsCommandsRadioChildrenPlayRandomErrorsEn._(this._root);
+
+  final StringsEn _root; // ignore: unused_field
+
+  // Translations
+  String get noResults =>
+      'Couldn\'t find a random radio station :( Try again later!';
 }
 
 // Path: <root>
@@ -1043,6 +1074,9 @@ class StringsCommandsRadioChildrenEs extends StringsCommandsRadioChildrenEn {
   @override
   late final StringsCommandsRadioChildrenUpvoteEs upvote =
       StringsCommandsRadioChildrenUpvoteEs._(_root);
+  @override
+  late final StringsCommandsRadioChildrenPlayRandomEs playRandom =
+      StringsCommandsRadioChildrenPlayRandomEs._(_root);
 }
 
 // Path: services.music.trackStuck
@@ -1226,6 +1260,34 @@ class StringsCommandsRadioChildrenUpvoteEs
       StringsCommandsRadioChildrenUpvoteErrorsEs._(_root);
 }
 
+// Path: commands.radio.children.playRandom
+class StringsCommandsRadioChildrenPlayRandomEs
+    extends StringsCommandsRadioChildrenPlayRandomEn {
+  StringsCommandsRadioChildrenPlayRandomEs._(StringsEs root)
+      : this._root = root,
+        super._(root);
+
+  @override
+  final StringsEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get command => 'play-random';
+  @override
+  String get description => 'Reproduce una radio aleatoria';
+  @override
+  String get searching => 'Buscando una radio aleatoria...';
+  @override
+  String get startedPlaying => 'Se ha comenzado a reproducir';
+  @override
+  String startedPlayingDescription(
+          {required Object radio, required Object mention}) =>
+      'La radio ${radio} ha comenzado a reproducirse.\n\nPedido por ${mention}';
+  @override
+  late final StringsCommandsRadioChildrenPlayRandomErrorsEs errors =
+      StringsCommandsRadioChildrenPlayRandomErrorsEs._(_root);
+}
+
 // Path: commands.radio.children.recognize.errors
 class StringsCommandsRadioChildrenRecognizeErrorsEs
     extends StringsCommandsRadioChildrenRecognizeErrorsEn {
@@ -1262,6 +1324,22 @@ class StringsCommandsRadioChildrenUpvoteErrorsEs
   // Translations
   @override
   String get noRadioPlaying => 'No se está reproduciendo ninguna radio';
+}
+
+// Path: commands.radio.children.playRandom.errors
+class StringsCommandsRadioChildrenPlayRandomErrorsEs
+    extends StringsCommandsRadioChildrenPlayRandomErrorsEn {
+  StringsCommandsRadioChildrenPlayRandomErrorsEs._(StringsEs root)
+      : this._root = root,
+        super._(root);
+
+  @override
+  final StringsEs _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get noResults =>
+      'No se ha podido encontrar una radio aleatoria :( Inténtalo de nuevo más tarde!';
 }
 
 /// Flat map(s) containing all translations.
@@ -1420,6 +1498,19 @@ extension on StringsEn {
             'You have successfully voted for the radio ${radio}! Thank you for your support :D';
       case 'commands.radio.children.upvote.errors.noRadioPlaying':
         return 'Couldn\'t find a radio playing!';
+      case 'commands.radio.children.playRandom.command':
+        return 'play-random';
+      case 'commands.radio.children.playRandom.description':
+        return 'Plays a random radio station';
+      case 'commands.radio.children.playRandom.searching':
+        return 'Searching for a random radio station...';
+      case 'commands.radio.children.playRandom.startedPlaying':
+        return 'Started playing';
+      case 'commands.radio.children.playRandom.startedPlayingDescription':
+        return ({required Object radio, required Object mention}) =>
+            'Radio ${radio} started playing.\n\nRequested by ${mention}';
+      case 'commands.radio.children.playRandom.errors.noResults':
+        return 'Couldn\'t find a random radio station :( Try again later!';
       case 'services.music.trackStuck.title':
         return 'Track stuck';
       case 'services.music.trackStuck.description':
@@ -1634,6 +1725,19 @@ extension on StringsEs {
             'Has votado positivamente por la radio ${radio}! Gracias por tu apoyo :D';
       case 'commands.radio.children.upvote.errors.noRadioPlaying':
         return 'No se está reproduciendo ninguna radio';
+      case 'commands.radio.children.playRandom.command':
+        return 'play-random';
+      case 'commands.radio.children.playRandom.description':
+        return 'Reproduce una radio aleatoria';
+      case 'commands.radio.children.playRandom.searching':
+        return 'Buscando una radio aleatoria...';
+      case 'commands.radio.children.playRandom.startedPlaying':
+        return 'Se ha comenzado a reproducir';
+      case 'commands.radio.children.playRandom.startedPlayingDescription':
+        return ({required Object radio, required Object mention}) =>
+            'La radio ${radio} ha comenzado a reproducirse.\n\nPedido por ${mention}';
+      case 'commands.radio.children.playRandom.errors.noResults':
+        return 'No se ha podido encontrar una radio aleatoria :( Inténtalo de nuevo más tarde!';
       case 'services.music.trackStuck.title':
         return 'La canción se ha quedado atascada';
       case 'services.music.trackStuck.description':

@@ -4,9 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'package:get_it/get_it.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_horizon/radio_horizon.dart';
+import 'package:shazam_client/shazam_client.dart';
+
+final getIt = GetIt.instance;
 
 Future<void> main() async {
   dotEnvFlavour = DotEnvFlavour.development;
@@ -44,12 +48,24 @@ Future<void> main() async {
     ..registerPlugin(IgnoreExceptions())
     ..registerPlugin(commands);
 
-  // Initialise our services
-  MusicService.init(client);
-  await DatabaseService.init(client);
+  final databaseService = DatabaseService(client);
+  await databaseService.initialize();
+
+  final musicService = MusicService(client);
+  final bootupService =
+      BootUpService(client: client, databaseService: databaseService);
+  final songRecognitionService =
+      SongRecognitionService(ShazamClient.dockerized());
+
+  getIt
+    ..registerSingleton<MusicService>(musicService)
+    ..registerSingleton<DatabaseService>(databaseService)
+    ..registerSingleton<BootUpService>(bootupService)
+    ..registerSingleton<SongRecognitionService>(songRecognitionService);
 
   client.onReady.listen((_) async {
-    BootUpService.init(client, DatabaseService.instance);
+    await musicService.initialize();
+    await bootupService.initialize(musicService.cluster);
   });
 
   // Connect

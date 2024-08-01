@@ -33,8 +33,10 @@ ChatCommand:skip: {
 }''',
     );
 
-    final node =
-        MusicService.instance.cluster.getOrCreatePlayerNode(context.guild!.id);
+    final node = getIt
+        .get<MusicService>()
+        .cluster
+        .getOrCreatePlayerNode(context.guild!.id);
     final player = node.players[context.guild!.id]!;
 
     if (player.queue.isEmpty) {
@@ -78,7 +80,9 @@ ChatCommand:leave: {
 }''',
     );
 
-    MusicService.instance.cluster
+    getIt
+        .get<MusicService>()
+        .cluster
         .getOrCreatePlayerNode(context.guild!.id)
         .destroy(context.guild!.id);
     context.guild!.shard.changeVoiceState(context.guild!.id, null);
@@ -113,7 +117,7 @@ ChatCommand:join: {
 }''',
     );
 
-    MusicService.instance.cluster.getOrCreatePlayerNode(context.guild!.id);
+    getIt.get<MusicService>().cluster.getOrCreatePlayerNode(context.guild!.id);
     await connectIfNeeded(context);
     await context.respond(MessageBuilder.content(commandTranslations.joined));
   }),
@@ -154,7 +158,9 @@ ChatCommand:volume: {
 }''',
     );
 
-    MusicService.instance.cluster
+    getIt
+        .get<MusicService>()
+        .cluster
         .getOrCreatePlayerNode(context.guild!.id)
         .volume(
           context.guild!.id,
@@ -195,7 +201,9 @@ ChatCommand:pause: {
 }''',
     );
 
-    MusicService.instance.cluster
+    getIt
+        .get<MusicService>()
+        .cluster
         .getOrCreatePlayerNode(context.guild!.id)
         .pause(context.guild!.id);
     await context.respond(MessageBuilder.content(commandTranslations.paused));
@@ -228,7 +236,9 @@ ChatCommand:resume: {
 }''',
     );
 
-    MusicService.instance.cluster
+    getIt
+        .get<MusicService>()
+        .cluster
         .getOrCreatePlayerNode(context.guild!.id)
         .resume(context.guild!.id);
     await context.respond(MessageBuilder.content(commandTranslations.resumed));
@@ -260,7 +270,9 @@ ChatCommand:stop: {
 }''',
     );
 
-    MusicService.instance.cluster
+    getIt
+        .get<MusicService>()
+        .cluster
         .getOrCreatePlayerNode(context.guild!.id)
         .stop(context.guild!.id);
     await context.respond(MessageBuilder.content(commandTranslations.stopped));

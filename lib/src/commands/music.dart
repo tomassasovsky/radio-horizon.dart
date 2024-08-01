@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
@@ -18,6 +19,7 @@ final _enMusicCommand = AppLocale.en.translations.commands.music;
 final _enPlayCommand = _enMusicCommand.children.play;
 
 final _logger = Logger('command/music');
+final _getIt = GetIt.instance;
 
 ChatGroup music = ChatGroup(
   _enMusicCommand.command,
@@ -53,7 +55,9 @@ ChatCommand:music-play: {
 }''',
         );
 
-        final node = MusicService.instance.cluster
+        final node = _getIt
+            .get<MusicService>()
+            .cluster
             .getOrCreatePlayerNode(context.guild!.id);
         await connectIfNeeded(context);
         final result = await node.autoSearch(query);
@@ -106,7 +110,9 @@ ChatCommand:music-play: {
           );
         }
 
-        await DatabaseService.instance.deleteRadioFromList(context.guild!.id);
+        await _getIt
+            .get<DatabaseService>()
+            .deleteRadioFromList(context.guild!.id);
       }),
       localizedDescriptions: localizedValues(
         (translations) => translations.commands.music.children.play.description,
@@ -141,8 +147,10 @@ ChatCommand:music-play: autocompletion: {
 }''',
   );
 
-  final node =
-      MusicService.instance.cluster.getOrCreatePlayerNode(context.guild!.id);
+  final node = _getIt
+      .get<MusicService>()
+      .cluster
+      .getOrCreatePlayerNode(context.guild!.id);
   final response =
       await node.autoSearch(query).timeout(const Duration(milliseconds: 2500));
 

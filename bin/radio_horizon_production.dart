@@ -6,12 +6,16 @@
 
 import 'dart:async';
 
+import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:sentry/sentry.dart';
 import 'package:sentry_logging/sentry_logging.dart';
+import 'package:shazam_client/shazam_client.dart';
+
+final getIt = GetIt.instance;
 
 Future<void> main() async {
   await runZonedGuarded(() async {
@@ -59,10 +63,25 @@ Future<void> main() async {
       ..registerPlugin(IgnoreExceptions())
       ..registerPlugin(commands);
 
-    // Initialise our services
-    MusicService.init(client);
-    await DatabaseService.init(client);
-    BootUpService.init(client, DatabaseService.instance);
+    final databaseService = DatabaseService(client);
+    await databaseService.initialize();
+
+    final musicService = MusicService(client);
+    final bootupService =
+        BootUpService(client: client, databaseService: databaseService);
+    final songRecognitionService =
+        SongRecognitionService(ShazamClient.dockerized());
+
+    getIt
+      ..registerSingleton<MusicService>(musicService)
+      ..registerSingleton<DatabaseService>(databaseService)
+      ..registerSingleton<BootUpService>(bootupService)
+      ..registerSingleton<SongRecognitionService>(songRecognitionService);
+
+    client.onReady.listen((_) async {
+      await musicService.initialize();
+      await bootupService.initialize(musicService.cluster);
+    });
 
     // Connect
     await client.connect();

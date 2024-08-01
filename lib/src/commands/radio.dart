@@ -22,6 +22,7 @@ import 'package:shazam_client/shazam_client.dart';
 
 final _enRadioCommand = AppLocale.en.translations.commands.radio;
 final _enPlayCommand = _enRadioCommand.children.play;
+final _enPlayRandomCommand = _enRadioCommand.children.playRandom;
 final _enRecognizeCommand = _enRadioCommand.children.recognize;
 final _enUpvoteCommand = _enRadioCommand.children.upvote;
 
@@ -46,7 +47,7 @@ ChatGroup radio = ChatGroup(
     ChatCommand(
       _enPlayCommand.command,
       _enPlayCommand.description,
-      id('radio-play', (
+      id('radioplay', (
         IChatContext context,
         @Description('The name of the Radio Station to play')
         @Autocomplete(autocompleteRadioQuery)
@@ -76,7 +77,9 @@ ChatCommand:radio-play: {
 
         await connectIfNeeded(context, replace: true);
 
-        final node = MusicService.instance.cluster
+        final node = getIt
+            .get<MusicService>()
+            .cluster
             .getOrCreatePlayerNode(context.guild!.id);
 
         late final RadioBrowserListResponse<Station> stations;
@@ -125,7 +128,7 @@ ChatCommand:radio-play: {
             channelId: context.channel.id,
           ).startPlaying();
 
-        final databaseService = DatabaseService.instance;
+        final databaseService = getIt.get<DatabaseService>();
         await databaseService.setCurrentRadio(
           context.guild!.id,
           context.member!.voiceState!.channel!.id,
@@ -151,8 +154,8 @@ ChatCommand:radio-play: {
       ),
     ),
     ChatCommand(
-      _enPlayCommand.command,
-      _enPlayCommand.description,
+      _enPlayRandomCommand.command,
+      _enPlayRandomCommand.description,
       id('radio-play-random', (
         IChatContext context,
       ) async {
@@ -187,7 +190,9 @@ ChatCommand:radio-play-random: {
 
         await connectIfNeeded(context, replace: true);
 
-        final node = MusicService.instance.cluster
+        final node = getIt
+            .get<MusicService>()
+            .cluster
             .getOrCreatePlayerNode(context.guild!.id);
 
         await _radioBrowserClient.clickStation(
@@ -215,12 +220,12 @@ ChatCommand:radio-play-random: {
             channelId: context.channel.id,
           ).startPlaying();
 
-        await DatabaseService.instance.setCurrentRadio(
-          context.guild!.id,
-          context.member!.voiceState!.channel!.id,
-          context.channel.id,
-          radio,
-        );
+        await getIt.get<DatabaseService>().setCurrentRadio(
+              context.guild!.id,
+              context.member!.voiceState!.channel!.id,
+              context.channel.id,
+              radio,
+            );
 
         final embed = EmbedBuilder()
           ..color = getRandomColor()
@@ -233,10 +238,12 @@ ChatCommand:radio-play-random: {
         await context.respond(MessageBuilder.embed(embed));
       }),
       localizedDescriptions: localizedValues(
-        (translations) => translations.commands.radio.children.play.description,
+        (translations) =>
+            translations.commands.radio.children.playRandom.description,
       ),
       localizedNames: localizedValues(
-        (translations) => translations.commands.radio.children.play.command,
+        (translations) =>
+            translations.commands.radio.children.playRandom.command,
       ),
     ),
     ChatCommand(
@@ -251,8 +258,8 @@ ChatCommand:radio-play-random: {
         CurrentStationInfo? stationInfo;
 
         try {
-          final recognitionService = SongRecognitionService.instance;
-          final databaseService = DatabaseService.instance;
+          final recognitionService = getIt.get<SongRecognitionService>();
+          final databaseService = getIt.get<DatabaseService>();
           final guildId = context.guild!.id;
 
           var recognitionSampleDuration = 10;
@@ -363,8 +370,9 @@ ChatCommand:radio-play-random: {
 
         late GuildRadio? guildRadio;
         try {
-          guildRadio =
-              await DatabaseService.instance.currentRadio(context.guild!.id);
+          guildRadio = await getIt
+              .get<DatabaseService>()
+              .currentRadio(context.guild!.id);
         } on RadioNotPlayingException {
           await context.respond(
             MessageBuilder.embed(

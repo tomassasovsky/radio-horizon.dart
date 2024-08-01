@@ -6,6 +6,7 @@
 
 import 'dart:io';
 
+import 'package:get_it/get_it.dart';
 import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
@@ -22,13 +23,15 @@ String getCurrentMemoryString() {
 final _enInfoCommand = AppLocale.en.translations.commands.info;
 final _logger = Logger('command/info');
 
+final _getIt = GetIt.instance;
+
 ChatCommand info = ChatCommand(
   _enInfoCommand.command,
   _enInfoCommand.description,
   id('info', (IChatContext context) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).info;
-    final nodes = MusicService.instance.cluster.connectedNodes;
+    final nodes = _getIt.get<MusicService>().cluster.connectedNodes;
     final players = nodes.values
         .map((b) => b.players.length)
         .reduce((value, element) => value + element);

@@ -15,13 +15,7 @@ import 'package:shazam_client/shazam_client.dart';
 import 'package:uuid/uuid.dart';
 
 class SongRecognitionService {
-  SongRecognitionService._privateConstructor()
-      : _shazamClient = ShazamClient.dockerized();
-
-  static SongRecognitionService get instance => _instance;
-
-  static final SongRecognitionService _instance =
-      SongRecognitionService._privateConstructor();
+  SongRecognitionService(this._shazamClient);
 
   Uuid get uuid => const Uuid();
 
@@ -90,85 +84,53 @@ class SongRecognitionService {
     final completer = Completer<File>();
 
     final uri = Uri.parse(url);
-
     final request = http.Request('GET', uri);
-    http.StreamedResponse? response;
+    http.StreamedResponse response;
     try {
       response = await httpClient.send(request);
     } catch (e) {
       throw RadioCantCommunicateWithServer(Exception(e.toString()));
     }
 
-    StreamSubscription<List<int>>? streamSubscription;
-
     final responseBitRate = response.headers['icy-br'] ?? '128';
-
     final bitRate = num.parse(responseBitRate.split(',').first).toInt();
-    final outputFile = File('${Directory.systemTemp.path}/${uuid.v4()}');
-    if (!outputFile.existsSync()) outputFile.createSync();
-    final sink = outputFile.openWrite();
+    final outputFile =
+        File('${Directory.systemTemp.path}/${const Uuid().v4()}.mp3');
+    if (!outputFile.existsSync()) await outputFile.create();
 
-    // we can calculate the duration by using the bitrate and
-    // the file size, the formula is found here:
-    // http://www.audiomountain.com/tech/audio-file-size.html
+    final sink = outputFile.openWrite();
     final bytePerSecond = bitRate / 8 * 1024;
     final expectedBytes = bytePerSecond * durationInSeconds;
 
-    streamSubscription = response.stream.listen((chunk) async {
-      final bytes = await outputFile.length();
-
-      if (bytes > 0) {
-        if (expectedBytes < bytes) {
-          unawaited(streamSubscription?.cancel());
-
-          await sink.flush();
+    StreamSubscription<List<int>>? streamSubscription;
+    streamSubscription = response.stream.listen(
+      (chunk) async {
+        sink.add(chunk);
+        final bytes = await outputFile.length();
+        if (bytes >= expectedBytes) {
+          await streamSubscription?.cancel();
           await sink.close();
-
           if (!completer.isCompleted) {
             completer.complete(outputFile);
           }
-          return;
         }
-      }
-
-      sink.add(chunk);
-    });
+      },
+      onDone: () async {
+        await sink.close();
+        if (!completer.isCompleted) {
+          completer.complete(outputFile);
+        }
+      },
+      onError: (Object error) async {
+        await streamSubscription?.cancel();
+        await sink.close();
+        if (!completer.isCompleted) {
+          completer.completeError(error);
+        }
+      },
+      cancelOnError: true,
+    );
 
     return completer.future;
-  }
-
-  /// Gets a list of links to different streaming services where the song
-  /// is available.
-  Future<MusicLinksResponse> getMusicLinks(String songName) async {
-    final uri = Uri(
-      scheme: 'https',
-      host: 'musiclinkssapi.p.rapidapi.com',
-      path: 'search/query',
-      queryParameters: {
-        'q': songName,
-        'type': 'track',
-      },
-    );
-
-    final request = http.Request('GET', uri);
-
-    request.headers.addAll({
-      'X-RapidAPI-Key': rapidapiShazamSongRecognizerKey,
-      'X-RapidAPI-Host': 'musiclinkssapi.p.rapidapi.com',
-    });
-
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-
-    final decodedResponse = jsonDecode(response.body);
-    if (decodedResponse is! Map || decodedResponse.isEmpty) {
-      return MusicLinksResponse.empty();
-    }
-
-    final result = MusicLinksResponse.fromJson(
-      (jsonDecode(response.body) as Map).cast(),
-    );
-
-    return result;
   }
 }

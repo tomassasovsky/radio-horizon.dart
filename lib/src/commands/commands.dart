@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'package:get_it/get_it.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_interactions/nyxx_interactions.dart';
@@ -14,12 +15,16 @@ export 'music.dart';
 export 'radio.dart';
 export 'sound.dart';
 
+final _getIt = GetIt.instance;
+
 Future<void> connectIfNeeded(
   IChatContext context, {
   bool replace = false,
 }) async {
   if (replace) {
-    MusicService.instance.cluster
+    _getIt
+        .get<MusicService>()
+        .cluster
         .getOrCreatePlayerNode(context.guild!.id)
         .destroy(context.guild!.id);
     context.guild!.shard.changeVoiceState(
@@ -51,7 +56,9 @@ Future<void> connectToChannel(
   bool replace = false,
 }) async {
   if (replace) {
-    MusicService.instance.cluster
+    _getIt
+        .get<MusicService>()
+        .cluster
         .getOrCreatePlayerNode(guild.id)
         .destroy(guild.id);
     guild.shard.changeVoiceState(

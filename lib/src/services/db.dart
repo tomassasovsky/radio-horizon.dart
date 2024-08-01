@@ -7,19 +7,12 @@ import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 
 class DatabaseService {
-  DatabaseService._(this._client) {
+  DatabaseService(this._client) {
     _client.onReady.listen((_) async {
       await _addServer();
     });
   }
 
-  static DatabaseService get instance =>
-      _instance ??
-      (throw Exception(
-        'DB service must be initialised with DB.init',
-      ));
-
-  static DatabaseService? _instance;
   late Db _db;
 
   Future<void> _checkConnection() async {
@@ -28,7 +21,7 @@ class DatabaseService {
     }
   }
 
-  Future<void> _initialize() async {
+  Future<void> initialize() async {
     /// Connects to the MongoDB database
     _db = await Db.create(mongoDBConnection);
     await _db.open();
@@ -163,11 +156,6 @@ class DatabaseService {
   DbCollection get radioPlayingCollection => _db.collection('radioPlaying');
 
   final INyxxWebsocket _client;
-
-  static Future<void> init(INyxxWebsocket client) {
-    _instance = DatabaseService._(client);
-    return _instance!._initialize();
-  }
 
   FutureOr<void> close() async => _db.close();
 }

@@ -11,45 +11,47 @@ Future<void> generateSample({
 }) async {
   final url = radio.urlResolved ?? radio.url;
   final uri = Uri.parse(url);
-
   final client = http.Client();
   final request = http.Request('GET', uri);
   final response = await client.send(request);
 
-  StreamSubscription<List<int>>? streamSubscription;
-
-  final bitRate = radio.bitrate;
-
   final outputFile = File(outputPath);
-  if (!outputFile.existsSync()) outputFile.createSync();
+  if (!outputFile.existsSync()) await outputFile.create();
+
   final sink = outputFile.openWrite();
-
   final completer = Completer<void>();
+  final bitRate = radio.bitrate;
+  final bytePerSecond = bitRate / 8 * 1000;
+  final expectedBytes = bytePerSecond * durationInSeconds;
 
-  streamSubscription = response.stream.listen((chunk) async {
-    final bytes = await outputFile.length();
-
-    if (bytes > 0) {
-      // we can calculate the duration by using the bitrate and the file size,
-      // the formula is found here:
-      // http://www.audiomountain.com/tech/audio-file-size.html
-      final bytePerSecond = bitRate / 8 * 1000;
-      final expectedBytes = bytePerSecond * durationInSeconds;
-
-      if (expectedBytes < bytes) {
-        await sink.flush();
-        await sink.close();
-
+  StreamSubscription<List<int>>? streamSubscription;
+  streamSubscription = response.stream.listen(
+    (chunk) async {
+      sink.add(chunk);
+      final bytes = await outputFile.length();
+      if (bytes >= expectedBytes) {
         await streamSubscription?.cancel();
+        await sink.close();
         if (!completer.isCompleted) {
           completer.complete();
         }
-        return;
       }
-    }
-
-    sink.add(chunk);
-  });
+    },
+    onDone: () async {
+      await sink.close();
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+    },
+    onError: (Object error) async {
+      await streamSubscription?.cancel();
+      await sink.close();
+      if (!completer.isCompleted) {
+        completer.completeError(error);
+      }
+    },
+    cancelOnError: true,
+  );
 
   return completer.future;
 }

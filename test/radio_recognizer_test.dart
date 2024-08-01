@@ -34,7 +34,8 @@ void main() {
       SongModel? result;
       await retry(
         () async {
-          result = await SongRecognitionService.instance.identify(
+          result =
+              await SongRecognitionService(ShazamClient.localhost()).identify(
             'https://ais-edge49-nyc04.cdnstream.com/2281_128.mp3',
             recognitionSampleDuration,
           );

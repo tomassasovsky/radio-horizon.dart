@@ -71,7 +71,9 @@ class BootUpService {
           ),
         );
       } catch (e) {
-        Logger('BootUpService').shout('Error during bootup', e);
+        Logger.root.info(
+          'Failed to initialize radio for guild: ${playing.guildId}',
+        );
       }
     }
   }

@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   radio_horizon:
     image: ghcr.io/tomassasovsky/radio-horizon.dart:latest

@@ -4,10 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import 'package:logging/logging.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
-import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 
 final _logger = Logger('ROD.CommandErrors');
@@ -16,7 +14,7 @@ Future<void> commandErrorHandler(CommandsException error) async {
   if (error is CommandInvocationException) {
     final context = error.context;
 
-    final locale = context.guild?.preferredLocale ?? Locale.englishUs.code;
+    final locale = (context.guild?.preferredLocale ?? Locale.enUs).identifier;
     final translations = AppLocaleUtils.parse(locale).translations;
 
     String? title;
@@ -27,26 +25,26 @@ Future<void> commandErrorHandler(CommandsException error) async {
         switch (error.failed.name) {
           case 'musicConnectedToVC':
             await context.respond(
-              MessageBuilder.content(
-                translations.errorHandler.musicConnectedToVC,
+              MessageBuilder(
+                content: translations.errorHandler.musicConnectedToVC,
               ),
             );
           case 'musicNotConnectedToVC':
             await context.respond(
-              MessageBuilder.content(
-                translations.errorHandler.musicNotConnectedToVC,
+              MessageBuilder(
+                content: translations.errorHandler.musicNotConnectedToVC,
               ),
             );
           case 'musicSameVC':
             await context.respond(
-              MessageBuilder.content(
-                translations.errorHandler.musicSameVC,
+              MessageBuilder(
+                content: translations.errorHandler.musicSameVC,
               ),
             );
           case 'musicUserConnectedToVC':
             await context.respond(
-              MessageBuilder.content(
-                translations.errorHandler.musicUserConnectedToVC,
+              MessageBuilder(
+                content: translations.errorHandler.musicUserConnectedToVC,
               ),
             );
           default:
@@ -79,16 +77,13 @@ Future<void> commandErrorHandler(CommandsException error) async {
 
     // Send a generic "an error occurred" response
     final embed = EmbedBuilder()
-      ..color = DiscordColor.red
+      ..color = const DiscordColor.fromRgb(255, 0, 0)
       ..title = title ?? translations.errorHandler.title
       ..description =
           description ?? translations.errorHandler.fallbackDescription
-      ..addFooter((footer) {
-        footer.text = error.runtimeType.toString();
-      })
       ..timestamp = DateTime.now();
 
-    await context.respond(MessageBuilder.embed(embed));
+    await context.respond(MessageBuilder(embeds: [embed]));
     return;
   }
 

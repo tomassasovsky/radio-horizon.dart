@@ -6,16 +6,14 @@
 
 import 'dart:async';
 
-import 'package:get_it/get_it.dart';
-import 'package:logging/logging.dart';
+import 'package:injector/injector.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
+import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:sentry/sentry.dart';
 import 'package:sentry_logging/sentry_logging.dart';
 import 'package:shazam_client/shazam_client.dart';
-
-final getIt = GetIt.instance;
 
 Future<void> main() async {
   await runZonedGuarded(() async {
@@ -37,8 +35,17 @@ Future<void> main() async {
       },
     );
 
-    // Create nyxx client and nyxx_commands plugin
-    final client = NyxxFactory.createNyxxWebsocket(token, intents);
+    final lavalinkClient = await LavalinkClient.connect(
+      Uri(
+        host: lavalinkAddress,
+        port: lavalinkPort,
+        scheme: lavalinkUseSSL ? 'https' : 'http',
+      ),
+      password: lavalinkPassword,
+      userId: clientId.toString(),
+    );
+
+    final lavalinkPlugin = LavalinkPlugin.usingClient(lavalinkClient);
 
     final commands = CommandsPlugin(
       prefix: mentionOr((_) => prefix),
@@ -47,44 +54,45 @@ Future<void> main() async {
       ),
     )
       ..addCommand(info)
-      ..addCommand(skip)
-      ..addCommand(stop)
-      ..addCommand(join)
-      ..addCommand(leave)
-      ..addCommand(pause)
-      ..addCommand(resume)
-      ..addCommand(volume)
-      ..addCommand(music)
-      ..addCommand(radio)
-      ..onCommandError.listen(commandErrorHandler);
+      // ..addCommand(skip)
+      // ..addCommand(stop)
+      // ..addCommand(join)
+      // ..addCommand(leave)
+      // ..addCommand(pause)
+      // ..addCommand(resume)
+      // ..addCommand(volume)
+      ..addCommand(music);
+    // ..addCommand(radio);
 
-    client
-      ..registerPlugin(CliIntegration())
-      ..registerPlugin(IgnoreExceptions())
-      ..registerPlugin(commands);
+    commands.onCommandError.listen(commandErrorHandler);
 
-    final databaseService = DatabaseService(client);
-    await databaseService.initialize();
+    final client = await Nyxx.connectGateway(
+      token,
+      intents,
+      options: GatewayClientOptions(
+        plugins: [
+          Logging(),
+          CliIntegration(),
+          IgnoreExceptions(),
+          commands,
+          lavalinkPlugin,
+        ],
+      ),
+    );
 
-    final musicService = MusicService(client);
-    final bootupService =
-        BootUpService(client: client, databaseService: databaseService);
-    final songRecognitionService =
-        SongRecognitionService(ShazamClient.dockerized());
+    Injector.appInstance
+      ..registerSingleton(() => client)
+      ..registerSingleton(DatabaseService.new)
+      ..registerSingleton(BootUpService.new)
+      ..registerSingleton(ShazamClient.dockerized)
+      ..registerSingleton(SongRecognitionService.new)
+      ..registerSingleton(BotStartDuration.new)
+      ..registerSingleton(() => lavalinkClient)
+      ..registerSingleton(() => lavalinkPlugin);
 
-    getIt
-      ..registerSingleton<MusicService>(musicService)
-      ..registerSingleton<DatabaseService>(databaseService)
-      ..registerSingleton<BootUpService>(bootupService)
-      ..registerSingleton<SongRecognitionService>(songRecognitionService);
-
-    client.onReady.listen((_) async {
-      await musicService.initialize();
-      await bootupService.initialize(musicService.cluster);
-    });
-
-    // Connect
-    await client.connect();
+    await Injector.appInstance.get<BotStartDuration>().init();
+    await Injector.appInstance.get<DatabaseService>().init();
+    await Injector.appInstance.get<BootUpService>().init();
   }, (exception, stackTrace) async {
     Logger('main').severe(
       'Uncaught exception when initialising the bot',

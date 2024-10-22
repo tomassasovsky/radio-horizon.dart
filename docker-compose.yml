@@ -17,20 +17,34 @@ services:
       - shazam_api
 
   lavalink:
-    image: ghcr.io/lavalink-devs/lavalink:3
+    image: ghcr.io/lavalink-devs/lavalink:4
     container_name: lavalink
     restart: always
     expose:
       - 2333
     volumes:
-     - ./lavalink.yml:/opt/Lavalink/application.yml
+     - ./output.lavalink.yml:/opt/Lavalink/application.yml
+    depends_on:
+      update_lavalink_config:
+        condition: service_completed_successfully
 
   shazam_api:
-    build:
-      context: ./shazam_api
+    image: ghcr.io/tomassasovsky/shazam_api:latest
     expose:
       - 5000
     volumes:
       - ./shazam_api:/app
     environment:
       FLASK_ENV: development
+
+  update_lavalink_config:
+    build:
+      context: ./custom_lavalink
+    container_name: update_lavalink_config
+    restart: "no"
+    volumes:
+      - ./lavalink.yml:/app/lavalink.yml
+      - ./:/output-dir
+    env_file:
+      - .env/.env.development
+    command: ["--input", "lavalink.yml", "--output", "/output-dir/output.lavalink.yml"]

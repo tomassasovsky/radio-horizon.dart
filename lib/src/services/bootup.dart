@@ -1,39 +1,19 @@
 import 'dart:async';
 
-import 'package:logging/logging.dart';
+import 'package:injector/injector.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:radio_horizon/radio_horizon.dart';
-import 'package:retry/retry.dart';
 
 class BootUpService {
-  BootUpService({
-    required INyxxWebsocket client,
-    required this.databaseService,
-  }) : _client = client;
+  BootUpService();
 
-  final DatabaseService databaseService;
-  final INyxxWebsocket _client;
+  DatabaseService get databaseService => Injector().get<DatabaseService>();
+  NyxxGateway get _client => Injector().get<NyxxGateway>();
 
   /// Grabs the previously playing radio and sets it as the current one
   /// for the guild
-  Future<void> initialize(ICluster cluster) async {
-    final mCluster = await retry<ICluster?>(
-      () async {
-        if (cluster.connectedNodes.isEmpty) {
-          throw Exception('No nodes connected yet... retrying');
-        } else {
-          return cluster;
-        }
-      },
-      maxAttempts: 10,
-      delayFactor: const Duration(seconds: 5),
-    );
-
-    if (mCluster == null || mCluster.connectedNodes.isEmpty) {
-      return;
-    }
-
+  Future<void> init() async {
     final allPlaying = await databaseService.getAllPlaying();
 
     if (allPlaying == null) {
@@ -42,7 +22,7 @@ class BootUpService {
 
     for (final playing in allPlaying) {
       try {
-        final guild = await _client.fetchGuild(playing.guildId);
+        final guild = await _client.guilds.fetch(playing.guildId);
 
         await connectToChannel(
           guild,
@@ -50,17 +30,15 @@ class BootUpService {
           replace: true,
         );
 
-        final node = mCluster.getOrCreatePlayerNode(guild.id);
-        final tracks = await node
-            .searchTracks(playing.station.urlResolved ?? playing.station.url);
-        node
-          ..players[guild.id]!.queue.clear()
-          ..play(
-            guild.id,
-            tracks.tracks.first,
-            replace: true,
-            channelId: playing.voiceChannelId,
-          ).startPlaying();
+        final voiceState = guild.voiceStates[playing.voiceChannelId]!;
+        final voiceChannel =
+            (await voiceState.channel!.fetch()) as VoiceChannel;
+
+        final lavalinkPlayer = await voiceChannel.connectLavalink();
+
+        await lavalinkPlayer.stopPlaying();
+        await lavalinkPlayer
+            .playEncoded(playing.station.urlResolved ?? playing.station.url);
 
         await databaseService.setPlaying(
           GuildRadio(

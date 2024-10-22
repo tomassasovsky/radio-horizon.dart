@@ -12,74 +12,51 @@ final administratorCheck = UserCheck.anyId(
   name: 'Administrator check',
 );
 
-final connectedToAVoiceChannelCheck = Check(
-  (ICommandContextData context) async {
-    final selfMember = await context.guild?.selfMember.getOrDownload();
-
-    if (selfMember == null) {
+final botConnectedToAVoiceChannelCheck = Check(
+  (CommandContext context) async {
+    final guildId = context.guild?.id;
+    if (guildId == null) {
       return false;
     }
 
-    if (selfMember.voiceState == null ||
-        selfMember.voiceState?.channel == null) {
-      return false;
-    }
-    return true;
+    final botVoiceState = context.guild?.voiceStates[context.client.user.id];
+    return botVoiceState?.channel != null;
   },
   name: 'musicConnectedToVC',
 );
 
-final notConnectedToAVoiceChannelCheck = Check(
-  (ICommandContextData context) async {
-    final selfMember = await context.guild?.selfMember.getOrDownload();
-
-    if (selfMember == null) {
+final botNotConnectedToAVoiceChannelCheck = Check(
+  (CommandContext context) async {
+    final guildId = context.guild?.id;
+    if (guildId == null) {
       return false;
     }
 
-    if (selfMember.voiceState == null ||
-        selfMember.voiceState?.channel == null) {
-      return true;
-    }
-    return false;
+    final botVoiceState = context.guild?.voiceStates[context.client.user.id];
+
+    return botVoiceState?.channel == null;
   },
   name: 'musicNotConnectedToVC',
 );
 
 final userConnectedToVoiceChannelCheck = Check(
-  (ICommandContextData context) {
-    final memberVoiceState = context.member?.voiceState;
-
-    if (memberVoiceState == null || memberVoiceState.channel == null) {
-      return false;
-    }
-    return true;
+  (CommandContext context) async {
+    final userVoiceState = context.guild?.voiceStates[context.member?.id];
+    return userVoiceState != null || userVoiceState?.channel != null;
   },
   name: 'musicUserConnectedToVC',
 );
 
 final sameVoiceChannelOrDisconnectedCheck = Check(
-  (ICommandContextData context) async {
-    // If this is an interaction, acknowledge it just in case the check
-    // takes too long to run.
-    if (context is InteractionChatContext) {
-      await context.acknowledge();
-    }
+  (CommandContext context) async {
+    final userVoiceState = context.guild?.voiceStates[context.member?.id];
+    final botVoiceState = context.guild?.voiceStates[context.client.user.id];
 
-    final selfMemberVoiceState =
-        (await context.guild?.selfMember.getOrDownload())?.voiceState;
-    // The upper check should be executed before, so its okay to
-    // assume the voice state exists.
-    final memberVoiceState = context.member?.voiceState;
-
-    if (selfMemberVoiceState == null || selfMemberVoiceState.channel == null) {
+    if (botVoiceState?.channel == null) {
       return true;
     }
 
-    if (selfMemberVoiceState.channel?.id != memberVoiceState?.channel?.id) {
-      return false;
-    }
-    return true;
+    return userVoiceState?.channel == botVoiceState?.channel;
   },
   name: 'musicSameVC',
 );

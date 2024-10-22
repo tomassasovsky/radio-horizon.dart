@@ -18,10 +18,10 @@ class GuildRadio {
   factory GuildRadio.fromJson(Map<dynamic, dynamic> json) {
     json = json.cast<String, dynamic>();
     return GuildRadio(
-      Snowflake(json['guildId'].toString()),
+      Snowflake.parse(json['guildId'].toString()),
       station: Station.fromJson((json['station'] as Map).cast()),
-      voiceChannelId: Snowflake(json['voiceChannelId'].toString()),
-      textChannelId: Snowflake(json['textChannelId'].toString()),
+      voiceChannelId: Snowflake.parse(json['voiceChannelId'].toString()),
+      textChannelId: Snowflake.parse(json['textChannelId'].toString()),
     );
   }
 

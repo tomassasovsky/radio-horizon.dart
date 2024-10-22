@@ -14,7 +14,8 @@
       "memoryUsage": "Memory usage (current/RSS)",
       "uptime": "Uptime",
       "currentPlayers": "Current players",
-      "gatewayLatency": "Gateway latency"
+      "gatewayLatency": "Gateway latency",
+      "viewOnGithub": "View on GitHub"
     },
     "skip": {
       "command": "skip",
@@ -64,7 +65,21 @@
           "queryDescription": "The name/url of the song/playlist to play",
           "noResults": "No results found for $query",
           "playlistEnqueued": "Playlist $name (${query}) enqueued",
-          "songEnqueued": "Song $title (${query}) enqueued"
+          "songEnqueued": "Song $title (${query}) enqueued",
+          "children": {
+            "youtube": {
+              "command": "youtube",
+              "description": "Plays music from YouTube",
+              "searching": "Searching for $query on YouTube...",
+              "noResults": "No results found for $query"
+            },
+            "deezer": {
+              "command": "deezer",
+              "description": "Plays music from Deezer",
+              "searching": "Searching for $query on Deezer...",
+              "noResults": "No results found for $query"
+            }
+          }
         }
       }
     },

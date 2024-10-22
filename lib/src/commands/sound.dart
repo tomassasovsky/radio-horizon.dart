@@ -1,8 +1,9 @@
-import 'package:logging/logging.dart';
+import 'package:injector/injector.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/checks.dart';
+import 'package:radio_horizon/src/helpers/music_queue.dart';
 
 final _enSkipCommand = AppLocale.en.translations.commands.skip;
 final _enStopCommand = AppLocale.en.translations.commands.stop;
@@ -12,44 +13,45 @@ final _enPauseCommand = AppLocale.en.translations.commands.pause;
 final _enResumeCommand = AppLocale.en.translations.commands.resume;
 final _enVolumeCommand = AppLocale.en.translations.commands.volume;
 
-final _skipLogger = Logger('command/skip');
-
 final skip = ChatCommand(
   _enSkipCommand.command,
   _enSkipCommand.description,
-  checks: [connectedToAVoiceChannelCheck],
-  id('skip', (IChatContext context) async {
+  checks: [botConnectedToAVoiceChannelCheck],
+  id('skip', (ChatContext context) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).skip;
+    final playCommandTranslations =
+        getCommandTranslations(context).music.children.play;
 
-    _skipLogger.info(
-      '''
-ChatCommand:skip: {
-  'guild': ${context.guild?.id.toString() ?? 'null'},
-  'guild_name': ${context.guild?.name ?? 'null'},
-  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
-  'channel': ${context.channel.id},
-  'user': ${context.member?.id.toString() ?? 'null'},
-}''',
-    );
-
-    final node = getIt
-        .get<MusicService>()
-        .cluster
-        .getOrCreatePlayerNode(context.guild!.id);
-    final player = node.players[context.guild!.id]!;
-
-    if (player.queue.isEmpty) {
-      await context.respond(
-        MessageBuilder.content(commandTranslations.nothingPlaying),
-      );
+    final player = await connectLavalink(context);
+    if (player == null) {
+      await context
+          .respond(MessageBuilder(content: commandTranslations.nothingPlaying));
       return;
     }
 
-    node.skip(context.guild!.id);
-    await context.respond(
-      MessageBuilder.content(commandTranslations.skipped),
-    );
+    final queue = trackQueues.getOrCreateQueue(player);
+    if (queue.isEmpty) {
+      await context
+          .respond(MessageBuilder(content: commandTranslations.nothingPlaying));
+      return;
+    }
+
+    final next = queue.skip();
+
+    if (next != null) {
+      await context.respond(
+        MessageBuilder(
+          content: playCommandTranslations.songEnqueued(
+            title: next.info.title,
+            query: 'from queue',
+          ),
+        ),
+      );
+    } else {
+      await context
+          .respond(MessageBuilder(content: commandTranslations.skipped));
+    }
   }),
   localizedDescriptions: localizedValues(
     (translations) => translations.commands.skip.description,
@@ -59,34 +61,32 @@ ChatCommand:skip: {
   ),
 );
 
-final _leaveLogger = Logger('command/leave');
-
 final leave = ChatCommand(
   _enLeaveCommand.command,
   _enLeaveCommand.description,
-  checks: [connectedToAVoiceChannelCheck],
-  id('leave', (IChatContext context) async {
+  checks: [botConnectedToAVoiceChannelCheck],
+  id('leave', (ChatContext context) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).leave;
 
-    _leaveLogger.info(
-      '''
-ChatCommand:leave: {
-  'guild': ${context.guild?.id.toString() ?? 'null'},
-  'guild_name': ${context.guild?.name ?? 'null'},
-  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
-  'channel': ${context.channel.id},
-  'user': ${context.member?.id.toString() ?? 'null'},
-}''',
+    final nyxxGateway = Injector.appInstance.get<NyxxGateway>();
+
+    final player = await connectLavalink(context);
+    if (player != null) {
+      final queue = trackQueues.getOrCreateQueue(player);
+      queue.clear();
+    }
+
+    nyxxGateway.updateVoiceState(
+      context.guild!.id,
+      GatewayVoiceStateBuilder(
+        channelId: null,
+        isMuted: false,
+        isDeafened: false,
+      ),
     );
 
-    getIt
-        .get<MusicService>()
-        .cluster
-        .getOrCreatePlayerNode(context.guild!.id)
-        .destroy(context.guild!.id);
-    context.guild!.shard.changeVoiceState(context.guild!.id, null);
-    await context.respond(MessageBuilder.content(commandTranslations.left));
+    await context.respond(MessageBuilder(content: commandTranslations.left));
   }),
   localizedDescriptions: localizedValues(
     (translations) => translations.commands.leave.description,
@@ -96,47 +96,30 @@ ChatCommand:leave: {
   ),
 );
 
-final _joinLogger = Logger('command/join');
-
 final join = ChatCommand(
   _enJoinCommand.command,
   _enJoinCommand.description,
-  checks: [notConnectedToAVoiceChannelCheck],
-  id('join', (IChatContext context) async {
+  checks: [botNotConnectedToAVoiceChannelCheck],
+  id('join', (ChatContext context) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).join;
 
-    _joinLogger.info(
-      '''
-ChatCommand:join: {
-  'guild': ${context.guild?.id.toString() ?? 'null'},
-  'guild_name': ${context.guild?.name ?? 'null'},
-  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
-  'channel': ${context.channel.id},
-  'user': ${context.member?.id.toString() ?? 'null'},
-}''',
-    );
+    await connectLavalink(context);
 
-    getIt.get<MusicService>().cluster.getOrCreatePlayerNode(context.guild!.id);
-    await connectIfNeeded(context);
-    await context.respond(MessageBuilder.content(commandTranslations.joined));
+    await context.respond(MessageBuilder(content: commandTranslations.joined));
   }),
-  localizedDescriptions: localizedValues(
-    (translations) => translations.commands.join.description,
-  ),
-  localizedNames: localizedValues(
-    (translations) => translations.commands.join.command,
-  ),
+  localizedDescriptions:
+      localizedValues((translations) => translations.commands.join.description),
+  localizedNames:
+      localizedValues((translations) => translations.commands.join.command),
 );
-
-final _volumeLogger = Logger('command/volume');
 
 final volume = ChatCommand(
   _enVolumeCommand.command,
   _enVolumeCommand.description,
-  checks: [connectedToAVoiceChannelCheck],
+  checks: [botConnectedToAVoiceChannelCheck],
   id('volume', (
-    IChatContext context,
+    ChatContext context,
     @Description(
       'The new volume, this value must be contained between 0 and 1000',
     )
@@ -146,67 +129,30 @@ final volume = ChatCommand(
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).volume;
 
-    _volumeLogger.info(
-      '''
-ChatCommand:volume: {
-  'volume': $volume,
-  'guild': ${context.guild?.id.toString() ?? 'null'},
-  'guild_name': ${context.guild?.name ?? 'null'},
-  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
-  'channel': ${context.channel.id},
-  'user': ${context.member?.id.toString() ?? 'null'},
-}''',
-    );
-
-    getIt
-        .get<MusicService>()
-        .cluster
-        .getOrCreatePlayerNode(context.guild!.id)
-        .volume(
-          context.guild!.id,
-          volume,
-        );
+    final player = await connectLavalink(context);
+    await player?.setVolume(volume);
 
     await context.respond(
-      MessageBuilder.content(
-        commandTranslations.volumeSet(volume: volume),
+      MessageBuilder(
+        content: commandTranslations.volumeSet(volume: volume),
       ),
     );
   }),
-  localizedDescriptions: localizedValues(
-    (translations) => translations.commands.volume.description,
-  ),
-  localizedNames: localizedValues(
-    (translations) => translations.commands.volume.command,
-  ),
+  localizedDescriptions: localizedValues((t) => t.commands.volume.description),
+  localizedNames: localizedValues((t) => t.commands.volume.command),
 );
-
-final _pauseLogger = Logger('command/pause');
 
 final pause = ChatCommand(
   _enPauseCommand.command,
   _enPauseCommand.description,
-  id('pause', (IChatContext context) async {
+  id('pause', (ChatContext context) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).pause;
 
-    _pauseLogger.info(
-      '''
-ChatCommand:pause: {
-  'guild': ${context.guild?.id.toString() ?? 'null'},
-  'guild_name': ${context.guild?.name ?? 'null'},
-  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
-  'channel': ${context.channel.id},
-  'user': ${context.member?.id.toString() ?? 'null'},
-}''',
-    );
+    final player = await connectLavalink(context);
+    await player?.pause();
 
-    getIt
-        .get<MusicService>()
-        .cluster
-        .getOrCreatePlayerNode(context.guild!.id)
-        .pause(context.guild!.id);
-    await context.respond(MessageBuilder.content(commandTranslations.paused));
+    await context.respond(MessageBuilder(content: commandTranslations.paused));
   }),
   localizedDescriptions: localizedValues(
     (translations) => translations.commands.pause.description,
@@ -216,32 +162,17 @@ ChatCommand:pause: {
   ),
 );
 
-final _resumeLogger = Logger('command/resume');
-
 final resume = ChatCommand(
   _enResumeCommand.command,
   _enResumeCommand.description,
-  id('resume', (IChatContext context) async {
+  id('resume', (ChatContext context) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).resume;
 
-    _resumeLogger.info(
-      '''
-ChatCommand:resume: {
-  'guild': ${context.guild?.id.toString() ?? 'null'},
-  'guild_name': ${context.guild?.name ?? 'null'},
-  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
-  'channel': ${context.channel.id},
-  'user': ${context.member?.id.toString() ?? 'null'},
-}''',
-    );
+    final player = await connectLavalink(context);
+    await player?.resume();
 
-    getIt
-        .get<MusicService>()
-        .cluster
-        .getOrCreatePlayerNode(context.guild!.id)
-        .resume(context.guild!.id);
-    await context.respond(MessageBuilder.content(commandTranslations.resumed));
+    await context.respond(MessageBuilder(content: commandTranslations.resumed));
   }),
   localizedDescriptions: localizedValues(
     (translations) => translations.commands.resume.description,
@@ -254,28 +185,19 @@ ChatCommand:resume: {
 final stop = ChatCommand(
   _enStopCommand.command,
   _enStopCommand.description,
-  checks: [connectedToAVoiceChannelCheck],
-  id('stop', (IChatContext context) async {
+  checks: [botConnectedToAVoiceChannelCheck],
+  id('stop', (ChatContext context) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).stop;
 
-    _resumeLogger.info(
-      '''
-ChatCommand:stop: {
-  'guild': ${context.guild?.id.toString() ?? 'null'},
-  'guild_name': ${context.guild?.name ?? 'null'},
-  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
-  'channel': ${context.channel.id},
-  'user': ${context.member?.id.toString() ?? 'null'},
-}''',
-    );
+    final player = await connectLavalink(context);
 
-    getIt
-        .get<MusicService>()
-        .cluster
-        .getOrCreatePlayerNode(context.guild!.id)
-        .stop(context.guild!.id);
-    await context.respond(MessageBuilder.content(commandTranslations.stopped));
+    if (player != null) {
+      final queue = trackQueues.getOrCreateQueue(player);
+      queue.clear();
+    }
+
+    await context.respond(MessageBuilder(content: commandTranslations.stopped));
   }),
   localizedDescriptions: localizedValues(
     (translations) => translations.commands.stop.description,

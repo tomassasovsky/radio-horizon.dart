@@ -8,10 +8,11 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:math' as math;
 
-import 'package:logging/logging.dart';
+import 'package:injector/injector.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
-import 'package:nyxx_interactions/nyxx_interactions.dart';
+import 'package:nyxx_extensions/nyxx_extensions.dart';
+import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/checks.dart';
@@ -48,7 +49,7 @@ ChatGroup radio = ChatGroup(
       _enPlayCommand.command,
       _enPlayCommand.description,
       id('radioplay', (
-        IChatContext context,
+        ChatContext context,
         @Description('The name of the Radio Station to play')
         @Autocomplete(autocompleteRadioQuery)
         String query,
@@ -58,29 +59,12 @@ ChatGroup radio = ChatGroup(
             getCommandTranslations(context).radio.children.play;
 
         await context.respond(
-          MessageBuilder.content(
-            commandTranslations.searching(query: query),
+          MessageBuilder(
+            content: commandTranslations.searching(query: query),
           ),
         );
 
-        _logger.info(
-          '''
-ChatCommand:radio-play: {
-  'query': $query,
-  'guild': ${context.guild?.id.toString() ?? 'null'},
-  'guild_name': ${context.guild?.name ?? 'null'},
-  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
-  'channel': ${context.channel.id},
-  'user': ${context.member?.id.toString() ?? 'null'},
-}''',
-        );
-
-        await connectIfNeeded(context, replace: true);
-
-        final node = getIt
-            .get<MusicService>()
-            .cluster
-            .getOrCreatePlayerNode(context.guild!.id);
+        final player = await connectLavalink(context);
 
         late final RadioBrowserListResponse<Station> stations;
 
@@ -93,12 +77,11 @@ ChatCommand:radio-play: {
         }
 
         if (stations.items.isEmpty) {
-          await context.respond(
-            MessageBuilder.content(
-              commandTranslations.noResults(query: query),
+          return context.respond(
+            MessageBuilder(
+              content: commandTranslations.noResults(query: query),
             ),
           );
-          return;
         }
 
         final bestMatch = stations.items.first;
@@ -106,32 +89,34 @@ ChatCommand:radio-play: {
           uuid: bestMatch.stationUUID,
         );
 
-        final result =
-            await node.searchTracks(bestMatch.urlResolved ?? bestMatch.url);
-        if (result.tracks.isEmpty) {
-          await context.respond(
-            MessageBuilder.content(
-              commandTranslations.noResults(query: query),
+        final lavalinkClient = Injector.appInstance.get<LavalinkClient>();
+
+        final result = await lavalinkClient
+            .loadTrack(bestMatch.urlResolved ?? bestMatch.url);
+        if (result is! TrackLoadResult) {
+          return context.respond(
+            MessageBuilder(
+              content: commandTranslations.noResults(query: query),
             ),
           );
-          return;
         }
 
-        final track = result.tracks.first;
-        node
-          ..players[context.guild!.id]!.queue.clear()
-          ..play(
-            context.guild!.id,
-            track,
-            replace: true,
-            requester: context.member!.id,
-            channelId: context.channel.id,
-          ).startPlaying();
+        await context.respond(
+          MessageBuilder(
+            content: commandTranslations.stationEnqueued(
+              name: result.data.info.title,
+              query: query,
+            ),
+          ),
+        );
 
-        final databaseService = getIt.get<DatabaseService>();
+        final track = result.data;
+        await player?.play(track);
+
+        final databaseService = Injector.appInstance.get<DatabaseService>();
         await databaseService.setCurrentRadio(
           context.guild!.id,
-          context.member!.voiceState!.channel!.id,
+          context.guild!.voiceStates[context.member!.id]!.channelId!,
           context.channel.id,
           bestMatch,
         );
@@ -141,10 +126,10 @@ ChatCommand:radio-play: {
           ..title = commandTranslations.startedPlaying
           ..description = commandTranslations.startedPlayingDescription(
             radio: bestMatch.name,
-            mention: context.member?.mention ?? '(Unknown)',
+            mention: context.member?.user?.mention ?? '(Unknown)',
           );
 
-        await context.respond(MessageBuilder.embed(embed));
+        await context.respond(MessageBuilder(embeds: [embed]));
       }),
       localizedDescriptions: localizedValues(
         (translations) => translations.commands.radio.children.play.description,
@@ -157,15 +142,15 @@ ChatCommand:radio-play: {
       _enPlayRandomCommand.command,
       _enPlayRandomCommand.description,
       id('radio-play-random', (
-        IChatContext context,
+        ChatContext context,
       ) async {
         context as InteractionChatContext;
         final commandTranslations =
             getCommandTranslations(context).radio.children.playRandom;
 
         await context.respond(
-          MessageBuilder.content(
-            commandTranslations.searching,
+          MessageBuilder(
+            content: commandTranslations.searching,
           ),
         );
 
@@ -177,65 +162,38 @@ ChatCommand:radio-play: {
         final randomIndex = math.Random().nextInt(radios.items.length);
         final radio = radios.items[randomIndex];
 
-        _logger.info(
-          '''
-ChatCommand:radio-play-random: {
-  'guild': ${context.guild?.id.toString() ?? 'null'},
-  'guild_name': ${context.guild?.name ?? 'null'},
-  'guild_preferred_locale': ${context.guild?.preferredLocale ?? 'null'},
-  'channel': ${context.channel.id},
-  'user': ${context.member?.id.toString() ?? 'null'},
-}''',
-        );
+        final lavalinkClient = Injector.appInstance.get<LavalinkClient>();
+        final player = await connectLavalink(context);
+        await _radioBrowserClient.clickStation(uuid: radio.stationUUID);
 
-        await connectIfNeeded(context, replace: true);
-
-        final node = getIt
-            .get<MusicService>()
-            .cluster
-            .getOrCreatePlayerNode(context.guild!.id);
-
-        await _radioBrowserClient.clickStation(
-          uuid: radio.stationUUID,
-        );
-
-        final result = await node.searchTracks(radio.urlResolved ?? radio.url);
-        if (result.tracks.isEmpty) {
-          await context.respond(
-            MessageBuilder.content(
-              commandTranslations.errors.noResults,
-            ),
+        final result =
+            await lavalinkClient.loadTrack(radio.urlResolved ?? radio.url);
+        if (result is! TrackLoadResult) {
+          return context.respond(
+            MessageBuilder(content: commandTranslations.errors.noResults),
           );
-          return;
         }
 
-        final track = result.tracks.first;
-        node
-          ..players[context.guild!.id]!.queue.clear()
-          ..play(
-            context.guild!.id,
-            track,
-            replace: true,
-            requester: context.member!.id,
-            channelId: context.channel.id,
-          ).startPlaying();
+        final track = result.data;
+        await player?.play(track);
 
-        await getIt.get<DatabaseService>().setCurrentRadio(
-              context.guild!.id,
-              context.member!.voiceState!.channel!.id,
-              context.channel.id,
-              radio,
-            );
+        final databaseService = Injector.appInstance.get<DatabaseService>();
+        await databaseService.setCurrentRadio(
+          context.guild!.id,
+          context.guild!.voiceStates[context.member!.id]!.channelId!,
+          context.channel.id,
+          radio,
+        );
 
         final embed = EmbedBuilder()
           ..color = getRandomColor()
           ..title = commandTranslations.startedPlaying
           ..description = commandTranslations.startedPlayingDescription(
             radio: radio.name,
-            mention: context.member?.mention ?? '(Unknown)',
+            mention: context.member?.user?.mention ?? '(Unknown)',
           );
 
-        await context.respond(MessageBuilder.embed(embed));
+        await context.respond(MessageBuilder(embeds: [embed]));
       }),
       localizedDescriptions: localizedValues(
         (translations) =>
@@ -250,7 +208,7 @@ ChatCommand:radio-play-random: {
       _enRecognizeCommand.command,
       _enRecognizeCommand.description,
       id('radio-recognize', (
-        IChatContext context,
+        ChatContext context,
       ) async {
         context as InteractionChatContext;
         final translations = getCommandTranslations(context);
@@ -258,8 +216,10 @@ ChatCommand:radio-play-random: {
         CurrentStationInfo? stationInfo;
 
         try {
-          final recognitionService = getIt.get<SongRecognitionService>();
-          final databaseService = getIt.get<DatabaseService>();
+          final databaseService = Injector.appInstance.get<DatabaseService>();
+          final recognitionService =
+              Injector.appInstance.get<SongRecognitionService>();
+
           final guildId = context.guild!.id;
 
           var recognitionSampleDuration = 10;
@@ -285,10 +245,13 @@ ChatCommand:radio-play-random: {
 
             if (result == null) {
               await context.respond(
-                MessageBuilder.embed(
-                  EmbedBuilder()
-                    ..color = DiscordColor.red
-                    ..title = commandTranslations.errors.noResults,
+                MessageBuilder(
+                  embeds: [
+                    EmbedBuilder(
+                      color: const DiscordColor.fromRgb(255, 0, 0),
+                      title: commandTranslations.errors.noResults,
+                    ),
+                  ],
                 ),
               );
               return null;
@@ -298,39 +261,54 @@ ChatCommand:radio-play-random: {
                 CurrentStationInfo.fromShazamResult(result!, guildRadio);
           } catch (e) {
             await context.respond(
-              MessageBuilder.embed(
-                EmbedBuilder()
-                  ..color = DiscordColor.red
-                  ..title = commandTranslations.errors.noResults,
+              MessageBuilder(
+                embeds: [
+                  EmbedBuilder(
+                    color: const DiscordColor.fromRgb(255, 0, 0),
+                    title: commandTranslations.errors.noResults,
+                  ),
+                ],
               ),
             );
             return null;
           }
 
           final color = getRandomColor();
-
-          final embed = EmbedBuilder()
-            ..color = color
-            ..title = stationInfo.title
-            ..description = commandTranslations.requestedBy(
-              mention: context.member?.mention ?? '(Unknown)',
-            )
-            ..addField(
-              name: commandTranslations.radioStationField,
-              content: stationInfo.name,
-            )
-            ..thumbnailUrl = stationInfo.image
-            ..url = stationInfo.url;
-
           final genre = stationInfo.genre;
-          if (genre != null) {
-            embed.addField(
-              name: commandTranslations.genreField,
-              content: genre,
-            );
-          }
 
-          await context.respond(MessageBuilder.embed(embed));
+          final embed = EmbedBuilder(
+            color: color,
+            title: stationInfo.title,
+            description: commandTranslations.requestedBy(
+              mention: context.member?.user?.mention ?? '(Unknown)',
+            ),
+            thumbnail: stationInfo.image != null
+                ? EmbedThumbnailBuilder(url: Uri.parse(stationInfo.image!))
+                : null,
+            url: stationInfo.url != null ? Uri.parse(stationInfo.url!) : null,
+            fields: [
+              if (stationInfo.name != null)
+                EmbedFieldBuilder(
+                  name: commandTranslations.radioStationField,
+                  value: stationInfo.name!,
+                  isInline: true,
+                ),
+              if (stationInfo.image != null && stationInfo.url != null)
+                EmbedFieldBuilder(
+                  name: stationInfo.image!,
+                  value: stationInfo.url!,
+                  isInline: true,
+                ),
+              if (genre != null)
+                EmbedFieldBuilder(
+                  name: commandTranslations.genreField,
+                  value: genre,
+                  isInline: true,
+                ),
+            ],
+          );
+
+          await context.respond(MessageBuilder(embeds: [embed]));
         } catch (e, stacktrace) {
           _logger.severe(
             'Failed to recognize radio',
@@ -339,12 +317,15 @@ ChatCommand:radio-play-random: {
           );
 
           await context.respond(
-            MessageBuilder.embed(
-              EmbedBuilder()
-                ..color = DiscordColor.red
-                ..title = commandTranslations.errors.title
-                ..description =
-                    handleRecognitionExceptions(e, stacktrace, translations),
+            MessageBuilder(
+              embeds: [
+                EmbedBuilder(
+                  color: const DiscordColor.fromRgb(255, 0, 0),
+                  title: commandTranslations.errors.title,
+                  description:
+                      handleRecognitionExceptions(e, stacktrace, translations),
+                ),
+              ],
             ),
           );
         }
@@ -362,7 +343,7 @@ ChatCommand:radio-play-random: {
       _enUpvoteCommand.command,
       _enUpvoteCommand.description,
       id('radio-upvote', (
-        IChatContext context,
+        ChatContext context,
       ) async {
         context as InteractionChatContext;
         final translations = getCommandTranslations(context);
@@ -370,15 +351,18 @@ ChatCommand:radio-play-random: {
 
         late GuildRadio? guildRadio;
         try {
-          guildRadio = await getIt
+          guildRadio = await Injector.appInstance
               .get<DatabaseService>()
               .currentRadio(context.guild!.id);
         } on RadioNotPlayingException {
           await context.respond(
-            MessageBuilder.embed(
-              EmbedBuilder()
-                ..color = DiscordColor.red
-                ..title = commandTranslations.errors.noRadioPlaying,
+            MessageBuilder(
+              embeds: [
+                EmbedBuilder(
+                  color: const DiscordColor.fromRgb(255, 0, 0),
+                  title: commandTranslations.errors.noRadioPlaying,
+                ),
+              ],
             ),
           );
           return;
@@ -395,7 +379,7 @@ ChatCommand:radio-play-random: {
             radio: guildRadio.station.name,
           );
 
-        await context.respond(MessageBuilder.embed(embed));
+        await context.respond(MessageBuilder(embeds: [embed]));
       }),
     ),
   ],
@@ -407,7 +391,7 @@ ChatCommand:radio-play-random: {
   ),
 );
 
-FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
+FutureOr<Iterable<CommandOptionChoiceBuilder<dynamic>>?> autocompleteRadioQuery(
   AutocompleteContext context,
 ) async {
   final query = context.currentValue;
@@ -434,8 +418,8 @@ FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
       final croppedName =
           e.name.substring(0, math.min(e.name.length, 58)).trim();
 
-      return ArgChoiceBuilder(
-        e.name.substring(0, math.min(e.name.length, 100)),
+      return CommandOptionChoiceBuilder(
+        name: e.name.substring(0, math.min(e.name.length, 100)),
         // limit the name's length to 59 characters, because Discord has a limit
         // of 100 characters for the choice's and value.
         // 59 is due to the fact that the station's UUID is also added to the
@@ -443,8 +427,8 @@ FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
         // around the UUID + pre-text space).
         //
         // The value is used to identify the station when the user selects it.
-        '${e.name.length >= 58 ? '$croppedName...' : croppedName} '
-        '(${e.stationUUID})',
+        value: '${e.name.length >= 58 ? '$croppedName...' : croppedName} '
+            '(${e.stationUUID})',
       );
     },
   );
@@ -453,7 +437,7 @@ FutureOr<Iterable<ArgChoiceBuilder>?> autocompleteRadioQuery(
 String handleRecognitionExceptions(
   Object e,
   StackTrace stackTrace,
-  StringsCommandsEn commandTranslations,
+  TranslationsCommandsEn commandTranslations,
 ) {
   log('Exception: ', error: e, stackTrace: stackTrace);
   final errors = commandTranslations.radio.children.recognize.errors;

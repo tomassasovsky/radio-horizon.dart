@@ -13,8 +13,19 @@ services:
       - lavalink
       - shazam_api
 
+  update_lavalink_config:
+    image: ghcr.io/your_github_username/update_lavalink_config:latest
+    container_name: update_lavalink_config
+    depends_on:
+      - shazam_api
+    volumes:
+      - /mnt/nas-share/generalnas/server/docker/radiohorizon/config/lavalink.yml:/app/lavalink.yml
+    env_file:
+      - .env/.env.production
+    command: ["--input", "lavalink.yml", "--output", "test.lavalink.yml"]
+
   lavalink:
-    image: ghcr.io/lavalink-devs/lavalink:3
+    image: ghcr.io/lavalink-devs/lavalink:4
     container_name: lavalink
     restart: always
     expose:

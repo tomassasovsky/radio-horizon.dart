@@ -43,7 +43,7 @@ final String prefix = getEnv('RG_PREFIX');
 
 /// The IDs of the users that are allowed to use administrator commands
 final List<Snowflake> adminIds =
-    getEnv('RG_ADMIN_IDS').split(RegExp(r'\s+')).map(Snowflake.new).toList();
+    getEnv('RG_ADMIN_IDS').split(RegExp(r'\s+')).map(Snowflake.parse).toList();
 
 /// The default response for the github command.
 final String defaultGithubResponse = getEnv(
@@ -65,22 +65,22 @@ final bool dev = getEnvBool('RG_DEV');
 
 /// If this instance is in development mode,
 /// the ID of the guild to register commands to, else `null`.
-final devGuildId = dev ? Snowflake(getEnv('RG_DEV_GUILD_ID')) : null;
+final devGuildId = dev ? Snowflake.parse(getEnv('RG_DEV_GUILD_ID')) : null;
 
 /// The bot's app id.
-final clientId = dev ? Snowflake(getEnv('CLIENT_ID')) : null;
+final clientId = dev ? Snowflake.parse(getEnv('CLIENT_ID')) : null;
 
 /// The address of the lavalink running server to connect to.
-String serverAddress = getEnv('LAVALINK_ADDRESS');
+String lavalinkAddress = getEnv('LAVALINK_ADDRESS');
 
 /// The port of the lavalink running server to use to connect.
-int serverPort = int.parse(getEnv('LAVALINK_PORT'));
+int lavalinkPort = int.parse(getEnv('LAVALINK_PORT'));
 
 /// The password used to connect to the lavalink server.
-String serverPassword = getEnv('LAVALINK_PASSWORD');
+String lavalinkPassword = getEnv('LAVALINK_PASSWORD');
 
 /// Whether to use or not ssl to establish a connection.
-bool useSSL = getEnvBool('LAVALINK_USE_SSL', def: false);
+bool lavalinkUseSSL = getEnvBool('LAVALINK_USE_SSL', def: false);
 
 /// The api key for the song recognition service, in Rapid Api.
 ///
@@ -92,12 +92,17 @@ String rapidapiShazamSongRecognizerKey =
 String sentryDsn = getEnv('SENTRY_DSN');
 
 /// The basic intents needed to run Radio Horizon without privileged intents.
-const int intents = GatewayIntents.directMessages |
+final intents = GatewayIntents.directMessages |
     GatewayIntents.guilds |
-    GatewayIntents.guildVoiceState;
+    GatewayIntents.guildVoiceStates;
 
 /// Your MongoDB connection string.
 ///
 /// Find yours in https://www.mongodb.com/cloud/atlas.
 /// You can also use a local MongoDB instance.
 String mongoDBConnection = getEnv('MONGO_CONNECTION');
+
+const botIconUrl =
+    'https://cdn.discordapp.com/app-icons/977793621896093736/bed9c0abf5b7f4980024b4ad82a18a15.png?size=256';
+
+const githubUrl = 'https://github.com/tomassasovsky/radio-horizon.dart';

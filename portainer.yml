@@ -1,0 +1,29 @@
+services:
+  radio_horizon:
+    image: ghcr.io/tomassasovsky/radio-horizon.dart:latest
+    container_name: radio_horizon
+    expose:
+      - 8034:8080
+    links:
+      - lavalink
+      - shazam_api
+    depends_on:
+      - lavalink
+      - shazam_api
+
+  lavalink:
+    image: ghcr.io/lavalink-devs/lavalink:3
+    container_name: lavalink
+    restart: always
+    expose:
+      - 2333
+    volumes:
+     - /mnt/nas-share/generalnas/server/docker/radiohorizon/config/lavalink.yml:/opt/Lavalink/application.yml
+
+  shazam_api:
+    image: ghcr.io/tomassasovsky/shazam_api:latest
+    container_name: shazam_api
+    expose:
+      - 5000
+    environment:
+      FLASK_ENV: production

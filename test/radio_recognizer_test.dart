@@ -1,3 +1,4 @@
+import 'package:injector/injector.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:retry/retry.dart';
 import 'package:sentry/sentry.dart';
@@ -26,6 +27,10 @@ void main() {
           ..addIntegration(LoggingIntegration());
       },
     );
+
+    Injector.appInstance
+      ..registerSingleton(ShazamClient.localhost)
+      ..registerSingleton(SongRecognitionService.new);
   });
 
   test(
@@ -34,8 +39,7 @@ void main() {
       SongModel? result;
       await retry(
         () async {
-          result =
-              await SongRecognitionService(ShazamClient.localhost()).identify(
+          result = await SongRecognitionService().identify(
             'https://ais-edge49-nyc04.cdnstream.com/2281_128.mp3',
             recognitionSampleDuration,
           );

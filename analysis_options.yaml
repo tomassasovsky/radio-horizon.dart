@@ -4,6 +4,8 @@ linter:
     public_member_api_docs: false
 
 analyzer:
+  errors:
+    cascade_invocations: ignore
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"

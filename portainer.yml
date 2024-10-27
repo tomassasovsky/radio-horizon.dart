@@ -11,7 +11,6 @@ services:
     depends_on:
       - lavalink
       - shazam_api
-    # mount a volume for the .env file
     volumes:
       - /server/docker/radiohorizon/config/.env:/app/.env
 
@@ -20,9 +19,10 @@ services:
     container_name: update_lavalink_config
     restart: no
     volumes:
-      - /server/docker/radiohorizon/config/:/output-dir
+      - /server/docker/radiohorizon/config/.env:/app/.env
+      - /server/docker/radiohorizon/config:/output-dir
     command:
-      ["--input", "lavalink.yml", "--output", "/output-dir/output.lavalink.yml"]
+      ["--input", "/output-dir/lavalink.yml", "--output", "/output-dir/output.lavalink.yml", "--env", "production"]
 
   lavalink:
     image: ghcr.io/lavalink-devs/lavalink:4
@@ -31,7 +31,7 @@ services:
     expose:
       - 2333
     volumes:
-      - /server/docker/radiohorizon/config/lavalink.yml:/opt/Lavalink/application.yml
+     - /server/docker/radiohorizon/config/output.lavalink.yml:/opt/Lavalink/application.yml
     depends_on:
       update_lavalink_config:
         condition: service_completed_successfully

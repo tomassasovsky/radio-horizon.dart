@@ -11,7 +11,7 @@ COPY . /app
 RUN dart pub get
 
 # Compile the Dart script to a native executable (optional but recommended)
-RUN dart compile exe update_lavalink_config.dart -o update_lavalink_config
+RUN dart compile exe bin/update_lavalink_config.dart -o update_lavalink_config
 
 # Set the entrypoint to the compiled executable
 ENTRYPOINT ["./update_lavalink_config"]

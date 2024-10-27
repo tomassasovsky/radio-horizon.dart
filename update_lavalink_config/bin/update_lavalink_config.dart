@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:custom_lavalink/dotenv.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 // A tool that automatically edits the lavalink.yml file to populate the
@@ -46,6 +47,13 @@ void main(List<String> args) {
       help: 'Deezer master decryption key. Will default to the '
           'DEEZER_MASTER_DECRYPTION_KEY environment variable.',
     )
+    ..addOption(
+      'env',
+      abbr: 'e',
+      defaultsTo: 'none',
+      allowed: ['development', 'production', 'none'],
+      help: 'Environment to use. Defaults to "development"',
+    )
     ..addFlag(
       'clear',
       negatable: false,
@@ -73,10 +81,28 @@ void main(List<String> args) {
   final inputFilePath = argResults['input'] as String;
   final outputFilePath = argResults['output'] as String? ?? inputFilePath;
 
+  final env = argResults['env'] as String;
+
+  // Load the environment variables
+  if (env != 'none') {
+    if (env == 'development') {
+      dotEnvFlavour = DotEnvFlavour.development;
+      stdout.writeln('Loading environment variables from .env.development');
+    } else if (env == 'production') {
+      dotEnvFlavour = DotEnvFlavour.production;
+      stdout.writeln('Loading environment variables from .env.production');
+    }
+
+    dotEnvFlavour.initialize();
+  }
+
   // Helper function to get environment variable or command-line argument
   String? getEnvOrArg(String argName, String envName) {
     if (clear) return null;
-    return argResults[argName] as String? ?? Platform.environment[envName];
+    return argResults[argName] as String? ??
+        dotEnvFlavour.dotenv[envName] ??
+        Platform.environment[envName] ??
+        String.fromEnvironment(envName);
   }
 
   // Retrieve the environment variables
@@ -88,6 +114,8 @@ void main(List<String> args) {
     'deezer-master-decryption-key',
     'DEEZER_MASTER_DECRYPTION_KEY',
   );
+
+  stdout.writeln('Updating lavalink.yml file...');
 
   // Ensure required variables are not null
   if ((lavalinkPassword == null ||
@@ -149,7 +177,10 @@ void main(List<String> args) {
   final newContent = editor.toString();
 
   final outputFile = File(outputFilePath);
-  outputFile.deleteSync(recursive: true);
+  if (outputFile.existsSync()) {
+    outputFile.deleteSync(recursive: true);
+  }
+
   outputFile.createSync(recursive: true);
 
   outputFile.writeAsStringSync(newContent);

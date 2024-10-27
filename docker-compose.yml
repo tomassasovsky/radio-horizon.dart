@@ -24,9 +24,6 @@ services:
       - 2333
     volumes:
      - ./output.lavalink.yml:/opt/Lavalink/application.yml
-    depends_on:
-      update_lavalink_config:
-        condition: service_completed_successfully
 
   shazam_api:
     build:
@@ -35,15 +32,3 @@ services:
       - 5000
     environment:
       FLASK_ENV: development
-
-  update_lavalink_config:
-    build:
-      context: ./custom_lavalink
-    container_name: update_lavalink_config
-    restart: no
-    volumes:
-      - ./lavalink.yml:/app/lavalink.yml
-      - ./:/output-dir
-    env_file:
-      - .env/.env.development
-    command: ["--input", "lavalink.yml", "--output", "/output-dir/output.lavalink.yml"]

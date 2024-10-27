@@ -2,6 +2,7 @@ services:
   radio_horizon:
     image: ghcr.io/tomassasovsky/radio-horizon.dart:latest
     container_name: radio_horizon
+    restart: unless-stopped
     expose:
       - 8034:8080
     links:
@@ -10,19 +11,35 @@ services:
     depends_on:
       - lavalink
       - shazam_api
+    # mount a volume for the .env file
+    volumes:
+      - /server/docker/radiohorizon/config/.env:/app/.env
+
+  update_lavalink_config:
+    image: ghcr.io/tomassasovsky/update-lavalink-config:latest
+    container_name: update_lavalink_config
+    restart: no
+    volumes:
+      - /server/docker/radiohorizon/config/:/output-dir
+    command:
+      ["--input", "lavalink.yml", "--output", "/output-dir/output.lavalink.yml"]
 
   lavalink:
-    image: ghcr.io/lavalink-devs/lavalink:3
+    image: ghcr.io/lavalink-devs/lavalink:4
     container_name: lavalink
-    restart: always
+    restart: unless-stopped
     expose:
       - 2333
     volumes:
-     - /mnt/nas-share/generalnas/server/docker/radiohorizon/config/lavalink.yml:/opt/Lavalink/application.yml
+      - /server/docker/radiohorizon/config/lavalink.yml:/opt/Lavalink/application.yml
+    depends_on:
+      update_lavalink_config:
+        condition: service_completed_successfully
 
   shazam_api:
     image: ghcr.io/tomassasovsky/shazam_api:latest
     container_name: shazam_api
+    restart: unless-stopped
     expose:
       - 5000
     environment:

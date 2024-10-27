@@ -25,3 +25,5 @@ coverage/
 /shazam_api/pyvenv.cfg
 /shazam_api/pyvenv.cfg
 .DS_Store
+
+output.lavalink.yml

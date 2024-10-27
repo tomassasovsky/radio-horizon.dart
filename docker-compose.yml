@@ -29,11 +29,10 @@ services:
         condition: service_completed_successfully
 
   shazam_api:
-    image: ghcr.io/tomassasovsky/shazam_api:latest
+    build:
+      context: ./shazam_api
     expose:
       - 5000
-    volumes:
-      - ./shazam_api:/app
     environment:
       FLASK_ENV: development
 
@@ -41,7 +40,7 @@ services:
     build:
       context: ./custom_lavalink
     container_name: update_lavalink_config
-    restart: "no"
+    restart: no
     volumes:
       - ./lavalink.yml:/app/lavalink.yml
       - ./:/output-dir

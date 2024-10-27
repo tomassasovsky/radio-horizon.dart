@@ -149,10 +149,8 @@ void main(List<String> args) {
   final newContent = editor.toString();
 
   final outputFile = File(outputFilePath);
-  if (!outputFile.existsSync()) {
-    outputFile.deleteSync(recursive: true);
-    outputFile.createSync(recursive: true);
-  }
+  outputFile.deleteSync(recursive: true);
+  outputFile.createSync(recursive: true);
 
   outputFile.writeAsStringSync(newContent);
 

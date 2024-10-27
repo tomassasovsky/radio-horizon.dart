@@ -68,7 +68,7 @@ final bool dev = getEnvBool('RG_DEV');
 final devGuildId = dev ? Snowflake.parse(getEnv('RG_DEV_GUILD_ID')) : null;
 
 /// The bot's app id.
-final clientId = dev ? Snowflake.parse(getEnv('CLIENT_ID')) : null;
+final clientId = Snowflake.parse(getEnv('CLIENT_ID'));
 
 /// The address of the lavalink running server to connect to.
 String lavalinkAddress = getEnv('LAVALINK_ADDRESS');
@@ -81,12 +81,6 @@ String lavalinkPassword = getEnv('LAVALINK_PASSWORD');
 
 /// Whether to use or not ssl to establish a connection.
 bool lavalinkUseSSL = getEnvBool('LAVALINK_USE_SSL', def: false);
-
-/// The api key for the song recognition service, in Rapid Api.
-///
-/// Find yours in https://rapidapi.com/mirzahadjaevaguzal/api/shazam-song-recognizer
-String rapidapiShazamSongRecognizerKey =
-    getEnv('RAPIDAPI_SHAZAM_SONG_RECOGNIZER_KEY');
 
 /// The Sentry DSN to use for this instance.
 String sentryDsn = getEnv('SENTRY_DSN');

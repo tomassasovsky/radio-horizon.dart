@@ -35,6 +35,12 @@ Future<void> main() async {
       },
     );
 
+    final commands = CommandsPlugin(
+      prefix: null,
+      guild: devGuildId,
+      options: CommandsOptions(logErrors: dev),
+    );
+
     final lavalinkClient = await LavalinkClient.connect(
       Uri(
         host: lavalinkAddress,
@@ -47,22 +53,17 @@ Future<void> main() async {
 
     final lavalinkPlugin = LavalinkPlugin.usingClient(lavalinkClient);
 
-    final commands = CommandsPlugin(
-      prefix: mentionOr((_) => prefix),
-      options: const CommandsOptions(
-        logErrors: false,
-      ),
-    )
+    commands
       ..addCommand(info)
-      // ..addCommand(skip)
-      // ..addCommand(stop)
-      // ..addCommand(join)
-      // ..addCommand(leave)
-      // ..addCommand(pause)
-      // ..addCommand(resume)
-      // ..addCommand(volume)
-      ..addCommand(music);
-    // ..addCommand(radio);
+      ..addCommand(skip)
+      ..addCommand(stop)
+      ..addCommand(join)
+      ..addCommand(leave)
+      ..addCommand(pause)
+      ..addCommand(resume)
+      ..addCommand(volume)
+      ..addCommand(music)
+      ..addCommand(radio);
 
     commands.onCommandError.listen(commandErrorHandler);
 

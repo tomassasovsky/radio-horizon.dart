@@ -1,27 +1,18 @@
 import 'dart:async';
 
-import 'package:logging/logging.dart';
+import 'package:injector/injector.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 
 class DatabaseService {
-  DatabaseService(this._client) {
-    _client.onReady.listen((_) async {
-      await _addServer();
-    });
-  }
+  DatabaseService();
 
   late Db _db;
+  NyxxGateway get _client => Injector().get<NyxxGateway>();
 
-  Future<void> _checkConnection() async {
-    if (!_db.isConnected) {
-      await _db.open();
-    }
-  }
-
-  Future<void> initialize() async {
+  Future<void> init() async {
     /// Connects to the MongoDB database
     _db = await Db.create(mongoDBConnection);
     await _db.open();
@@ -35,13 +26,15 @@ class DatabaseService {
           key: 'guildId',
           unique: true,
         );
-  }
 
-  Future<void> _addServer() async {
-    _client.eventsWs.onGuildCreate.listen((event) async {
+    _client.onEvent.listen((event) async {
+      if (event is! GuildCreateEvent) {
+        return;
+      }
+
       try {
-        await _checkConnection();
-        await serverCollection.insert({'guildId': event.guild.id.id});
+        final guild = await event.guild.get();
+        await serverCollection.insert({'guildId': guild.id.value});
       } catch (e, stackTrace) {
         Logger('DB').warning('Error while adding server to db', e, stackTrace);
       }
@@ -50,7 +43,6 @@ class DatabaseService {
 
   Future<void> setPlaying(GuildRadio guildRadio) async {
     try {
-      await _checkConnection();
       await radioPlayingCollection.insert(guildRadio.toJson());
     } catch (e, stackTrace) {
       Logger('DB').warning('Error while setting playing to db', e, stackTrace);
@@ -95,7 +87,6 @@ class DatabaseService {
 
   Future<GuildRadio?> getPlaying(Snowflake guildId) async {
     try {
-      await _checkConnection();
       final res = await radioPlayingCollection.findOne(
         where.eq('guildId', guildId.toString()),
       );
@@ -118,7 +109,6 @@ class DatabaseService {
 
   Future<List<GuildRadio>?> getAllPlaying() async {
     try {
-      await _checkConnection();
       final res = await radioPlayingCollection.find().toList();
 
       if (res.isEmpty) {
@@ -139,7 +129,6 @@ class DatabaseService {
 
   Future<void> setNotPlaying(Snowflake guildId) async {
     try {
-      await _checkConnection();
       await radioPlayingCollection.remove(
         where.eq('guildId', guildId.toString()),
       );
@@ -154,8 +143,6 @@ class DatabaseService {
 
   DbCollection get serverCollection => _db.collection('servers');
   DbCollection get radioPlayingCollection => _db.collection('radioPlaying');
-
-  final INyxxWebsocket _client;
 
   FutureOr<void> close() async => _db.close();
 }

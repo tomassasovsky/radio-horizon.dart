@@ -4,15 +4,25 @@ services:
     container_name: radio_horizon
     restart: unless-stopped
     expose:
-      - 8080
-    env_file:
-     - .env/.env.development
+      - 8034:8080
     links:
       - lavalink
       - shazam_api
     depends_on:
       - lavalink
       - shazam_api
+    # mount a volume for the .env file
+    volumes:
+      - /server/docker/radiohorizon/config/.env:/app/.env
+
+  update_lavalink_config:
+    image: ghcr.io/tomassasovsky/update-lavalink-config:latest
+    container_name: update_lavalink_config
+    restart: no
+    volumes:
+      - /server/docker/radiohorizon/config/:/output-dir
+    command:
+      ["--input", "lavalink.yml", "--output", "/output-dir/output.lavalink.yml"]
 
   lavalink:
     image: ghcr.io/lavalink-devs/lavalink:4
@@ -21,7 +31,7 @@ services:
     expose:
       - 2333
     volumes:
-     - ./output.lavalink.yml:/opt/Lavalink/application.yml
+      - /server/docker/radiohorizon/config/lavalink.yml:/opt/Lavalink/application.yml
     depends_on:
       update_lavalink_config:
         condition: service_completed_successfully
@@ -34,14 +44,3 @@ services:
       - 5000
     environment:
       FLASK_ENV: production
-
-  update_lavalink_config:
-    image: ghcr.io/tomassasovsky/update-lavalink-config:latest
-    container_name: update_lavalink_config
-    restart: no
-    volumes:
-      - ./lavalink.yml:/app/lavalink.yml
-      - ./:/output-dir
-    env_file:
-      - .env/.env.development
-    command: ["--input", "lavalink.yml", "--output", "/output-dir/output.lavalink.yml"]

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 
 export 'platform.dart';
@@ -50,35 +49,5 @@ class MusicLinksResponse {
     }
 
     return localPlatforms;
-  }
-
-  List<ComponentRowBuilder> get componentRows {
-    var addedLinks = 0;
-    final buttonRowBuilders = <ComponentRowBuilder>[];
-
-    void addLinkButton(MusicLinksPlatform? platform) {
-      if (platform == null) return;
-
-      final url = platform.url;
-      final label = platform.name;
-
-      if (url == null || label == null) return;
-
-      // the buttons in a button row can't be more than 5
-      if (addedLinks % 5 == 0) {
-        buttonRowBuilders.add(ComponentRowBuilder());
-      }
-
-      final button = LinkButtonBuilder(label, url);
-      buttonRowBuilders.last.addComponent(button);
-      addedLinks++;
-    }
-
-    for (final element in uniquePlatforms) {
-      addLinkButton(element);
-    }
-
-    if (addedLinks == 0) return [];
-    return buttonRowBuilders;
   }
 }

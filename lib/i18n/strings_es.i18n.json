@@ -14,7 +14,8 @@
       "memoryUsage": "Uso de memoria (current/RSS)",
       "uptime": "Tiempo de actividad",
       "currentPlayers": "Reproductores actuales",
-      "gatewayLatency": "Latencia de la puerta de enlace"
+      "gatewayLatency": "Latencia de la puerta de enlace",
+      "viewOnGithub": "Ver en GitHub"
     },
     "skip": {
       "command": "saltar",
@@ -64,7 +65,21 @@
           "queryDescription": "El nombre de una canción o una URL",
           "noResults": "No se encontraron resultados para $query",
           "playlistEnqueued": "Lista de reproducción $name (${query}) añadida a la cola",
-          "songEnqueued": "Canción $title (${query}) añadida a la cola"
+          "songEnqueued": "Canción $title (${query}) añadida a la cola",
+          "children": {
+            "youtube": {
+              "command": "youtube",
+              "description": "Reproduce música de YouTube",
+              "searching": "Buscando $query en YouTube...",
+              "noResults": "No se encontraron resultados para $query"
+            },
+            "deezer": {
+              "command": "deezer",
+              "description": "Reproduce música de Deezer",
+              "searching": "Buscando $query en Deezer...",
+              "noResults": "No se encontraron resultados para $query"
+            }
+          }
         }
       }
     },

@@ -4,9 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'dart:io';
 import 'dart:math';
 import 'package:nyxx/nyxx.dart';
-import 'package:nyxx_interactions/nyxx_interactions.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 
@@ -20,31 +20,32 @@ DiscordColor getRandomColor() {
   );
 }
 
-Map<String, String> queuedTrackToAnalyticsParameters(IQueuedTrack track) {
+Map<String, String> queuedTrackToAnalyticsParameters(Track track) {
   return {
-    'channel_id': track.channelId?.id.toString() ?? 'null',
-    'track_uri': track.track.info?.uri ?? 'null',
-    'track_title': track.track.info?.title ?? 'null',
-    'track_author': track.track.info?.author ?? 'null',
-    'track_identifier': track.track.info?.identifier ?? 'null',
-    'track_duration': track.track.info?.length.toString() ?? 'null',
-    'track_position': track.track.info?.position.toString() ?? 'null',
-    'track_is_stream': track.track.info?.stream.toString() ?? 'null',
-    'track_is_seekable': track.track.info?.seekable.toString() ?? 'null',
-    'track_base64': track.track.track,
+    'identifier': track.info.identifier,
+    'isSeekable': track.info.isSeekable.toString(),
+    'author': track.info.author,
+    'length': track.info.length.toString(),
+    'isStream': track.info.isStream.toString(),
+    'position': track.info.position.toString(),
+    'title': track.info.title,
+    'uri': track.info.uri.toString(),
+    'artworkUrl': track.info.artworkUrl.toString(),
+    'isrc': track.info.isrc.toString(),
+    'sourceName': track.info.sourceName,
   };
 }
 
 Map<Locale, String> localizedValues(
-  String Function(StringsEn translations) getter,
+  String Function(Translations translations) getter,
 ) {
   final locales = AppLocaleUtils.instance.locales;
   final translations = <Locale, String>{};
 
   for (final locale in locales) {
     final key = Locale.values.firstWhere(
-      (element) => element.code.startsWith(locale.languageTag),
-      orElse: () => Locale.englishUs,
+      (element) => element.identifier.startsWith(locale.languageTag),
+      orElse: () => Locale.enUs,
     );
 
     final result = getter(locale.translations);
@@ -53,3 +54,5 @@ Map<Locale, String> localizedValues(
 
   return translations;
 }
+
+String getDartPlatform() => Platform.version.split('(').first;

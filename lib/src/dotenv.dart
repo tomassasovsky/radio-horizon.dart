@@ -25,5 +25,5 @@ enum DotEnvFlavour {
   DotEnv get dotenv => _dotEnv;
 }
 
-var _dotEnv = DotEnv(includePlatformEnvironment: true);
+var _dotEnv = DotEnv(includePlatformEnvironment: true, quiet: true);
 late DotEnvFlavour dotEnvFlavour;

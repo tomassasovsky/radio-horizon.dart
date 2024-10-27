@@ -9,20 +9,18 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:injector/injector.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/models/song_recognition/current_station_info.dart';
 import 'package:shazam_client/shazam_client.dart';
 import 'package:uuid/uuid.dart';
 
 class SongRecognitionService {
-  SongRecognitionService(this._shazamClient);
+  SongRecognitionService();
 
   Uuid get uuid => const Uuid();
 
-  ShazamClient get shazamClient => _shazamClient;
-
-  // ShazamClient used to get the sample
-  final ShazamClient _shazamClient;
+  ShazamClient get shazamClient => Injector.appInstance.get<ShazamClient>();
 
   final http.Client httpClient = http.Client();
 

@@ -5,6 +5,6 @@
 // https://opensource.org/licenses/MIT.
 
 export 'bootup.dart';
+export 'bot_start_duration.dart';
 export 'db.dart';
-export 'music.dart';
 export 'song_recognition.dart';

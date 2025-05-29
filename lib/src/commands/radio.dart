@@ -282,8 +282,8 @@ ChatGroup radio = ChatGroup(
             description: commandTranslations.requestedBy(
               mention: context.member?.user?.mention ?? '(Unknown)',
             ),
-            thumbnail: stationInfo.image != null
-                ? EmbedThumbnailBuilder(url: Uri.parse(stationInfo.image!))
+            image: stationInfo.image != null
+                ? EmbedImageBuilder(url: Uri.parse(stationInfo.image!))
                 : null,
             url: stationInfo.url != null ? Uri.parse(stationInfo.url!) : null,
             fields: [
@@ -291,12 +291,6 @@ ChatGroup radio = ChatGroup(
                 EmbedFieldBuilder(
                   name: commandTranslations.radioStationField,
                   value: stationInfo.name!,
-                  isInline: true,
-                ),
-              if (stationInfo.image != null && stationInfo.url != null)
-                EmbedFieldBuilder(
-                  name: stationInfo.image!,
-                  value: stationInfo.url!,
                   isInline: true,
                 ),
               if (genre != null)

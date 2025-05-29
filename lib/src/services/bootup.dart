@@ -8,8 +8,9 @@ import 'package:radio_horizon/radio_horizon.dart';
 class BootUpService {
   BootUpService();
 
-  DatabaseService get databaseService => Injector().get<DatabaseService>();
-  NyxxGateway get _client => Injector().get<NyxxGateway>();
+  DatabaseService get databaseService =>
+      Injector.appInstance.get<DatabaseService>();
+  NyxxGateway get _client => Injector.appInstance.get<NyxxGateway>();
 
   /// Grabs the previously playing radio and sets it as the current one
   /// for the guild

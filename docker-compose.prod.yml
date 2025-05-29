@@ -3,22 +3,24 @@ services:
     image: ghcr.io/tomassasovsky/radio-horizon.dart:latest
     container_name: radio_horizon
     restart: unless-stopped
-    expose:
+    ports:
       - 8080
     env_file:
      - .env/.env.development
     links:
       - lavalink
       - shazam_api
+      - mongo
     depends_on:
       - lavalink
       - shazam_api
+      - mongo
 
   lavalink:
     image: ghcr.io/lavalink-devs/lavalink:4
     container_name: lavalink
     restart: unless-stopped
-    expose:
+    ports:
       - 2333
     volumes:
      - ./output.lavalink.yml:/opt/Lavalink/application.yml
@@ -30,7 +32,7 @@ services:
     image: ghcr.io/tomassasovsky/shazam_api:latest
     container_name: shazam_api
     restart: unless-stopped
-    expose:
+    ports:
       - 5000
     environment:
       FLASK_ENV: production
@@ -45,3 +47,14 @@ services:
     env_file:
       - .env/.env.development
     command: ["--input", "lavalink.yml", "--output", "/output-dir/output.lavalink.yml"]
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=radio_horizon

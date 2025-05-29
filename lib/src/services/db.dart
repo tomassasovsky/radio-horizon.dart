@@ -10,7 +10,7 @@ class DatabaseService {
   DatabaseService();
 
   late Db _db;
-  NyxxGateway get _client => Injector().get<NyxxGateway>();
+  NyxxGateway get _client => Injector.appInstance.get<NyxxGateway>();
 
   Future<void> init() async {
     /// Connects to the MongoDB database

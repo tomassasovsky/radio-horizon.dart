@@ -12,9 +12,11 @@ services:
     links:
       - lavalink
       - shazam_api
+      - mongo
     depends_on:
       - lavalink
       - shazam_api
+      - mongo
 
   lavalink:
     image: ghcr.io/lavalink-devs/lavalink:4
@@ -32,3 +34,14 @@ services:
       - 5000
     environment:
       FLASK_ENV: development
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=radio_horizon

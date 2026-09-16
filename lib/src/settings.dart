@@ -71,6 +71,14 @@ final Snowflake? devGuildId =
 /// The bot's app id.
 final clientId = Snowflake.parse(getEnv('CLIENT_ID'));
 
+/// OAuth2 client secret for Discord Activity token exchange.
+/// Set in `.env/.env.development` and `.env/.env.production`. Token routes
+/// return 401 if this is unset; the bot still starts.
+final String clientSecret = maybeGetEnv('CLIENT_SECRET') ?? '';
+
+/// Port for the companion Activity HTTP server (Prometheus scrapes this).
+final int activityHttpPort = int.parse(getEnv('ACTIVITY_HTTP_PORT', '8080'));
+
 /// The address of the lavalink running server to connect to.
 String lavalinkAddress = getEnv('LAVALINK_ADDRESS');
 

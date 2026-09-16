@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+export 'activity_bind.dart';
+export 'activity_http.dart';
 export 'bootup.dart';
 export 'bot_start_duration.dart';
 export 'db.dart';

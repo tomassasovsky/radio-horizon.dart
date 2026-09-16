@@ -7,6 +7,12 @@ __Bug fixes__:
 
 __New Features__:
 - feat: enable Deezer only when both the decryption key and ARL are configured
+- feat: add a Discord companion Activity panel for guild voice playback
+
+__Miscellaneous__:
+- refactor: extract a context-free playback service so radio and music commands share one Lavalink API
+- fix: /stop now also clears the current radio row and always stops Lavalink
+- chore: serve an authenticated Activity JSON API on port 8080 (Prometheus scrape means HTTP is bound)
 
 ## 1.7.1
 

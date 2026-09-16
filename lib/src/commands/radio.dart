@@ -12,14 +12,11 @@ import 'package:injector/injector.dart';
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_extensions/nyxx_extensions.dart';
-import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:radio_browser_api/radio_browser_api.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/checks.dart';
 import 'package:radio_horizon/src/helpers/random_string.dart';
 import 'package:radio_horizon/src/models/song_recognition/current_station_info.dart';
-import 'package:retry/retry.dart';
-import 'package:shazam_client/shazam_client.dart';
 
 final TranslationsCommandsRadioEn _enRadioCommand =
     AppLocale.en.translations.commands.radio;
@@ -69,8 +66,6 @@ ChatGroup radio = ChatGroup(
           ),
         );
 
-        final player = await connectLavalink(context);
-
         late final RadioBrowserListResponse<Station> stations;
 
         if (uuidRegExp.hasMatch(query)) {
@@ -90,15 +85,14 @@ ChatGroup radio = ChatGroup(
         }
 
         final bestMatch = stations.items.first;
-        await _radioBrowserClient.clickStation(
-          uuid: bestMatch.stationUUID,
+        final playback = Injector.appInstance.get<PlaybackService>();
+        final outcome = await playback.playRadio(
+          context.guild!.id,
+          commandVoiceChannelId(context),
+          station: bestMatch,
+          textChannelId: context.channel.id,
         );
-
-        final lavalinkClient = Injector.appInstance.get<LavalinkClient>();
-
-        final result = await lavalinkClient
-            .loadTrack(bestMatch.urlResolved ?? bestMatch.url);
-        if (result is! TrackLoadResult) {
+        if (!outcome.isSuccess) {
           return await context.respond(
             MessageBuilder(
               content: commandTranslations.noResults(query: query),
@@ -109,21 +103,10 @@ ChatGroup radio = ChatGroup(
         await context.respond(
           MessageBuilder(
             content: commandTranslations.stationEnqueued(
-              name: result.data.info.title,
+              name: outcome.nextTrack?.info.title ?? bestMatch.name,
               query: query,
             ),
           ),
-        );
-
-        final track = result.data;
-        await player?.play(track);
-
-        final databaseService = Injector.appInstance.get<DatabaseService>();
-        await databaseService.setCurrentRadio(
-          context.guild!.id,
-          context.guild!.voiceStates[context.member!.id]!.channelId!,
-          context.channel.id,
-          bestMatch,
         );
 
         final embed = EmbedBuilder()
@@ -167,28 +150,18 @@ ChatGroup radio = ChatGroup(
         final randomIndex = math.Random().nextInt(radios.items.length);
         final radio = radios.items[randomIndex];
 
-        final lavalinkClient = Injector.appInstance.get<LavalinkClient>();
-        final player = await connectLavalink(context);
-        await _radioBrowserClient.clickStation(uuid: radio.stationUUID);
-
-        final result =
-            await lavalinkClient.loadTrack(radio.urlResolved ?? radio.url);
-        if (result is! TrackLoadResult) {
+        final playback = Injector.appInstance.get<PlaybackService>();
+        final outcome = await playback.playRadio(
+          context.guild!.id,
+          commandVoiceChannelId(context),
+          station: radio,
+          textChannelId: context.channel.id,
+        );
+        if (!outcome.isSuccess) {
           return await context.respond(
             MessageBuilder(content: commandTranslations.errors.noResults),
           );
         }
-
-        final track = result.data;
-        await player?.play(track);
-
-        final databaseService = Injector.appInstance.get<DatabaseService>();
-        await databaseService.setCurrentRadio(
-          context.guild!.id,
-          context.guild!.voiceStates[context.member!.id]!.channelId!,
-          context.channel.id,
-          radio,
-        );
 
         final embed = EmbedBuilder()
           ..color = getRandomColor()
@@ -221,34 +194,20 @@ ChatGroup radio = ChatGroup(
         CurrentStationInfo? stationInfo;
 
         try {
-          final databaseService = Injector.appInstance.get<DatabaseService>();
-          final recognitionService =
-              Injector.appInstance.get<SongRecognitionService>();
+          final playback = Injector.appInstance.get<PlaybackService>();
+          final outcome = await playback.recognize(
+            context.guild!.id,
+            commandVoiceChannelId(context),
+          );
 
-          final guildId = context.guild!.id;
-
-          var recognitionSampleDuration = 10;
-
-          final guildRadio = await databaseService.currentRadio(guildId);
+          if (outcome.error == PlaybackError.radioOnly) {
+            throw const RadioNotPlayingException();
+          }
 
           try {
-            SongModel? result;
-            await retry(
-              () async {
-                result = await recognitionService.identify(
-                  guildRadio.station.urlResolved ?? guildRadio.station.url,
-                  recognitionSampleDuration,
-                );
-              },
-              maxDelay: const Duration(minutes: 2),
-              retryIf: (e) => true,
-              onRetry: (e) {
-                recognitionSampleDuration +=
-                    (recognitionSampleDuration * 0.25).toInt();
-              },
-            ).timeout(const Duration(minutes: 1));
-
-            if (result == null) {
+            if (!outcome.isSuccess ||
+                outcome.song == null ||
+                outcome.radio == null) {
               await context.respond(
                 MessageBuilder(
                   embeds: [
@@ -262,8 +221,10 @@ ChatGroup radio = ChatGroup(
               return null;
             }
 
-            stationInfo =
-                CurrentStationInfo.fromShazamResult(result!, guildRadio);
+            stationInfo = CurrentStationInfo.fromShazamResult(
+              outcome.song!,
+              outcome.radio,
+            );
           } on Object catch (_) {
             await context.respond(
               MessageBuilder(
@@ -350,9 +311,14 @@ ChatGroup radio = ChatGroup(
 
         late GuildRadio? guildRadio;
         try {
-          guildRadio = await Injector.appInstance
-              .get<DatabaseService>()
-              .currentRadio(context.guild!.id);
+          final outcome = await Injector.appInstance
+              .get<PlaybackService>()
+              .upvote(context.guild!.id, commandVoiceChannelId(context));
+          if (outcome.error == PlaybackError.radioOnly ||
+              outcome.radio == null) {
+            throw const RadioNotPlayingException();
+          }
+          guildRadio = outcome.radio;
         } on RadioNotPlayingException {
           await context.respond(
             MessageBuilder(
@@ -367,15 +333,11 @@ ChatGroup radio = ChatGroup(
           return;
         }
 
-        await _radioBrowserClient.voteForStation(
-          stationUUID: guildRadio.station.stationUUID,
-        );
-
         final embed = EmbedBuilder()
           ..color = getRandomColor()
           ..title = commandTranslations.success
           ..description = commandTranslations.successDescription(
-            radio: guildRadio.station.name,
+            radio: guildRadio!.station.name,
           );
 
         await context.respond(MessageBuilder(embeds: [embed]));

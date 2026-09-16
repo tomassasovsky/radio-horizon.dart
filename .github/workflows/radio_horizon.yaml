@@ -6,7 +6,10 @@ on:
       - ".github/workflows/radio_horizon.yaml"
       - "lib/**"
       - "test/**"
+      - "bin/**"
+      - "activity/**"
       - "pubspec.yaml"
+      - "Dockerfile"
   push:
     branches:
       - master
@@ -14,7 +17,10 @@ on:
       - ".github/workflows/radio_horizon.yaml"
       - "lib/**"
       - "test/**"
+      - "bin/**"
+      - "activity/**"
       - "pubspec.yaml"
+      - "Dockerfile"
 
 jobs:
   semantic-pull-request:
@@ -24,7 +30,29 @@ jobs:
     uses: ./.github/workflows/dart_package.yaml
     with:
       min_coverage: 0
-      analyze_directories: lib
+      analyze_directories: lib bin
+
+  activity:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: activity
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: activity/package-lock.json
+
+      - name: 📦 Install Activity dependencies
+        run: npm ci
+
+      - name: 🏗️ Build Activity
+        run: npm run build
 
   verify-version:
     runs-on: ubuntu-latest

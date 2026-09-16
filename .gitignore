@@ -19,6 +19,9 @@ coverage/
 !.env.vault
 .history
 
+/activity/node_modules
+/activity/dist
+
 /shazam_api/lib/
 /shazam_api/include/
 /shazam_api/__pycache__

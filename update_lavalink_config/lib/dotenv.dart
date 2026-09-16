@@ -19,10 +19,10 @@ enum DotEnvFlavour {
   void initialize() {
     try {
       dotenv.load([path]);
-      dotenv.addAll(Platform.environment);
     } on Object catch (_) {
       Logger('DotEnv').warning('Failed to load $path');
     }
+    dotenv.addAll(Platform.environment);
   }
 
   DotEnv get dotenv => _dotEnv;

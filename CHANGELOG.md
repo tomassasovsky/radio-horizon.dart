@@ -1,3 +1,13 @@
+## 1.7.2
+
+__Bug fixes__:
+- fix: restore YouTube Music search by upgrading youtube-plugin and current Innertube clients
+- fix: keep music autocomplete available when Lavalink search fails
+- fix: upgrade LavaSrc so Deezer can start without crashing when its key is missing
+
+__New Features__:
+- feat: enable Deezer only when both the decryption key and ARL are configured
+
 ## 1.7.1
 
 __Bug fixes__:

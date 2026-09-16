@@ -19,6 +19,7 @@ final TranslationsCommandsMusicEn _enMusicCommand =
     AppLocale.en.translations.commands.music;
 final TranslationsCommandsMusicChildrenPlayEn _enPlayCommand =
     _enMusicCommand.children.play;
+final _logger = Logger('command/music');
 
 ChatGroup music = ChatGroup(
   _enMusicCommand.command,
@@ -136,9 +137,19 @@ FutureOr<Iterable<CommandOptionChoiceBuilder<String>>?> autocompleteMusicQuery(
   final lavalinkClient = Injector.appInstance.get<LavalinkClient>();
   final responses = <SearchLoadResult>[];
   for (final source in sources) {
-    final response = await lavalinkClient.loadTrack('$source:$query');
-    if (response is SearchLoadResult) {
+    final response = await _loadSearchResults(lavalinkClient, source, query);
+    if (response != null) {
       responses.add(response);
+    }
+  }
+
+  if (responses.isEmpty &&
+      sources.contains('ytmsearch') &&
+      !sources.contains('ytsearch')) {
+    final fallback =
+        await _loadSearchResults(lavalinkClient, 'ytsearch', query);
+    if (fallback != null) {
+      responses.add(fallback);
     }
   }
 
@@ -181,6 +192,34 @@ FutureOr<Iterable<CommandOptionChoiceBuilder<String>>?> autocompleteMusicQuery(
   });
 
   return choices;
+}
+
+Future<SearchLoadResult?> _loadSearchResults(
+  LavalinkClient lavalinkClient,
+  String source,
+  String query,
+) async {
+  try {
+    final response = await lavalinkClient.loadTrack('$source:$query');
+    if (response is SearchLoadResult && response.data.isNotEmpty) {
+      return response;
+    }
+
+    if (response is ErrorLoadResult) {
+      _logger.warning(
+        'Failed to autocomplete "$query" via $source: '
+        '${response.data.message}',
+      );
+    }
+  } on Object catch (error, stackTrace) {
+    _logger.warning(
+      'Failed to autocomplete "$query" via $source',
+      error,
+      stackTrace,
+    );
+  }
+
+  return null;
 }
 
 Future<void> musicPlay({
@@ -237,6 +276,14 @@ Future<void> musicPlay({
         ),
       ),
     );
+  } else if (searchResult is ErrorLoadResult) {
+    _logger.warning(
+      'Failed to load "$query": ${searchResult.data.message}',
+    );
+    await context.respond(
+      MessageBuilder(content: commandTranslations.noResults(query: query)),
+    );
+    return;
   } else if (searchResult is PlaylistLoadResult) {
     if (searchResult.data.tracks.isEmpty) {
       throw Exception('No tracks found');

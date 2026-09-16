@@ -37,9 +37,9 @@ lavalink:
     soundcloudSearchEnabled: true
     gc-warnings: true
   plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.8.3"
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.2"
       snapshot: false
-    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.3.0"
+    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.3"
       snapshot: false
 
 metrics:
@@ -71,9 +71,9 @@ plugins:
     # The clients to use for track loading.
     clients:
       - MUSIC
-      - ANDROID_TESTSUITE
+      - ANDROID_VR
       - WEB
-      - TVHTML5EMBEDDED
+      - WEBEMBEDDED
     oauth:
       enabled: true
       refreshToken: null
@@ -86,14 +86,16 @@ plugins:
     sources:
       spotify: false
       applemusic: false
-      deezer: true
+      deezer: false
       yandexmusic: false
       flowerytts: false
       youtube: true
     deezer:
-      # the master key used for decrypting the deezer tracks. 
-      # (yes this is not here you need to get it from somewhere else)
+      # Injected by update_lavalink_config from DEEZER_MASTER_DECRYPTION_KEY.
       masterDecryptionKey: null
+      # Injected by update_lavalink_config from DEEZER_ARL.
+      # LavaSrc 4.8 requires a non-empty ARL to enable Deezer.
+      arl: null
       formats: [ "MP3_128", "MP3_64" ]
     youtube:
       countryCode: "US"

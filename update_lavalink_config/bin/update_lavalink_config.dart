@@ -10,6 +10,7 @@ import 'package:yaml_edit/yaml_edit.dart';
 // 1. LAVALINK_PASSWORD
 // 2. YOUTUBE_OAUTH_REFRESH_TOKEN
 // 3. DEEZER_MASTER_DECRYPTION_KEY
+// 4. DEEZER_ARL
 //
 // The lavalink.yml file is expected to be in the same directory as this file.
 // The environment variables are expected to be in a .env file in the .env
@@ -46,6 +47,11 @@ void main(List<String> args) {
       'deezer-master-decryption-key',
       help: 'Deezer master decryption key. Will default to the '
           'DEEZER_MASTER_DECRYPTION_KEY environment variable.',
+    )
+    ..addOption(
+      'deezer-arl',
+      help: 'Deezer ARL cookie. Will default to the '
+          'DEEZER_ARL environment variable.',
     )
     ..addOption(
       'env',
@@ -99,8 +105,12 @@ void main(List<String> args) {
   // Helper function to get environment variable or command-line argument
   String? getEnvOrArg(String argName, String envName) {
     if (clear) return null;
+    String? fromDotenv;
+    if (env != 'none') {
+      fromDotenv = dotEnvFlavour.dotenv[envName];
+    }
     final value = argResults[argName] as String? ??
-        dotEnvFlavour.dotenv[envName] ??
+        fromDotenv ??
         Platform.environment[envName] ??
         String.fromEnvironment(envName);
     return value.isEmpty ? null : value;
@@ -115,6 +125,7 @@ void main(List<String> args) {
     'deezer-master-decryption-key',
     'DEEZER_MASTER_DECRYPTION_KEY',
   );
+  final deezerArl = getEnvOrArg('deezer-arl', 'DEEZER_ARL');
 
   stdout.writeln('Updating lavalink.yml file...');
 
@@ -172,8 +183,12 @@ void main(List<String> args) {
     deezerMasterDecryptionKey,
   );
   editor.update(
+    ['plugins', 'lavasrc', 'deezer', 'arl'],
+    deezerArl,
+  );
+  editor.update(
     ['plugins', 'lavasrc', 'sources', 'deezer'],
-    deezerMasterDecryptionKey != null,
+    deezerMasterDecryptionKey != null && deezerArl != null,
   );
 
   final newContent = editor.toString();

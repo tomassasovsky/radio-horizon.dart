@@ -9,8 +9,8 @@ class Urlparams {
   factory Urlparams.fromRawJson(String str) =>
       Urlparams.fromJson(json.decode(str) as Map);
 
-  factory Urlparams.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Urlparams.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Urlparams(
       trackartist: json['{trackartist}'] as String?,

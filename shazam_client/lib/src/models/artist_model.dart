@@ -9,8 +9,8 @@ class Artist {
   factory Artist.fromRawJson(String str) =>
       Artist.fromJson(json.decode(str) as Map);
 
-  factory Artist.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Artist.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Artist(
       adamid: json['adamid'] as String?,

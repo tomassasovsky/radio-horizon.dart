@@ -15,8 +15,10 @@ import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/checks.dart';
 import 'package:radio_horizon/src/helpers/music_queue.dart';
 
-final _enMusicCommand = AppLocale.en.translations.commands.music;
-final _enPlayCommand = _enMusicCommand.children.play;
+final TranslationsCommandsMusicEn _enMusicCommand =
+    AppLocale.en.translations.commands.music;
+final TranslationsCommandsMusicChildrenPlayEn _enPlayCommand =
+    _enMusicCommand.children.play;
 
 ChatGroup music = ChatGroup(
   _enMusicCommand.command,
@@ -113,12 +115,12 @@ ChatGroup music = ChatGroup(
 );
 
 FutureOr<Iterable<CommandOptionChoiceBuilder<String>>?>
-    autocompleteMusicYoutubeQuery(AutocompleteContext context) async {
+    autocompleteMusicYoutubeQuery(AutocompleteContext context) {
   return autocompleteMusicQuery(context, sources: ['ytmsearch']);
 }
 
 FutureOr<Iterable<CommandOptionChoiceBuilder<String>>?>
-    autocompleteMusicDeezerQuery(AutocompleteContext context) async {
+    autocompleteMusicDeezerQuery(AutocompleteContext context) {
   return autocompleteMusicQuery(context, sources: ['dzsearch']);
 }
 
@@ -167,12 +169,13 @@ FutureOr<Iterable<CommandOptionChoiceBuilder<String>>?> autocompleteMusicQuery(
     final title = '$name by $artist';
     final source = track.info.sourceName;
     final value = track.info.uri.toString();
+    final displayTitle = title.substring(
+      0,
+      math.min(title.length, 100 - source.length - 3),
+    );
 
     return CommandOptionChoiceBuilder<String>(
-      name:
-          // ignore: lines_longer_than_80_chars
-          '${title.substring(0, math.min(title.length, 100 - source.length - 3))} '
-          '($source)',
+      name: '$displayTitle ($source)',
       value: value.substring(0, math.min(value.length, 100)),
     );
   });
@@ -252,7 +255,6 @@ Future<void> musicPlay({
     );
   } else {
     throw Exception(
-      // ignore: lines_longer_than_80_chars, avoid_dynamic_calls
       'Unknown load result: $searchResult, ${searchResult.data.runtimeType}',
     );
   }

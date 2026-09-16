@@ -11,8 +11,8 @@ class SongModelImages {
   factory SongModelImages.fromRawJson(String str) =>
       SongModelImages.fromJson(json.decode(str) as Map);
 
-  factory SongModelImages.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory SongModelImages.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return SongModelImages(
       background: json['background'] as String?,

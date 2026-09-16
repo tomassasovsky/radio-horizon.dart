@@ -5,13 +5,20 @@ import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/checks.dart';
 import 'package:radio_horizon/src/helpers/music_queue.dart';
 
-final _enSkipCommand = AppLocale.en.translations.commands.skip;
-final _enStopCommand = AppLocale.en.translations.commands.stop;
-final _enJoinCommand = AppLocale.en.translations.commands.join;
-final _enLeaveCommand = AppLocale.en.translations.commands.leave;
-final _enPauseCommand = AppLocale.en.translations.commands.pause;
-final _enResumeCommand = AppLocale.en.translations.commands.resume;
-final _enVolumeCommand = AppLocale.en.translations.commands.volume;
+final TranslationsCommandsSkipEn _enSkipCommand =
+    AppLocale.en.translations.commands.skip;
+final TranslationsCommandsStopEn _enStopCommand =
+    AppLocale.en.translations.commands.stop;
+final TranslationsCommandsJoinEn _enJoinCommand =
+    AppLocale.en.translations.commands.join;
+final TranslationsCommandsLeaveEn _enLeaveCommand =
+    AppLocale.en.translations.commands.leave;
+final TranslationsCommandsPauseEn _enPauseCommand =
+    AppLocale.en.translations.commands.pause;
+final TranslationsCommandsResumeEn _enResumeCommand =
+    AppLocale.en.translations.commands.resume;
+final TranslationsCommandsVolumeEn _enVolumeCommand =
+    AppLocale.en.translations.commands.volume;
 
 final skip = ChatCommand(
   _enSkipCommand.command,

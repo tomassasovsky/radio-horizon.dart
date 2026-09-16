@@ -11,8 +11,8 @@ class Action {
   factory Action.fromRawJson(String str) =>
       Action.fromJson(json.decode(str) as Map);
 
-  factory Action.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Action.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Action(
       id: json['id'] as String?,

@@ -15,8 +15,8 @@ class Share {
   factory Share.fromRawJson(String str) =>
       Share.fromJson(json.decode(str) as Map);
 
-  factory Share.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Share.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Share(
       avatar: json['avatar'] as String?,

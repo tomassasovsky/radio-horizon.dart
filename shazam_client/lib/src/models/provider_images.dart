@@ -9,8 +9,8 @@ class ProviderImages {
   factory ProviderImages.fromRawJson(String str) =>
       ProviderImages.fromJson(json.decode(str) as Map);
 
-  factory ProviderImages.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory ProviderImages.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return ProviderImages(
       imagesDefault: json['default'] as String?,

@@ -65,7 +65,8 @@ final bool dev = getEnvBool('RG_DEV');
 
 /// If this instance is in development mode,
 /// the ID of the guild to register commands to, else `null`.
-final devGuildId = dev ? Snowflake.parse(getEnv('RG_DEV_GUILD_ID')) : null;
+final Snowflake? devGuildId =
+    dev ? Snowflake.parse(getEnv('RG_DEV_GUILD_ID')) : null;
 
 /// The bot's app id.
 final clientId = Snowflake.parse(getEnv('CLIENT_ID'));
@@ -86,7 +87,7 @@ bool lavalinkUseSSL = getEnvBool('LAVALINK_USE_SSL', def: false);
 String sentryDsn = getEnv('SENTRY_DSN');
 
 /// The basic intents needed to run Radio Horizon without privileged intents.
-final intents = GatewayIntents.directMessages |
+final Flags<GatewayIntents> intents = GatewayIntents.directMessages |
     GatewayIntents.guilds |
     GatewayIntents.guildVoiceStates;
 

@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 /// {@template exception_response}
 /// A class that represents the error response from the backend.
 /// {@endtemplate}
-class ExceptionResponse with EquatableMixin implements Exception {
+class ExceptionResponse with Equatable implements Exception {
   /// {@macro exception_response}
   const ExceptionResponse({
     this.error,
@@ -29,7 +29,7 @@ class ExceptionResponse with EquatableMixin implements Exception {
       try {
         jsonDecode(response.body);
         return true;
-      } catch (_) {
+      } on Object catch (_) {
         // If decoding fails, it might not be a JSON response.
         return false;
       }

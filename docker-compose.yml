@@ -9,6 +9,8 @@ services:
       - 8080
     env_file:
      - .env/.env.development
+    environment:
+      MONGO_CONNECTION: mongodb://root:example@mongo:27017/radio_horizon?authSource=admin
     links:
       - lavalink
       - shazam_api
@@ -18,6 +20,17 @@ services:
       - shazam_api
       - mongo
 
+  update_lavalink_config:
+    build:
+      context: ./update_lavalink_config
+    container_name: update_lavalink_config
+    volumes:
+      - ./lavalink.yml:/app/lavalink.yml:ro
+      - ./:/output-dir
+    env_file:
+      - .env/.env.development
+    command: ["--input", "/app/lavalink.yml", "--output", "/output-dir/output.lavalink.yml", "--env", "development"]
+
   lavalink:
     image: ghcr.io/lavalink-devs/lavalink:4
     container_name: lavalink
@@ -25,7 +38,10 @@ services:
     expose:
       - 2333
     volumes:
-     - ./output.lavalink.yml:/opt/Lavalink/application.yml
+      - ./output.lavalink.yml:/opt/Lavalink/application.yml
+    depends_on:
+      update_lavalink_config:
+        condition: service_completed_successfully
 
   shazam_api:
     build:
@@ -36,7 +52,7 @@ services:
       FLASK_ENV: development
 
   mongo:
-    image: mongo:latest
+    image: mongo:8.3.11
     container_name: mongo
     restart: always
     ports:

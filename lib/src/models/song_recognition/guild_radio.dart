@@ -16,12 +16,12 @@ class GuildRadio {
   });
 
   factory GuildRadio.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+    final jsonMap = json.cast<String, dynamic>();
     return GuildRadio(
-      Snowflake.parse(json['guildId'].toString()),
-      station: Station.fromJson((json['station'] as Map).cast()),
-      voiceChannelId: Snowflake.parse(json['voiceChannelId'].toString()),
-      textChannelId: Snowflake.parse(json['textChannelId'].toString()),
+      Snowflake.parse(jsonMap['guildId'].toString()),
+      station: Station.fromJson((jsonMap['station'] as Map).cast()),
+      voiceChannelId: Snowflake.parse(jsonMap['voiceChannelId'].toString()),
+      textChannelId: Snowflake.parse(jsonMap['textChannelId'].toString()),
     );
   }
 

@@ -65,7 +65,7 @@ class ShazamClient extends ShazamApiClientBase {
       rethrow;
     } on TimeoutException {
       rethrow;
-    } catch (e) {
+    } on Object catch (_) {
       throw HttpException();
     }
   }

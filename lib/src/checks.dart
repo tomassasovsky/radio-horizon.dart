@@ -13,7 +13,7 @@ final administratorCheck = UserCheck.anyId(
 );
 
 final botConnectedToAVoiceChannelCheck = Check(
-  (CommandContext context) async {
+  (context) async {
     final guildId = context.guild?.id;
     if (guildId == null) {
       return false;
@@ -26,7 +26,7 @@ final botConnectedToAVoiceChannelCheck = Check(
 );
 
 final botNotConnectedToAVoiceChannelCheck = Check(
-  (CommandContext context) async {
+  (context) async {
     final guildId = context.guild?.id;
     if (guildId == null) {
       return false;
@@ -40,7 +40,7 @@ final botNotConnectedToAVoiceChannelCheck = Check(
 );
 
 final userConnectedToVoiceChannelCheck = Check(
-  (CommandContext context) async {
+  (context) async {
     final userVoiceState = context.guild?.voiceStates[context.member?.id];
     return userVoiceState != null || userVoiceState?.channel != null;
   },
@@ -48,7 +48,7 @@ final userConnectedToVoiceChannelCheck = Check(
 );
 
 final sameVoiceChannelOrDisconnectedCheck = Check(
-  (CommandContext context) async {
+  (context) async {
     final userVoiceState = context.guild?.voiceStates[context.member?.id];
     final botVoiceState = context.guild?.voiceStates[context.client.user.id];
 

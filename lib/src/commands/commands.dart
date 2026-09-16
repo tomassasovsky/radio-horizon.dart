@@ -39,7 +39,7 @@ Future<LavalinkPlayer?> connectToChannel(
     return null;
   }
 
-  return voiceChannel.connectLavalink();
+  return await voiceChannel.connectLavalink();
 }
 
 TranslationsCommandsEn getCommandTranslations(InteractionChatContext context) {

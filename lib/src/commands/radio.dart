@@ -21,11 +21,16 @@ import 'package:radio_horizon/src/models/song_recognition/current_station_info.d
 import 'package:retry/retry.dart';
 import 'package:shazam_client/shazam_client.dart';
 
-final _enRadioCommand = AppLocale.en.translations.commands.radio;
-final _enPlayCommand = _enRadioCommand.children.play;
-final _enPlayRandomCommand = _enRadioCommand.children.playRandom;
-final _enRecognizeCommand = _enRadioCommand.children.recognize;
-final _enUpvoteCommand = _enRadioCommand.children.upvote;
+final TranslationsCommandsRadioEn _enRadioCommand =
+    AppLocale.en.translations.commands.radio;
+final TranslationsCommandsRadioChildrenPlayEn _enPlayCommand =
+    _enRadioCommand.children.play;
+final TranslationsCommandsRadioChildrenPlayRandomEn _enPlayRandomCommand =
+    _enRadioCommand.children.playRandom;
+final TranslationsCommandsRadioChildrenRecognizeEn _enRecognizeCommand =
+    _enRadioCommand.children.recognize;
+final TranslationsCommandsRadioChildrenUpvoteEn _enUpvoteCommand =
+    _enRadioCommand.children.upvote;
 
 final uuidRegExp = RegExp(
   '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
@@ -77,7 +82,7 @@ ChatGroup radio = ChatGroup(
         }
 
         if (stations.items.isEmpty) {
-          return context.respond(
+          return await context.respond(
             MessageBuilder(
               content: commandTranslations.noResults(query: query),
             ),
@@ -94,7 +99,7 @@ ChatGroup radio = ChatGroup(
         final result = await lavalinkClient
             .loadTrack(bestMatch.urlResolved ?? bestMatch.url);
         if (result is! TrackLoadResult) {
-          return context.respond(
+          return await context.respond(
             MessageBuilder(
               content: commandTranslations.noResults(query: query),
             ),
@@ -169,7 +174,7 @@ ChatGroup radio = ChatGroup(
         final result =
             await lavalinkClient.loadTrack(radio.urlResolved ?? radio.url);
         if (result is! TrackLoadResult) {
-          return context.respond(
+          return await context.respond(
             MessageBuilder(content: commandTranslations.errors.noResults),
           );
         }
@@ -259,7 +264,7 @@ ChatGroup radio = ChatGroup(
 
             stationInfo =
                 CurrentStationInfo.fromShazamResult(result!, guildRadio);
-          } catch (e) {
+          } on Object catch (_) {
             await context.respond(
               MessageBuilder(
                 embeds: [
@@ -303,7 +308,7 @@ ChatGroup radio = ChatGroup(
           );
 
           await context.respond(MessageBuilder(embeds: [embed]));
-        } catch (e, stacktrace) {
+        } on Object catch (e, stacktrace) {
           _logger.severe(
             'Failed to recognize radio',
             e,
@@ -436,13 +441,11 @@ String handleRecognitionExceptions(
   log('Exception: ', error: e, stackTrace: stackTrace);
   final errors = commandTranslations.radio.children.recognize.errors;
 
-  switch (e.runtimeType) {
-    case RadioNotPlayingException:
-      return errors.noRadioPlaying;
-    case RadioCantCommunicateWithServer:
-      return errors.radioCantCommunicate;
-    case RadioCantIdentifySongException:
-    default:
-      return errors.noResults;
+  if (e is RadioNotPlayingException) {
+    return errors.noRadioPlaying;
   }
+  if (e is RadioCantCommunicateWithServer) {
+    return errors.radioCantCommunicate;
+  }
+  return errors.noResults;
 }

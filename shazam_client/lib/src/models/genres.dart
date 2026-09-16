@@ -9,8 +9,8 @@ class Genres {
   factory Genres.fromRawJson(String str) =>
       Genres.fromJson(json.decode(str) as Map);
 
-  factory Genres.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Genres.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Genres(
       primary: json['primary'] as String?,

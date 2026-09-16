@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:shazam_client/shazam_client.dart';
@@ -16,8 +15,8 @@ class Hub {
 
   factory Hub.fromRawJson(String str) => Hub.fromJson(json.decode(str) as Map);
 
-  factory Hub.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Hub.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Hub(
       actions: json['actions'] == null

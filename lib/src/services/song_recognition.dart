@@ -129,6 +129,6 @@ class SongRecognitionService {
       cancelOnError: true,
     );
 
-    return completer.future;
+    return await completer.future;
   }
 }

@@ -13,8 +13,8 @@ class Provider {
   factory Provider.fromRawJson(String str) =>
       Provider.fromJson(json.decode(str) as Map);
 
-  factory Provider.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Provider.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Provider(
       actions: json['actions'] == null

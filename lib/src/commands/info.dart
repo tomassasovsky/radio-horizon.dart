@@ -19,7 +19,8 @@ String getCurrentMemoryString() {
   return '$current/$rss MB';
 }
 
-final _enInfoCommand = AppLocale.en.translations.commands.info;
+final TranslationsCommandsInfoEn _enInfoCommand =
+    AppLocale.en.translations.commands.info;
 
 ChatCommand info = ChatCommand(
   _enInfoCommand.command,

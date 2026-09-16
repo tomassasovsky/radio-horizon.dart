@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:injector/injector.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:retry/retry.dart';
@@ -7,6 +9,11 @@ import 'package:shazam_client/shazam_client.dart';
 import 'package:test/test.dart';
 
 void main() {
+  if (Platform.environment['RUN_RADIO_RECOGNIZER_INTEGRATION_TESTS'] !=
+      'true') {
+    return;
+  }
+
   var recognitionSampleDuration = 10;
 
   setUpAll(() async {

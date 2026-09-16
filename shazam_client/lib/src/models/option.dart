@@ -18,8 +18,8 @@ class Option {
   factory Option.fromRawJson(String str) =>
       Option.fromJson(json.decode(str) as Map);
 
-  factory Option.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Option.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Option(
       actions: json['actions'] == null

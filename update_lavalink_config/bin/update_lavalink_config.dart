@@ -99,10 +99,11 @@ void main(List<String> args) {
   // Helper function to get environment variable or command-line argument
   String? getEnvOrArg(String argName, String envName) {
     if (clear) return null;
-    return argResults[argName] as String? ??
+    final value = argResults[argName] as String? ??
         dotEnvFlavour.dotenv[envName] ??
         Platform.environment[envName] ??
         String.fromEnvironment(envName);
+    return value.isEmpty ? null : value;
   }
 
   // Retrieve the environment variables
@@ -118,10 +119,7 @@ void main(List<String> args) {
   stdout.writeln('Updating lavalink.yml file...');
 
   // Ensure required variables are not null
-  if ((lavalinkPassword == null ||
-          youtubeOAuthRefreshToken == null ||
-          deezerMasterDecryptionKey == null) &&
-      !clear) {
+  if (lavalinkPassword == null && !clear) {
     stderr
       ..writeln('Error: Missing required environment variables.')
       ..writeln(
@@ -149,7 +147,7 @@ void main(List<String> args) {
       final subPath = path.sublist(0, i);
       try {
         editor.parseAt(subPath);
-      } catch (e) {
+      } on Object catch (_) {
         // If the path doesn't exist, create it
         editor.update(subPath, {});
       }
@@ -172,6 +170,10 @@ void main(List<String> args) {
   editor.update(
     ['plugins', 'lavasrc', 'deezer', 'masterDecryptionKey'],
     deezerMasterDecryptionKey,
+  );
+  editor.update(
+    ['plugins', 'lavasrc', 'sources', 'deezer'],
+    deezerMasterDecryptionKey != null,
   );
 
   final newContent = editor.toString();

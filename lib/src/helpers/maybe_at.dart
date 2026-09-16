@@ -12,7 +12,7 @@ extension MaybeAt<T> on List<T> {
             : null;
       }
       return this[index];
-    } catch (_) {}
+    } on Object catch (_) {}
     return null;
   }
 }

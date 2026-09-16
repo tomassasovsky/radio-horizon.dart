@@ -9,8 +9,8 @@ class Metapage {
   factory Metapage.fromRawJson(String str) =>
       Metapage.fromJson(json.decode(str) as Map);
 
-  factory Metapage.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Metapage.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Metapage(
       caption: json['caption'] as String?,

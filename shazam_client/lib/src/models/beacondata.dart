@@ -9,8 +9,8 @@ class Beacondata {
   factory Beacondata.fromRawJson(String str) =>
       Beacondata.fromJson(json.decode(str) as Map);
 
-  factory Beacondata.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Beacondata.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Beacondata(
       providername: json['providername'] as String?,

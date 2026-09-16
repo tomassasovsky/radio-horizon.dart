@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:nyxx/nyxx.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 
@@ -30,7 +32,7 @@ class MusicQueue {
 
   void clear() {
     _queue.clear();
-    player.stopPlaying();
+    unawaited(player.stopPlaying());
     _isPlaying = false;
   }
 
@@ -39,17 +41,17 @@ class MusicQueue {
   Track? skip() {
     // this will trigger the onTrackEnd event
     final nextTrack = _queue.elementAtOrNull(0);
-    player.stopPlaying();
+    unawaited(player.stopPlaying());
     return nextTrack;
   }
 
   void _playNext() {
     if (_queue.isNotEmpty) {
       final nextTrack = _queue.removeAt(0);
-      player.play(nextTrack);
+      unawaited(player.play(nextTrack));
       _isPlaying = true;
     } else {
-      player.stopPlaying();
+      unawaited(player.stopPlaying());
       _isPlaying = false;
     }
   }

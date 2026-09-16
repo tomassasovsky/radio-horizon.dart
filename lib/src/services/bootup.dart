@@ -49,7 +49,7 @@ class BootUpService {
             textChannelId: playing.textChannelId,
           ),
         );
-      } catch (e) {
+      } on Object catch (_) {
         Logger.root.info(
           'Failed to initialize radio for guild: ${playing.guildId}',
         );

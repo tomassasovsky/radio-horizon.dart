@@ -5,7 +5,7 @@
 // https://opensource.org/licenses/MIT.
 
 /// radio_horizon, a Dart program for the Radio Horizon API.
-library radio_horizon;
+library;
 
 export 'i18n/strings.g.dart';
 export 'src/commands/commands.dart';

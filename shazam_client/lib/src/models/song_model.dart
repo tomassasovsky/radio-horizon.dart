@@ -22,8 +22,8 @@ class SongModel {
     this.urlparams,
   });
 
-  factory SongModel.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory SongModel.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return SongModel(
       albumadamid: json['albumadamid'] as String?,

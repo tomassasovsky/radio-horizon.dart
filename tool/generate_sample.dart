@@ -53,7 +53,7 @@ Future<void> generateSample({
     cancelOnError: true,
   );
 
-  return completer.future;
+  return await completer.future;
 }
 
 Future<void> main(List<String> args) async {

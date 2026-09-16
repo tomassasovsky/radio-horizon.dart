@@ -35,7 +35,7 @@ class DatabaseService {
       try {
         final guild = await event.guild.get();
         await serverCollection.insert({'guildId': guild.id.value});
-      } catch (e, stackTrace) {
+      } on Object catch (e, stackTrace) {
         Logger('DB').warning('Error while adding server to db', e, stackTrace);
       }
     });
@@ -44,7 +44,7 @@ class DatabaseService {
   Future<void> setPlaying(GuildRadio guildRadio) async {
     try {
       await radioPlayingCollection.insert(guildRadio.toJson());
-    } catch (e, stackTrace) {
+    } on Object catch (e, stackTrace) {
       Logger('DB').warning('Error while setting playing to db', e, stackTrace);
     }
   }
@@ -96,7 +96,7 @@ class DatabaseService {
       }
 
       return GuildRadio.fromJson(res);
-    } catch (e, stackTrace) {
+    } on Object catch (e, stackTrace) {
       Logger('DB').warning(
         'Error while getting playing from db',
         e,
@@ -116,7 +116,7 @@ class DatabaseService {
       }
 
       return res.map(GuildRadio.fromJson).toList();
-    } catch (e, stackTrace) {
+    } on Object catch (e, stackTrace) {
       Logger('DB').warning(
         'Error while getting all stations playing from db',
         e,
@@ -132,7 +132,7 @@ class DatabaseService {
       await radioPlayingCollection.remove(
         where.eq('guildId', guildId.toString()),
       );
-    } catch (e, stackTrace) {
+    } on Object catch (e, stackTrace) {
       Logger('DB').warning(
         'Error while setting not playing to db',
         e,
@@ -144,5 +144,5 @@ class DatabaseService {
   DbCollection get serverCollection => _db.collection('servers');
   DbCollection get radioPlayingCollection => _db.collection('radioPlaying');
 
-  FutureOr<void> close() async => _db.close();
+  FutureOr<void> close() => _db.close();
 }

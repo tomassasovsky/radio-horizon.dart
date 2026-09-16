@@ -1,3 +1,4 @@
+// Printing is intentional for this command-line utility.
 // ignore_for_file: avoid_print
 
 import 'dart:io';

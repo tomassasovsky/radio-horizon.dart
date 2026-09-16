@@ -65,7 +65,7 @@ abstract class ShazamApiClientBase {
       rethrow;
     } on TimeoutException {
       rethrow;
-    } catch (_) {
+    } on Object catch (_) {
       throw HttpException();
     }
 
@@ -95,7 +95,7 @@ abstract class ShazamApiClientBase {
       rethrow;
     } on TimeoutException {
       rethrow;
-    } catch (_) {
+    } on Object catch (_) {
       throw HttpException();
     }
 
@@ -122,7 +122,7 @@ abstract class ShazamApiClientBase {
       rethrow;
     } on TimeoutException {
       rethrow;
-    } catch (_) {
+    } on Object catch (_) {
       throw HttpException();
     }
 
@@ -151,7 +151,7 @@ abstract class ShazamApiClientBase {
       rethrow;
     } on TimeoutException {
       rethrow;
-    } catch (_) {
+    } on Object catch (_) {
       throw HttpException();
     }
 
@@ -180,7 +180,7 @@ abstract class ShazamApiClientBase {
       rethrow;
     } on TimeoutException {
       rethrow;
-    } catch (_) {
+    } on Object catch (_) {
       throw HttpException();
     }
 
@@ -219,7 +219,7 @@ abstract class ShazamApiClientBase {
         }
 
         return decodedResponse as T;
-      } catch (_) {
+      } on Object catch (_) {
         throw const SpecifiedTypeNotMatchedException();
       }
     } on FormatException {

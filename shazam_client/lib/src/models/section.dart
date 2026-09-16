@@ -14,8 +14,8 @@ class Section {
   factory Section.fromRawJson(String str) =>
       Section.fromJson(json.decode(str) as Map);
 
-  factory Section.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Section.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Section(
       metadata: json['metadata'] == null

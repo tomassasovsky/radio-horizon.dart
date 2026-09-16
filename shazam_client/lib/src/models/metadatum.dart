@@ -9,8 +9,8 @@ class Metadatum {
   factory Metadatum.fromRawJson(String str) =>
       Metadatum.fromJson(json.decode(str) as Map);
 
-  factory Metadatum.fromJson(Map<dynamic, dynamic> json) {
-    json = json.cast<String, dynamic>();
+  factory Metadatum.fromJson(Map<dynamic, dynamic> rawJson) {
+    final json = rawJson.cast<String, dynamic>();
 
     return Metadatum(
       text: json['text'] as String?,

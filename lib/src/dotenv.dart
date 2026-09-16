@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import 'dart:io';
+
 import 'package:dotenv/dotenv.dart';
 import 'package:logging/logging.dart';
 
@@ -17,7 +19,8 @@ enum DotEnvFlavour {
   void initialize() {
     try {
       dotenv.load([path]);
-    } catch (_) {
+      dotenv.addAll(Platform.environment);
+    } on Object catch (_) {
       Logger('DotEnv').warning('Failed to load $path');
     }
   }

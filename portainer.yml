@@ -31,7 +31,7 @@ services:
     expose:
       - 2333
     volumes:
-     - /server/docker/radiohorizon/config/output.lavalink.yml:/opt/Lavalink/application.yml
+      - /server/docker/radiohorizon/config/output.lavalink.yml:/opt/Lavalink/application.yml
     depends_on:
       update_lavalink_config:
         condition: service_completed_successfully

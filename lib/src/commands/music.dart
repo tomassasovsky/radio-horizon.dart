@@ -208,7 +208,7 @@ Future<SearchLoadResult?> _loadSearchResults(
     if (response is ErrorLoadResult) {
       _logger.warning(
         'Failed to autocomplete "$query" via $source: '
-        '${response.data.message}',
+        '${_loadErrorDescription(response)}',
       );
     }
   } on Object catch (error, stackTrace) {
@@ -278,7 +278,7 @@ Future<void> musicPlay({
     );
   } else if (searchResult is ErrorLoadResult) {
     _logger.warning(
-      'Failed to load "$query": ${searchResult.data.message}',
+      'Failed to load "$query": ${_loadErrorDescription(searchResult)}',
     );
     await context.respond(
       MessageBuilder(content: commandTranslations.noResults(query: query)),
@@ -309,4 +309,13 @@ Future<void> musicPlay({
   await Injector.appInstance
       .get<DatabaseService>()
       .deleteRadioFromList(context.guild!.id);
+}
+
+String _loadErrorDescription(ErrorLoadResult result) {
+  final message = result.data.message ?? 'unknown error';
+  final cause = result.data.cause.trim();
+  if (cause.isEmpty) {
+    return message;
+  }
+  return '$message ($cause)';
 }

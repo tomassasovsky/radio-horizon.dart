@@ -16,6 +16,7 @@ import 'package:radio_horizon/src/services/playback_session.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
+import 'package:shelf_static/shelf_static.dart';
 
 class ActivityHttpService {
   ActivityHttpService({
@@ -24,17 +25,23 @@ class ActivityHttpService {
     required LavalinkClient lavalink,
     required RadioBrowserApi radioBrowser,
     required int port,
+    String staticRoot = 'activity/dist',
+    String clientId = '',
   })  : _bind = bind,
         _playback = playback,
         _lavalink = lavalink,
         _radioBrowser = radioBrowser,
-        _port = port;
+        _port = port,
+        _staticRoot = staticRoot,
+        _clientId = clientId;
 
   final ActivityBindService _bind;
   final PlaybackService _playback;
   final LavalinkClient _lavalink;
   final RadioBrowserApi _radioBrowser;
   final int _port;
+  final String _staticRoot;
+  final String _clientId;
   final _logger = Logger('ActivityHttpService');
   HttpServer? _server;
 
@@ -53,10 +60,38 @@ class ActivityHttpService {
       ..post('/api/recognize', _recognize)
       ..post('/api/upvote', _upvote);
 
-    return const Pipeline().addHandler(router.call);
+    final dist = Directory(_staticRoot);
+    if (!dist.existsSync()) {
+      return const Pipeline().addHandler(router.call);
+    }
+    return Cascade().add(router.call).add(_staticWithClientId()).handler;
+  }
+
+  Handler _staticWithClientId() {
+    final inner = createStaticHandler(
+      _staticRoot,
+      defaultDocument: 'index.html',
+    );
+    return (request) async {
+      final response = await inner(request);
+      final path = request.requestedUri.path;
+      final isIndex = path == '/' || path.endsWith('/index.html');
+      if (!isIndex || _clientId.isEmpty) {
+        return response;
+      }
+      final html = await response.readAsString();
+      return response.change(
+        body: html.replaceAll('__DISCORD_CLIENT_ID_PLACEHOLDER__', _clientId),
+      );
+    };
   }
 
   Future<void> start() async {
+    if (!Directory(_staticRoot).existsSync()) {
+      _logger.info(
+        'Activity static root $_staticRoot is missing; serving API only',
+      );
+    }
     try {
       _server = await io.serve(handler, InternetAddress.anyIPv4, _port);
       _logger.info('Activity HTTP listening on port $_port');

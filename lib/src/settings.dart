@@ -79,6 +79,21 @@ final String clientSecret = maybeGetEnv('CLIENT_SECRET') ?? '';
 /// Port for the companion Activity HTTP server (Prometheus scrapes this).
 final int activityHttpPort = int.parse(getEnv('ACTIVITY_HTTP_PORT', '8080'));
 
+/// Directory of the Vite `activity/dist` build. Docker copies it next to the
+/// bot binary; local `dart run` falls back to `activity/dist` from cwd.
+final String activityDistDir = () {
+  final configured = maybeGetEnv('ACTIVITY_DIST_DIR');
+  if (configured != null && configured.isNotEmpty) {
+    return configured;
+  }
+  final nextToBinary =
+      '${File(Platform.resolvedExecutable).parent.path}/activity/dist';
+  if (Directory(nextToBinary).existsSync()) {
+    return nextToBinary;
+  }
+  return 'activity/dist';
+}();
+
 /// The address of the lavalink running server to connect to.
 String lavalinkAddress = getEnv('LAVALINK_ADDRESS');
 

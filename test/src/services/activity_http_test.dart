@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
@@ -144,6 +145,7 @@ void main() {
       lavalink: lavalink,
       radioBrowser: radioBrowser,
       port: 8080,
+      staticRoot: '${Directory.systemTemp.path}/radio-horizon-no-dist',
     ).handler;
   });
 
@@ -238,6 +240,54 @@ void main() {
       expect(saved.single.guildId, equals(guildId));
       expect(saved.single.voiceChannelId, equals(channelId));
       expect(saved.single.textChannelId, equals(channelId));
+    });
+
+    test('GET / serves activity dist HTML', () async {
+      final dist = await Directory.systemTemp.createTemp('activity-dist');
+      addTearDown(() => dist.delete(recursive: true));
+      File('${dist.path}/index.html').writeAsStringSync(
+        '<!doctype html><title>__DISCORD_CLIENT_ID_PLACEHOLDER__</title>',
+      );
+
+      final local = ActivityHttpService(
+        bind: ActivityBindService(
+          httpClient: discord,
+          clientId: 'app',
+          clientSecret: 'secret',
+          botToken: 'bot',
+          userVoiceChannel: (guild, user) =>
+              guild == guildId && user == userId ? channelId : null,
+          isGuildVoice: (guild, channel) =>
+              guild == guildId && channel == channelId,
+          discordApiBase: Uri.parse('https://discord.com/api/v10'),
+        ),
+        playback: PlaybackService(
+          loadRadio: (_) async => null,
+          saveRadio: (_, __, ___, ____) async {},
+          clearRadio: (_) async {},
+          connect: (_, __) async => player,
+          botChannelId: (_) => null,
+          loadTrack: (_) async => TrackLoadResult(
+            loadType: 'track',
+            data: _track(),
+          ),
+          identify: (_, __) async => SongModel(title: 'x'),
+          clickStation: (_) async {},
+          voteStation: (_) async {},
+          queues: {},
+        ),
+        lavalink: lavalink,
+        radioBrowser: radioBrowser,
+        port: 8080,
+        staticRoot: dist.path,
+        clientId: 'client-123',
+      ).handler;
+
+      final response = await local(
+        Request('GET', Uri.parse('http://localhost/')),
+      );
+      expect(response.statusCode, equals(200));
+      expect(await response.readAsString(), contains('client-123'));
     });
   });
 }

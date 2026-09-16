@@ -7,6 +7,7 @@ __Bug fixes__:
 
 __New Features__:
 - feat: enable Deezer only when both the decryption key and ARL are configured
+- feat: add a Discord companion Activity panel for guild voice playback
 
 __Miscellaneous__:
 - refactor: extract a context-free playback service so radio and music commands share one Lavalink API

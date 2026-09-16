@@ -127,6 +127,8 @@ Future<void> main() async {
           radioBrowser:
               const RadioBrowserApi.fromHost('de1.api.radio-browser.info'),
           port: activityHttpPort,
+          staticRoot: activityDistDir,
+          clientId: clientId.toString(),
         ),
       );
 

@@ -1,0 +1,231 @@
+:root {
+  color-scheme: dark;
+  --ink: #efe6d6;
+  --muted: #b5a892;
+  --amber: #e09a3e;
+  --amber-dim: rgba(224, 154, 62, 0.18);
+  --live: #6fbf8a;
+  --desk: #14110d;
+  --panel: #1c1813;
+  --line: rgba(224, 154, 62, 0.32);
+  --danger: #d67a63;
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    radial-gradient(1200px 480px at 10% -10%, rgba(224, 154, 62, 0.08), transparent 55%),
+    linear-gradient(180deg, #1a1611 0%, var(--desk) 48%, #0e0c0a 100%);
+  color: var(--ink);
+}
+
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  opacity: 0.09;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.05) 0,
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 1.5rem;
+}
+
+.mast {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.wordmark {
+  margin: 0;
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.sig {
+  margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.card {
+  background: color-mix(in srgb, var(--panel) 92%, black);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  padding: 1rem;
+}
+
+.now {
+  min-height: 4.5rem;
+}
+
+.kicker {
+  margin: 0 0 0.35rem;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.25;
+}
+
+.live-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background: var(--live);
+  box-shadow: 0 0 0 4px rgba(111, 191, 138, 0.16);
+}
+
+.live-dot[data-off='true'] {
+  background: var(--muted);
+  box-shadow: none;
+}
+
+.notice,
+.error {
+  margin: 0.75rem 0 0;
+  font-size: 0.92rem;
+}
+
+.error {
+  color: var(--danger);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+}
+
+button,
+select {
+  font: inherit;
+  cursor: pointer;
+}
+
+button {
+  border: 1px solid var(--line);
+  background: var(--amber-dim);
+  color: var(--ink);
+  padding: 0.4rem 0.7rem;
+  min-height: 2.15rem;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--amber);
+}
+
+button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.volume {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.volume input {
+  flex: 1;
+  accent-color: var(--amber);
+}
+
+.search {
+  margin-top: 1.1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.search-row {
+  display: flex;
+  gap: 0.45rem;
+}
+
+input[type='search'] {
+  flex: 1;
+  font: inherit;
+  color: var(--ink);
+  background: #0f0d0b;
+  border: 1px solid var(--line);
+  padding: 0.45rem 0.6rem;
+  min-width: 0;
+}
+
+.modes {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.modes button[aria-pressed='true'] {
+  background: var(--amber);
+  color: #1a130c;
+  border-color: var(--amber);
+}
+
+.results {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.results button {
+  width: 100%;
+  text-align: left;
+}
+
+.blocked {
+  min-height: 12rem;
+  display: grid;
+  align-content: center;
+  gap: 0.6rem;
+}
+
+.blocked p {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}

@@ -1,3 +1,14 @@
+## 1.7.0
+
+__Bug fixes__:
+- fix: align the Lavalink client with the current voice-state API
+- fix: make the development Docker stack generate valid Lavalink configuration
+- fix: preserve container environment overrides for local development
+
+__Chores__:
+- chore: update Dart, Python, and Docker dependencies
+- chore: clean analyzer diagnostics and stabilize integration tests
+
 ## 1.0.0+1
 __Miscellaneous__:
 - feat: add song info with the radio URL's response by @tomassasovsky

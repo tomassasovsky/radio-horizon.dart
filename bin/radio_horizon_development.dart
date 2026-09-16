@@ -69,7 +69,20 @@ Future<void> main() async {
     ..registerSingleton(SongRecognitionService.new)
     ..registerSingleton(BotStartDuration.new)
     ..registerSingleton(() => lavalinkClient)
-    ..registerSingleton(() => lavalinkPlugin);
+    ..registerSingleton(() => lavalinkPlugin)
+    ..registerSingleton(
+      () => createPlaybackService(
+        database: Injector.appInstance.get<DatabaseService>(),
+        lavalink: lavalinkClient,
+        recognition: Injector.appInstance.get<SongRecognitionService>(),
+        connect: (guildId, channelId) async {
+          final guild = await client.guilds.get(guildId);
+          return await connectToChannel(guild, channelId);
+        },
+        botChannelId: (guildId) => client
+            .guilds.cache[guildId]?.voiceStates[client.user.id]?.channelId,
+      ),
+    );
 
   await Injector.appInstance.get<BotStartDuration>().init();
   await Injector.appInstance.get<DatabaseService>().init();

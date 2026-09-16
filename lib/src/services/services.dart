@@ -7,4 +7,6 @@
 export 'bootup.dart';
 export 'bot_start_duration.dart';
 export 'db.dart';
+export 'playback.dart';
+export 'playback_session.dart';
 export 'song_recognition.dart';

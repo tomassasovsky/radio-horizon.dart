@@ -126,7 +126,7 @@ FutureOr<Iterable<CommandOptionChoiceBuilder<String>>?>
 
 FutureOr<Iterable<CommandOptionChoiceBuilder<String>>?> autocompleteMusicQuery(
   AutocompleteContext context, {
-  List<String> sources = const ['ytmsearch', 'dzsearch'],
+  List<String> sources = const ['ytmsearch'],
 }) async {
   final query = context.currentValue;
   if (query.isEmpty) {

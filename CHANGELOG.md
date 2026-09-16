@@ -1,3 +1,8 @@
+## 1.7.1
+
+__Bug fixes__:
+- fix: keep default music autocomplete results on YouTube
+
 ## 1.7.0
 
 __Bug fixes__:

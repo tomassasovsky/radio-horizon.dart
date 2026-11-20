@@ -2,6 +2,7 @@
 
 __Bug fixes__:
 - fix: sync slash commands by deleting Discord's auto-added Primary Entry Point command before startup, which otherwise rejected the bulk command update with error 50240
+- fix: keep a malformed gateway dispatch event (such as an unknown channel type on guild create) from terminating the event stream, which previously left the bot connected but unresponsive until a restart (via a patched nyxx override)
 
 ## 1.7.2
 

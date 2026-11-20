@@ -51,6 +51,15 @@ dev_dependencies:
 dependency_overrides:
   json_annotation: ^4.11.0
   watcher: ^1.2.1
+  # Patched nyxx 6.9.1: keeps a malformed gateway dispatch event (e.g. a channel
+  # type newer than nyxx can parse) from terminating the whole event stream,
+  # which otherwise leaves the bot connected but silently processing nothing
+  # until it is restarted. See BOT-BP. Remove once the fix lands in a published
+  # nyxx release.
+  nyxx:
+    git:
+      url: https://github.com/tomassasovsky/nyxx.git
+      ref: ad0f52027c8bc95b79b804020c5ea7924418257f
 
 assets:
   - .env/

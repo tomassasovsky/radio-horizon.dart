@@ -1,3 +1,8 @@
+## 1.7.3
+
+__Bug fixes__:
+- fix: sync slash commands by deleting Discord's auto-added Primary Entry Point command before startup, which otherwise rejected the bulk command update with error 50240
+
 ## 1.7.2
 
 __Bug fixes__:

@@ -11,6 +11,7 @@ export 'i18n/strings.g.dart';
 export 'src/commands/commands.dart';
 export 'src/dotenv.dart';
 export 'src/error_handler.dart';
+export 'src/helpers/entry_point_command.dart';
 export 'src/helpers/maybe_at.dart';
 export 'src/models/models.dart';
 export 'src/services/services.dart';

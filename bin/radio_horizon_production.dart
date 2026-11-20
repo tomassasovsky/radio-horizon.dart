@@ -67,6 +67,10 @@ Future<void> main() async {
 
     commands.onCommandError.listen(commandErrorHandler);
 
+    // Remove Discord's auto-added Primary Entry Point command before connecting
+    // so nyxx_commands' slash-command sync is not rejected with error 50240.
+    await removeEntryPointCommand(token);
+
     final client = await Nyxx.connectGateway(
       token,
       intents,

@@ -1,3 +1,8 @@
+## 1.7.4
+
+__Bug fixes__:
+- fix: parse Discord channel types that nyxx does not model yet (such as type 20, "Server Home") as a generic channel instead of failing the whole guild create, so guilds with such a channel now load their channels, voice states and members properly (via an updated patched nyxx override)
+
 ## 1.7.3
 
 __Bug fixes__:

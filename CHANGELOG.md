@@ -1,3 +1,8 @@
+## 1.7.5
+
+__Bug fixes__:
+- fix: persist the station on change so `/radio recognize` no longer reports the previous station — `setPlaying` now upserts the guild's `radioPlaying` record instead of inserting, which silently failed on the unique `guildId` index and left the old station stored
+
 ## 1.7.4
 
 __Bug fixes__:

@@ -43,7 +43,17 @@ class DatabaseService {
 
   Future<void> setPlaying(GuildRadio guildRadio) async {
     try {
-      await radioPlayingCollection.insert(guildRadio.toJson());
+      // Upsert by guildId. Each guild has at most one radioPlaying document
+      // (enforced by the unique index created in [init]), so a station change
+      // must replace the guild's existing document. Inserting a second one
+      // instead fails on the unique index, silently leaving the previous
+      // station persisted — which made `/radio recognize` read the old
+      // station after a change.
+      await radioPlayingCollection.replaceOne(
+        where.eq('guildId', guildRadio.guildId.toString()),
+        guildRadio.toJson(),
+        upsert: true,
+      );
     } on Object catch (e, stackTrace) {
       Logger('DB').warning('Error while setting playing to db', e, stackTrace);
     }

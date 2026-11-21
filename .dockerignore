@@ -18,6 +18,9 @@ build/
 .vscode/
 .idea/
 
+activity/node_modules
+activity/dist
+
 .flaskenv*
 !.env.project
 !.env.vault

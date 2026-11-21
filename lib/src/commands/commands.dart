@@ -69,3 +69,11 @@ TranslationsCommandsEn getLocale(InteractionChatContext context) {
 
   return commandTranslations;
 }
+
+Snowflake commandVoiceChannelId(ChatContext context) {
+  final channelId = context.guild?.voiceStates[context.member?.id]?.channelId;
+  if (channelId == null) {
+    throw const UserNotConnectedToVoiceChannelException();
+  }
+  return channelId;
+}

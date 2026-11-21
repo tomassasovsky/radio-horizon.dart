@@ -32,7 +32,16 @@ class MusicQueue {
 
   void clear() {
     _queue.clear();
+    _isPlaying = false;
     unawaited(player.stopPlaying());
+  }
+
+  /// Drops queued music without stopping the current Lavalink player.
+  ///
+  /// Used when radio takes over the same player so a later track-end event
+  /// cannot stop the station or resume the old queue.
+  void discard() {
+    _queue.clear();
     _isPlaying = false;
   }
 
@@ -50,10 +59,13 @@ class MusicQueue {
       final nextTrack = _queue.removeAt(0);
       unawaited(player.play(nextTrack));
       _isPlaying = true;
-    } else {
-      unawaited(player.stopPlaying());
-      _isPlaying = false;
+      return;
     }
+
+    if (_isPlaying) {
+      unawaited(player.stopPlaying());
+    }
+    _isPlaying = false;
   }
 
   bool get isEmpty => _queue.isEmpty;

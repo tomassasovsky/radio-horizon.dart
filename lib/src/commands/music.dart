@@ -13,7 +13,6 @@ import 'package:nyxx_commands/nyxx_commands.dart';
 import 'package:nyxx_lavalink/nyxx_lavalink.dart';
 import 'package:radio_horizon/radio_horizon.dart';
 import 'package:radio_horizon/src/checks.dart';
-import 'package:radio_horizon/src/helpers/music_queue.dart';
 
 final TranslationsCommandsMusicEn _enMusicCommand =
     AppLocale.en.translations.commands.music;
@@ -208,7 +207,7 @@ Future<SearchLoadResult?> _loadSearchResults(
     if (response is ErrorLoadResult) {
       _logger.warning(
         'Failed to autocomplete "$query" via $source: '
-        '${response.data.message}',
+        '${_loadErrorDescription(response)}',
       );
     }
   } on Object catch (error, stackTrace) {
@@ -232,81 +231,80 @@ Future<void> musicPlay({
   final commandTranslations =
       getCommandTranslations(context).music.children.play;
 
-  final player = await connectLavalink(context);
-  if (player == null) {
-    await context.respond(
-      MessageBuilder(content: commandTranslations.noResults(query: query)),
-    );
-    return;
-  }
-
-  LoadResult searchResult;
-
+  final lavalinkClient = Injector.appInstance.get<LavalinkClient>();
   final queryAsUri = Uri.tryParse(query);
   final isUrl = queryAsUri != null && queryAsUri.hasScheme;
-  if (isUrl) {
-    searchResult = await player.lavalinkClient.loadTrack(query);
-  } else {
-    searchResult = await player.lavalinkClient.loadTrack('$source:$query');
-  }
+  final searchResult = await lavalinkClient.loadTrack(
+    isUrl ? query : '$source:$query',
+  );
 
+  late final List<Track> tracks;
+  var playlistName = query;
   if (searchResult is SearchLoadResult) {
-    if (searchResult.data.isEmpty) {
-      throw Exception('No tracks found');
-    }
-
-    trackQueues.getOrCreateQueue(player).queueTrack(searchResult.data.first);
-
-    await context.respond(
-      MessageBuilder(
-        content: commandTranslations.songEnqueued(
-          title: searchResult.data.first.info.title,
-          query: query,
-        ),
-      ),
-    );
+    tracks = searchResult.data.isEmpty ? const [] : [searchResult.data.first];
   } else if (searchResult is TrackLoadResult) {
-    trackQueues.getOrCreateQueue(player).queueTrack(searchResult.data);
-
-    await context.respond(
-      MessageBuilder(
-        content: commandTranslations.songEnqueued(
-          title: searchResult.data.info.title,
-          query: query,
-        ),
-      ),
-    );
+    tracks = [searchResult.data];
+  } else if (searchResult is PlaylistLoadResult) {
+    tracks = searchResult.data.tracks;
+    playlistName = searchResult.data.info.name;
   } else if (searchResult is ErrorLoadResult) {
     _logger.warning(
-      'Failed to load "$query": ${searchResult.data.message}',
+      'Failed to load "$query": ${_loadErrorDescription(searchResult)}',
     );
     await context.respond(
       MessageBuilder(content: commandTranslations.noResults(query: query)),
     );
     return;
-  } else if (searchResult is PlaylistLoadResult) {
-    if (searchResult.data.tracks.isEmpty) {
-      throw Exception('No tracks found');
-    }
-
-    final tracks = searchResult.data.tracks;
-    trackQueues.getOrCreateQueue(player).queueTracks(tracks);
-
-    await context.respond(
-      MessageBuilder(
-        content: commandTranslations.playlistEnqueued(
-          name: searchResult.data.info.name,
-          query: query,
-        ),
-      ),
-    );
   } else {
     throw Exception(
       'Unknown load result: $searchResult, ${searchResult.data.runtimeType}',
     );
   }
 
-  await Injector.appInstance
-      .get<DatabaseService>()
-      .deleteRadioFromList(context.guild!.id);
+  if (tracks.isEmpty) {
+    throw Exception('No tracks found');
+  }
+
+  final outcome =
+      await Injector.appInstance.get<PlaybackService>().enqueueTracks(
+            context.guild!.id,
+            commandVoiceChannelId(context),
+            tracks,
+          );
+  if (!outcome.isSuccess) {
+    await context.respond(
+      MessageBuilder(content: commandTranslations.noResults(query: query)),
+    );
+    return;
+  }
+
+  if (searchResult is PlaylistLoadResult) {
+    await context.respond(
+      MessageBuilder(
+        content: commandTranslations.playlistEnqueued(
+          name: playlistName,
+          query: query,
+        ),
+      ),
+    );
+    return;
+  }
+
+  await context.respond(
+    MessageBuilder(
+      content: commandTranslations.songEnqueued(
+        title: tracks.first.info.title,
+        query: query,
+      ),
+    ),
+  );
+}
+
+String _loadErrorDescription(ErrorLoadResult result) {
+  final message = result.data.message ?? 'unknown error';
+  final cause = result.data.cause.trim();
+  if (cause.isEmpty) {
+    return message;
+  }
+  return '$message ($cause)';
 }

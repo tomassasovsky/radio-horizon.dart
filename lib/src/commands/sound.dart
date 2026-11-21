@@ -30,21 +30,21 @@ final skip = ChatCommand(
     final playCommandTranslations =
         getCommandTranslations(context).music.children.play;
 
-    final player = await connectLavalink(context);
-    if (player == null) {
+    final playback = Injector.appInstance.get<PlaybackService>();
+    final outcome = await playback.skip(
+      context.guild!.id,
+      commandVoiceChannelId(context),
+    );
+
+    if (outcome.error == PlaybackError.nothingToSkip ||
+        outcome.error == PlaybackError.notPlaying ||
+        outcome.error == PlaybackError.wrongVoiceChannel) {
       await context
           .respond(MessageBuilder(content: commandTranslations.nothingPlaying));
       return;
     }
 
-    final queue = trackQueues.getOrCreateQueue(player);
-    if (queue.isEmpty) {
-      await context
-          .respond(MessageBuilder(content: commandTranslations.nothingPlaying));
-      return;
-    }
-
-    final next = queue.skip();
+    final next = outcome.nextTrack;
 
     if (next != null) {
       await context.respond(
@@ -135,9 +135,20 @@ final volume = ChatCommand(
   ) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).volume;
-
-    final player = await connectLavalink(context);
-    await player?.setVolume(volume);
+    final outcome =
+        await Injector.appInstance.get<PlaybackService>().setLavalinkVolume(
+              context.guild!.id,
+              commandVoiceChannelId(context),
+              volume,
+            );
+    if (!outcome.isSuccess) {
+      await context.respond(
+        MessageBuilder(
+          content: getCommandTranslations(context).skip.nothingPlaying,
+        ),
+      );
+      return;
+    }
 
     await context.respond(
       MessageBuilder(
@@ -196,12 +207,17 @@ final stop = ChatCommand(
   id('stop', (ChatContext context) async {
     context as InteractionChatContext;
     final commandTranslations = getCommandTranslations(context).stop;
-
-    final player = await connectLavalink(context);
-
-    if (player != null) {
-      final queue = trackQueues.getOrCreateQueue(player);
-      queue.clear();
+    final outcome = await Injector.appInstance.get<PlaybackService>().stop(
+          context.guild!.id,
+          commandVoiceChannelId(context),
+        );
+    if (!outcome.isSuccess) {
+      await context.respond(
+        MessageBuilder(
+          content: getCommandTranslations(context).skip.nothingPlaying,
+        ),
+      );
+      return;
     }
 
     await context.respond(MessageBuilder(content: commandTranslations.stopped));

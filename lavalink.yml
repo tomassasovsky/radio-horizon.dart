@@ -37,8 +37,11 @@ lavalink:
     soundcloudSearchEnabled: true
     gc-warnings: true
   plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.2"
-      snapshot: false
+    # 1.18.2 still uses a Cobalt TV user-agent that YouTube rejects with
+    # "The page needs to be reloaded." This snapshot includes the PS4 UA
+    # fix (#233) so OAuth TV playback can get stream URLs again.
+    - dependency: "dev.lavalink.youtube:youtube-plugin:f45bbb7aebfcbc1c553769e04af6cd43afa8b7c3"
+      snapshot: true
     - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.3"
       snapshot: false
 
@@ -68,15 +71,32 @@ plugins:
     # Whether just playlist IDs can match. If false, only complete URLs
     # will be loaded.
     allowDirectPlaylistIds: true
-    # The clients to use for track loading.
+    # Clients are queried in order. MUSIC is search-only. WEB is for
+    # ytsearch metadata only (SABR has no playable URLs). TV+OAuth is the
+    # playback path that works from this host after the PS4 UA fix.
     clients:
       - MUSIC
-      - ANDROID_VR
       - WEB
+      - MWEB
+      - TV
+      - IOS
+      - ANDROID_MUSIC
+      - TVHTML5_SIMPLY
+      - ANDROID_VR
       - WEBEMBEDDED
+    clientOptions:
+      WEB:
+        playback: false
+      WEBEMBEDDED:
+        playback: false
+      IOS:
+        searching: false
     oauth:
       enabled: true
       refreshToken: null
+    remoteCipher:
+      url: "https://cipher.kikkia.dev/"
+      userAgent: "radio-horizon"
   lavasrc:
     providers:
       - "dzisrc:%ISRC%"
